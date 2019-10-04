@@ -1,75 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# Plány
 
-[travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
-[travis-url]: https://travis-ci.org/nestjs/nest
-[linux-image]: https://img.shields.io/travis/nestjs/nest/master.svg?label=linux
-[linux-url]: https://travis-ci.org/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- **Uživatelské účty**
+  - Přihlašování (registrování) propojené skrze školní systém
+  - Systém rolí a permisí (je zde pravděpodobnost detekovat žácké účty podle E-mailu)
+  - Správa a přehled studentských účtů učiteli
+    - Lze spravovat přístup daného žáka k systému
+    - Lze se podívat na všechny práce daného žáka atd.
+    - To samé platí pro učitelské účty, které budou spravované nějakým rootem
+- **Projekty**
+  - Vytváření projektů pouze učitelskými účty
+  - Cíle se dají upravovat real time (aplikace stejně bude nejspíše single page application, ale lepší to zmínit :))
+    - Parsování seznam cílů z nějakého listu?
+    - Všechny cíle poté budou v nějaké “bance”, které jdou žákem nebo učitelem přetáhnout k nějakému z měsíců
+    - Cíle se dají označit jako hotové či nikoliv, dají se odstranit či přidat
+    - U každého měsíce lze označit, zda-li to už bylo zkonzultováno či nikoliv, přidat známku a i nějakou poznámku(?) a přidání data, kdy daná konzultace proběhla. Následuje nějaká kontrola, zda konzultace proběhla v dané datum
+    - Nastavování dat konzultací nebo podle měsíců?
+  - K projektu lze přiřadit učitele, učitel může vidět projekty přiřazené projektu, ale i všechny projekty
+  - “Klasifikace” - přehled všech projektů v nějaké tabulce se známkami k danému měsíci a zda proběhla konzultace včas či v náhradní termín
+  - Ke každému projektu možnost přidat “typ”? Jestli se jedná o web, desktopovou aplikaci atd.
+- **Správa projektů**
+  - K projektům lze nahrát samotný projekt, prezentace, dokumentace, analýza a dokumentace
+    - Nějaké verzování těchto souborů (vlastní složka pro každého studenta)?
+    - Možnost stáhnout všechny soubory v nějakém archivu?
+  - Webové projekty je možné spouštět ve virtuální mašině přes Docker
+    - Budou muset studenti sami vytvářet nějaký malý vlastní Docker? Nebo vytvořit nějaký builder pro skript?
+    - Nejlépe by se měl přikládat validní export databáze k projektu
+    - Ideálně by stačilo vytvořit pro každý projekt dockerfile. Přidali by jsme k tomu nějaký návod. Z toho by se pak vytvořil docker container, který by se nahrál na nějaký školní server
+    - Možná by mohlo být i nějaké rozšíření nebo pipeline pro GitHub kde by stačilo kliknout na tlačítko u repozitáře na GitHubu
+  - _Možné propojení s Gitem (GitHub / Vlastní Git server)_
+    - Zobrazení readme na hlavní stránce daného projektu
+    - Zobrazení commits a branches přímo na stránce projektu
+    - při použití Dockeru se (webový) projekt stáhne z Gitu a spustí
+    - propojení účtu v našem systému s Gitem
 
-## Description
+# Rozepsané cíle
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. **Září**
 
-## Installation
+- Analýza - řešení verzování projektů, možností školy, integrace GitHubu apod.
+- Analýza komunikace s Active Directory - vyřešit získávání dat ze školní databáze případné vytvoření vrstvy mezi AD a Backendem
+- Výběr technologického stacku - analýza použití možný frameworků - NestJS na Backend, React/Vue SPA, Prisma jako Data Layer nad DB, Postgres/MongoDB apod.
+- Analýza integrace Dockeru do řešení hostování Web. aplikací
 
-```bash
-$ npm install
-```
+2. **Říjen**
 
-## Running the app
+- Návrh vlastní DB pro účely Systému
+- Wireframe
+- Návrh Backendu (REST API nebo GRAPHQL)
+- Výkop projektu
 
-```bash
-# development
-$ npm run start
+3. **Listopad**
 
-# watch mode
-$ npm run start:dev
+- Vytvoření databáze
+- Vytvoření Backendu
+- Základní endpointy - login apod.
+- Autentifikace
+- Uživatelské účty
 
-# production mode
-$ npm run start:prod
-```
+4. **Prosinec**
 
-## Test
+- Výkop Frontendu
+- Vytváření Projektů
+- Vytváření cílů
+- Známkování cílů
 
-```bash
-# unit tests
-$ npm run test
+5. **Leden**
 
-# e2e tests
-$ npm run test:e2e
+- Management cílů tj. přesouvání cílů na jiný měsíc, mazání apod.
+- Upload souborů, které jsou součástí projektu
+- Výkop integrace nějakého verzovacího systému
+- Možnost nahrát PHP aplikaci a hostovat ji
+- Příprava na obhajoby
 
-# test coverage
-$ npm run test:cov
-```
+6. **Únor**
 
-## Support
+- Propojení s gitem
+- Role
+- Permise
+- Přidávání učitelů k projektům
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+7. **Březen**
 
-## Stay in touch
+- Klasifikace
+- Práce na hostování projektů - podpora NodeJS
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+8. **Duben**
 
-## License
+- Podpora Laravelu a ASP.NET
 
-  Nest is [MIT licensed](LICENSE).
+9. **Květen**
+
+- Optimalizace
+- Responzivita
+- Design
+
+## Dodatečné cíle
+
+- Možnost přiřadit více studentů k jednomu projektu
+- Notifikace ohledně projektu pro daného studenta/studenty - například, že už zbývá pouze x dní, aby se dostavili ke konzultacím včas pro daný měsíc
