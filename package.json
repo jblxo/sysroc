@@ -22,7 +22,12 @@
   "dependencies": {
     "@nestjs/common": "^6.7.2",
     "@nestjs/core": "^6.7.2",
+    "@nestjs/graphql": "^6.5.3",
     "@nestjs/platform-express": "^6.7.2",
+    "apollo-server-core": "^2.9.4",
+    "apollo-server-express": "^2.9.4",
+    "prisma-binding": "^2.3.16",
+    "prisma-client-lib": "^1.34.8",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3"
