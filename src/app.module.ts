@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CatsModule } from './cats/cats.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
-    CatsModule,
+    UsersModule,
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
     }),

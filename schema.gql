@@ -3,24 +3,24 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type CatDto {
-  id: ID!
-  name: String!
-  age: Int!
-  breed: String!
-}
-
-input CreateCatDto {
-  name: String!
-  age: Int!
-  breed: String!
+input CreateUserDto {
+  username: String!
+  email: String!
+  password: String!
+  confirmPassword: String!
 }
 
 type Mutation {
-  createCat(input: CreateCatDto!): CatDto!
+  createUser(input: CreateUserDto!): UserDto!
 }
 
 type Query {
-  hello: String!
-  cats: [CatDto!]!
+  user(_id: String, email: String, username: String): UserDto!
+  users: [UserDto!]!
+}
+
+type UserDto {
+  _id: ID!
+  username: String!
+  password: String!
 }
