@@ -1,23 +1,24 @@
-import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from './interfaces/users.interface';
+import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
+import { User } from './users.model';
+import { ReturnModelType } from '@typegoose/typegoose';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel('User') private readonly userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
+  ) {}
 
   async findAll(): Promise<User[]> {
     return await this.userModel.find().exec();
   }
 
-  async findOne(filter: UsersFilter): Promise<User> {
-    console.log(filter);
+  async findOne(filter: UsersFilter): Promise<UserDto> {
     const user = await this.userModel.findOne(filter).exec();
-    console.log(user);
     return user;
   }
 

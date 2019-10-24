@@ -22,5 +22,5 @@ type Query {
 type UserDto {
   _id: ID!
   username: String!
-  password: String!
+  email: String!
 }

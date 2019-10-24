@@ -7,5 +7,5 @@ export class UserDto {
   @Field()
   readonly username: string;
   @Field()
-  readonly password: string;
+  readonly email: string;
 }
