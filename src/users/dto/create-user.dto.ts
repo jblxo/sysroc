@@ -4,10 +4,13 @@ import { InputType, Field } from 'type-graphql';
 export class CreateUserDto {
   @Field()
   readonly username: string;
+
   @Field()
   readonly email: string;
+
   @Field()
   readonly password: string;
+
   @Field()
   readonly confirmPassword: string;
 }

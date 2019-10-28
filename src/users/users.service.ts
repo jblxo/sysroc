@@ -25,21 +25,11 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     // 1. TODO: Check if user can auth against AD
     const createUser = { ...createUserDto };
-    // 2. Lowercase email
-    createUser.email = createUserDto.email.toLowerCase();
     // 3. Check if the passwords match
     if (createUser.password !== createUser.confirmPassword)
       throw new Error(`The password don't match!`);
 
     delete createUser.confirmPassword;
-
-    // 4. Check if username and email are unique
-    const { username, email } = createUserDto;
-    const isUser = await this.userModel
-      .findOne({ $or: [{ username }, { email }] })
-      .exec();
-    if (isUser !== null)
-      throw new Error('User with given email or username already exists!');
     // 5. Hash the password
     createUser.password = await bcrypt.hash(createUserDto.password, 10);
     // 6. Create user
