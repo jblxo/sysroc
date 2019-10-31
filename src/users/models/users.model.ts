@@ -5,7 +5,7 @@ import {
 } from '@typegoose/typegoose';
 import { Field, ObjectType } from 'type-graphql';
 import * as validator from 'validator';
-import { Group } from '../groups/groups.model';
+import { Group } from '../../groups/models/groups.model';
 
 @ObjectType()
 export class User {
@@ -29,6 +29,6 @@ export class User {
   email: string;
 
   @Field(type => [Group], { nullable: true })
-  @ArrayProperty({ itemsRef: 'Group', default: [] })
+  @ArrayProperty({ itemsRef: 'Group', default: undefined })
   groups?: Ref<Group>[];
 }

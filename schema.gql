@@ -3,11 +3,15 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type ADUser {
+  dn: String!
+  userPrincipalName: String!
+  cn: String!
+}
+
 input CreateUserDto {
-  name: String!
   email: String!
   password: String!
-  confirmPassword: String!
 }
 
 type Group {
@@ -22,6 +26,7 @@ type Mutation {
 type Query {
   user(_id: String, email: String, name: String): UserDto!
   users: [UserDto!]!
+  authUser(auth: CreateUserDto!): ADUser!
 }
 
 type User {
