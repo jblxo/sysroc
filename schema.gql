@@ -20,7 +20,7 @@ type Group {
 }
 
 type Mutation {
-  createUser(input: CreateUserDto!): UserDto!
+  signup(input: CreateUserDto!): UserDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
 }
 
