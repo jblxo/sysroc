@@ -21,12 +21,13 @@ type Group {
 
 type Mutation {
   createUser(input: CreateUserDto!): UserDto!
+  signin(auth: UserAuthInputDto!): UserAuthDto!
 }
 
 type Query {
+  authUser(auth: CreateUserDto!): ADUser!
   user(_id: String, email: String, name: String): UserDto!
   users: [UserDto!]!
-  authUser(auth: CreateUserDto!): ADUser!
 }
 
 type User {
@@ -36,9 +37,20 @@ type User {
   groups: [Group!]
 }
 
+type UserAuthDto {
+  email: String!
+  access_token: String!
+}
+
+input UserAuthInputDto {
+  email: String!
+  password: String!
+}
+
 type UserDto {
   _id: ID!
   name: String!
   email: String!
+  password: String!
   groups: [Group!]
 }

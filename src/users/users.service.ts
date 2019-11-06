@@ -31,7 +31,7 @@ export class UsersService {
     return await this.userModel.find().exec();
   }
 
-  async findOne(filter: UsersFilter): Promise<UserDto> {
+  async findOne(filter: UsersFilter): Promise<UserDto | undefined> {
     const user = await this.userModel
       .findOne(filter)
       .populate('groups')

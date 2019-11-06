@@ -10,6 +10,8 @@ export class UserDto {
   readonly name: string;
   @Field()
   readonly email: string;
+  @Field()
+  readonly password?: string;
   @Field(type => [Group], { nullable: true })
   readonly groups?: Ref<Group>[];
 }
