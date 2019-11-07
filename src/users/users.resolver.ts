@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
@@ -9,6 +9,8 @@ import { UserAuthDto, UserAuthInputDto } from './dto/user-auth.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { MyContext } from '../context';
+import { jwtConstants } from '../auth/constants';
 
 @Resolver()
 export class UsersResolver {
@@ -35,13 +37,22 @@ export class UsersResolver {
   }
 
   @Mutation(() => UserAuthDto)
-  async signin(@Args('auth') auth: UserAuthInputDto): Promise<UserAuthDto> {
+  async signin(
+    @Args('auth') auth: UserAuthInputDto,
+    @Context() { req, res }: MyContext,
+  ): Promise<UserAuthDto> {
     const user = await this.usersService.findOne({ email: auth.email });
     const valid = await bcrypt.compare(auth.password, user.password);
     if (!valid) {
       throw new UnauthorizedException('Wrong password or email!');
     }
     const token = await this.authService.createToken(user.email, user._id);
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      path: jwtConstants.refreshPath,
+    });
+
     return {
       email: user.email,
       access_token: token,

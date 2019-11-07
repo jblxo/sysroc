@@ -11,7 +11,7 @@ import { UsersModule } from './users/users.module';
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
       installSubscriptionHandlers: true,
-      context: ({ req }) => ({ req }),
+      context: ({ req, res }) => ({ req, res }),
     }),
     TypegooseModule.forRoot('mongodb://localhost/sysroc', {
       useNewUrlParser: true,

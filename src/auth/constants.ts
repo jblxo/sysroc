@@ -1,4 +1,6 @@
 export const jwtConstants = {
-  secret: 'secretKey',
+  accessSecret: 'accessSecretKey',
+  refreshSecret: 'refreshSecretKey',
   expiresIn: '60s',
+  refreshPath: '/refresh_token',
 };

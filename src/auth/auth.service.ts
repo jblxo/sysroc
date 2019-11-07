@@ -14,10 +14,18 @@ export class AuthService {
 
   async createToken(email: string, userId: string): Promise<string> {
     const user: JwtPayload = { email, sub: userId };
-    const token = jwt.sign(user, jwtConstants.secret, {
+    const token = jwt.sign(user, jwtConstants.accessSecret, {
       expiresIn: jwtConstants.expiresIn,
     });
     return token;
+  }
+
+  async createRefreshToken(email: string, userId: string): Promise<string> {
+    const user: JwtPayload = { email, sub: userId };
+    const refresh = jwt.sign(user, jwtConstants.refreshSecret, {
+      expiresIn: '7d',
+    });
+    return refresh;
   }
 
   async validateUser(signedUser): Promise<UserDto> {
