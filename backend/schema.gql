@@ -3,11 +3,15 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type ADUser {
+  dn: String!
+  userPrincipalName: String!
+  cn: String!
+}
+
 input CreateUserDto {
-  name: String!
   email: String!
   password: String!
-  confirmPassword: String!
 }
 
 type Group {
@@ -16,10 +20,12 @@ type Group {
 }
 
 type Mutation {
-  createUser(input: CreateUserDto!): UserDto!
+  signup(input: CreateUserDto!): UserDto!
+  signin(auth: UserAuthInputDto!): UserAuthDto!
 }
 
 type Query {
+  authUser(auth: CreateUserDto!): ADUser!
   user(_id: String, email: String, name: String): UserDto!
   users: [UserDto!]!
 }
@@ -31,9 +37,20 @@ type User {
   groups: [Group!]
 }
 
+type UserAuthDto {
+  email: String!
+  access_token: String!
+}
+
+input UserAuthInputDto {
+  email: String!
+  password: String!
+}
+
 type UserDto {
   _id: ID!
   name: String!
   email: String!
+  password: String!
   groups: [Group!]
 }

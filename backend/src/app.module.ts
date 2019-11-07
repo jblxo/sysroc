@@ -1,21 +1,27 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { GroupsModule } from './groups/groups.module';
+import { ConfigModule } from './config/config.module';
+import { ActiveDirectoryModule } from './active-directory/active-directory.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
+      installSubscriptionHandlers: true,
+      context: ({ req, res }) => ({ req, res }),
     }),
     TypegooseModule.forRoot('mongodb://localhost/sysroc', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
     }),
-    UsersModule,
     GroupsModule,
+    ConfigModule,
+    ActiveDirectoryModule,
+    UsersModule,
   ],
 })
 export class AppModule {}

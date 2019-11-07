@@ -4,7 +4,7 @@ import {
   Ref,
 } from '@typegoose/typegoose';
 import { Field, ObjectType } from 'type-graphql';
-import { User } from '../users/users.model';
+import { User } from '../../users/models/users.model';
 
 @ObjectType()
 export class Group {
@@ -13,6 +13,6 @@ export class Group {
   name: string;
 
   @Field(type => [User], { nullable: true })
-  @ArrayProperty({ itemsRef: 'User', default: [] })
+  @ArrayProperty({ itemsRef: 'User', default: undefined })
   users?: Ref<User>[];
 }
