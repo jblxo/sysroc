@@ -13,9 +13,14 @@ export class GroupsService {
   async createMany(groups: Group[]): Promise<DocumentType<Group>[]> {
     return Promise.all(
       groups.map(async (group: Group) => {
-        const newGroup = new this.groupModel(group);
-        const createdGroup = await newGroup.save();
-        return createdGroup;
+        const newGroup = this.groupModel
+          .findOneAndUpdate({}, group, {
+            upsert: true,
+            new: true,
+            setDefaultsOnInsert: true,
+          })
+          .exec();
+        return newGroup;
       }),
     );
   }
