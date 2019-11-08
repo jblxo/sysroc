@@ -12,7 +12,7 @@ export class AuthController {
     private readonly authService: AuthService,
   ) {}
 
-  @Post(jwtConstants.refreshPath)
+  @Post('/refresh_token')
   async refreshToken(@Req() req: Request, @Res() res: Response): Promise<any> {
     const token = req.cookies.token;
     if (!token) {
@@ -27,7 +27,7 @@ export class AuthController {
       return res.send({ ok: false, accessToken: '' });
     }
 
-    const user = await this.usersService.findOne({ _id: payload.userId });
+    const user = await this.usersService.findOne({ _id: payload.sub });
 
     if (!user) {
       return res.send({ ok: false, accessToken: '' });

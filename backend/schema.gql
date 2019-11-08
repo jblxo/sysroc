@@ -28,6 +28,7 @@ type Query {
   authUser(auth: CreateUserDto!): ADUser!
   user(_id: String, email: String, name: String): UserDto!
   users: [UserDto!]!
+  me: UserDto
 }
 
 type User {
@@ -38,8 +39,8 @@ type User {
 }
 
 type UserAuthDto {
-  email: String!
-  access_token: String!
+  accessToken: String!
+  user: UserDto!
 }
 
 input UserAuthInputDto {

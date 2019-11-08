@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
+import { UserDto } from './user.dto';
 
 @InputType()
 export class UserAuthInputDto {
@@ -11,7 +12,7 @@ export class UserAuthInputDto {
 @ObjectType()
 export class UserAuthDto {
   @Field()
-  readonly email: string;
+  readonly accessToken: string;
   @Field()
-  readonly access_token: string;
+  readonly user: UserDto;
 }
