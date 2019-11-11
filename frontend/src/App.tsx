@@ -3,12 +3,13 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import client from './apollo/apollo.client';
 import { setAccessToken } from './auth/accessToke';
 import { Routes } from './routes/Routes';
+import { Config } from './config/config';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:3000/auth/refresh_token', {
+    fetch(`${Config.backendApiUrl}/auth/refresh_token`, {
       method: 'POST',
       credentials: 'include'
     }).then(async x => {

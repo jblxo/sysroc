@@ -6,6 +6,7 @@ import { onError } from 'apollo-link-error';
 import { ApolloLink, Observable } from 'apollo-link';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
 import jwtDecode from 'jwt-decode';
+import { Config } from '../config/config';
 
 const cache = new InMemoryCache({});
 
@@ -62,7 +63,7 @@ export default new ApolloClient({
         }
       },
       fetchAccessToken: () => {
-        return fetch('http://localhost:3000/auth/refresh_token', {
+        return fetch(`${Config.backendApiUrl}/auth/refresh_token`, {
           method: 'POST',
           credentials: 'include'
         });
@@ -81,7 +82,7 @@ export default new ApolloClient({
     }),
     requestLink,
     new HttpLink({
-      uri: 'http://localhost:3000/graphql',
+      uri: Config.backendGraphqlUrl,
       credentials: 'include'
     })
   ]),
