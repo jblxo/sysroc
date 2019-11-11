@@ -29,6 +29,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
               placeholder="Email Address"
               label="Email Address"
               component={MyField}
+              required
             />
           </div>
           <div>

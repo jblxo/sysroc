@@ -1,11 +1,11 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { useSingInMutation, MeDocument, MeQuery } from '../generated/graphql';
+import { useSignInMutation, MeDocument, MeQuery } from '../generated/graphql';
 import { setAccessToken } from '../auth/accessToke';
 import { MyForm } from './MyForm';
 
 export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
-  const [signin] = useSingInMutation();
+  const [signin] = useSignInMutation();
 
   return (
     <div style={{ textAlign: 'center' }}>

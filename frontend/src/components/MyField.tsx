@@ -6,21 +6,23 @@ interface Props extends FieldProps {
   type: string;
   placeholder: string;
   label: string;
+  required?: boolean;
 }
 
 export const MyField: React.FC<Props> = ({
   type,
   placeholder,
   label,
-  field
+  field,
+  required
 }) => {
   return (
     <TextField
       type={type}
       placeholder={placeholder}
       label={label}
+      required={required || false}
       {...field}
-      required
     />
   );
 };

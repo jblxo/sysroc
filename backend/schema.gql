@@ -22,6 +22,7 @@ type Group {
 type Mutation {
   signup(input: CreateUserDto!): UserDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
+  logout: Boolean!
 }
 
 type Query {

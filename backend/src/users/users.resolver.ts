@@ -68,4 +68,15 @@ export class UsersResolver {
       user,
     };
   }
+
+  @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard)
+  async logout(@Context() { res }: MyContext): Promise<Boolean> {
+    res.cookie('token', '', {
+      httpOnly: true,
+      path: jwtConstants.refreshPath,
+    });
+
+    return true;
+  }
 }
