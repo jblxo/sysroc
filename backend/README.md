@@ -1,4 +1,29 @@
-# Plány
+# Backend systému na ročníkové práce
+
+## Požadavky
+
+### Nainstalované balíčky
+
+TBC
+
+### Služby
+
+- Běžící [server s prostředníkem pro komunikaci se službou ActiveDirectory](https://github.com/jblxo/ActiveDirectoryJWTAuthServer).
+
+## Konfigurace
+
+Konfigurace systému se tahá z `.env` souborů dle typu prostředí, kdy konečný název souboru je
+typ prostředí + `.env` (tj. např. `development.env`).  
+Pro správný běh systému je vždy potřeba takový soubor vytvořit pro každý možný typ prostředí,
+pro vývoj na lokálním prostředí stačí pouze soubor `development.env`.
+
+### Hodnoty
+
+|               | Možnosti | Popis                                                                               |
+|---------------|----------|-------------------------------------------------------------------------------------|
+| `AD_ENDPOINT` | `string` | Adresa na server s běžícím prostředníkem pro komunikaci se službou ActiveDirectory. |
+
+## Plány
 
 - **Uživatelské účty**
   - Přihlašování (registrování) propojené skrze školní systém
