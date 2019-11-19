@@ -35,7 +35,7 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           <div>
             <Field
               type="password"
-              name="Password"
+              name="password"
               placeholder="Password"
               label="Password"
               component={MyField}
