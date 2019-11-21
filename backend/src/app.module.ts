@@ -5,6 +5,7 @@ import { GroupsModule } from './groups/groups.module';
 import { ConfigModule } from './config/config.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
 import { UsersModule } from './users/users.module';
+import { RedisModule } from 'nestjs-redis';
 
 @Module({
   imports: [
@@ -25,6 +26,14 @@ import { UsersModule } from './users/users.module';
       useUnifiedTopology: true,
       useCreateIndex: true,
     }),
+    RedisModule.register([
+      {
+        name: 'redis',
+        host: 'localhost',
+        port: 6379,
+        keyPrefix: 'sysroc',
+      },
+    ]),
     GroupsModule,
     ConfigModule,
     ActiveDirectoryModule,

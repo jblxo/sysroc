@@ -1,4 +1,4 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -11,13 +11,15 @@ import { map } from 'rxjs/operators';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
+import { DeleteUserDto } from './dto/delete-user.dto';
 
 @Injectable()
 export class UsersService {
   private ADEndpoint: string;
 
   constructor(
-    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
+    @InjectModel(User)
+    private readonly userModel: ReturnModelType<typeof User>,
     @InjectModel(Group)
     private readonly groupModel: ReturnModelType<typeof Group>,
     private readonly httpService: HttpService,
@@ -37,7 +39,9 @@ export class UsersService {
       .populate('groups')
       .exec();
 
-    if (!user) throw new Error(`User not found!`);
+    if (!user) {
+      throw new Error(`User not found!`);
+    }
 
     await this.userModel.populate(user, {
       path: 'groups.users',
@@ -46,17 +50,22 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async getADUser(createUserDto: CreateUserDto): Promise<ADResponse> {
     const { email: username, password } = createUserDto;
-    const ADResponse: ADResponse = await this.httpService
-      .post(this.ADEndpoint, {
+
+    return await this.httpService
+      .post(`${this.ADEndpoint}/auth/login`, {
         username,
         password,
       })
       .pipe(map(response => response.data))
       .toPromise();
+  }
 
-    const groups: Group[] = ADResponse.user.dn
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const response = await this.getADUser(createUserDto);
+
+    const groups: Group[] = response.user.dn
       .split(',')
       .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
 
@@ -64,7 +73,7 @@ export class UsersService {
 
     const createUser = {
       ...createUserDto,
-      name: ADResponse.user.cn,
+      name: response.user.cn,
       groups: [],
     };
 
@@ -76,11 +85,18 @@ export class UsersService {
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
-    createdGroups.forEach(async group => {
+    for (const group of createdGroups) {
       group.users.push(newUser._id);
       await group.save();
-    });
+    }
 
     return await newUser.populate('groups').execPopulate();
+  }
+
+  async delete(deleteUserDto: DeleteUserDto): Promise<number> {
+    const result = await this.userModel.deleteOne({
+      email: deleteUserDto.email,
+    });
+    return result.deletedCount;
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-import { Formik, Form, Field } from 'formik';
+import { Field, Form, Formik } from 'formik';
 import { MyField } from './MyField';
 
 interface Values {
@@ -12,7 +12,7 @@ interface Props {
   onSubmit: (values: Values) => void;
 }
 
-export const MyForm: React.FC<Props> = ({ onSubmit }) => {
+export const SignInForm: React.FC<Props> = ({ onSubmit }) => {
   return (
     <Formik
       initialValues={{ email: '', password: '' }}

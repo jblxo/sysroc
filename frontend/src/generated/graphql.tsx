@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -23,6 +24,10 @@ export type CreateUserDto = {
   password: Scalars['String'],
 };
 
+export type DeleteUserDto = {
+  email: Scalars['String'],
+};
+
 export type Group = {
    __typename?: 'Group',
   name: Scalars['String'],
@@ -31,19 +36,31 @@ export type Group = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  signup: UserDto,
+  create: UserDto,
+  signup: UserAuthDto,
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
+  delete: Scalars['Boolean'],
+};
+
+
+export type MutationCreateArgs = {
+  input: CreateUserDto
 };
 
 
 export type MutationSignupArgs = {
-  input: CreateUserDto
+  input: SignUpUserDto
 };
 
 
 export type MutationSigninArgs = {
   auth: UserAuthInputDto
+};
+
+
+export type MutationDeleteArgs = {
+  input: DeleteUserDto
 };
 
 export type Query = {
@@ -66,6 +83,11 @@ export type QueryUserArgs = {
   name?: Maybe<Scalars['String']>
 };
 
+export type SignUpUserDto = {
+  name: Scalars['String'],
+  password: Scalars['String'],
+};
+
 export type User = {
    __typename?: 'User',
   name: Scalars['String'],
@@ -76,8 +98,9 @@ export type User = {
 
 export type UserAuthDto = {
    __typename?: 'UserAuthDto',
-  accessToken: Scalars['String'],
-  user: UserDto,
+  accessToken?: Maybe<Scalars['String']>,
+  user?: Maybe<UserDto>,
+  registerToken?: Maybe<Scalars['String']>,
 };
 
 export type UserAuthInputDto = {
@@ -124,10 +147,11 @@ export type SignInMutation = (
   & { signin: (
     { __typename?: 'UserAuthDto' }
     & Pick<UserAuthDto, 'accessToken'>
-    & { user: (
+    & { user: Maybe<(
       { __typename?: 'UserDto' }
       & Pick<UserDto, '_id' | 'email'>
-    ) }
+    )> }
+    & Pick<UserAuthDto, 'registerToken'>
   ) }
 );
 
@@ -174,7 +198,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -202,6 +226,7 @@ export const SignInDocument = gql`
       _id
       email
     }
+    registerToken
   }
 }
     `;

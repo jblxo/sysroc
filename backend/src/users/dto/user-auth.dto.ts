@@ -11,8 +11,10 @@ export class UserAuthInputDto {
 
 @ObjectType()
 export class UserAuthDto {
-  @Field()
+  @Field({ nullable: true })
   readonly accessToken: string;
-  @Field()
+  @Field({ nullable: true })
   readonly user: UserDto;
+  @Field({ nullable: true })
+  readonly registerToken: string;
 }

@@ -1,15 +1,16 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { useSignInMutation, MeDocument, MeQuery } from '../generated/graphql';
+import { MeDocument, MeQuery, useSignInMutation } from '../generated/graphql';
 import { setAccessToken } from '../auth/accessToke';
-import { MyForm } from './MyForm';
+import { SignInForm } from './SignInForm';
+import { setRegisterToken } from "../auth/registerToken";
 
 export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
   const [signin] = useSignInMutation();
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <MyForm
+      <SignInForm
         onSubmit={async ({ email, password }) => {
           const res = await signin({
             variables: { email, password },
@@ -26,13 +27,20 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
             }
           });
 
-          console.log(res);
-
           if (res && res.data) {
-            setAccessToken(res.data.signin.accessToken);
-          }
+            const data = res.data.signin;
+            console.log(data);
 
-          history.push('/');
+            if (data.accessToken) {
+              setAccessToken(data.accessToken);
+
+              history.push('/');
+            } else if (data.registerToken) {
+              setRegisterToken(data.registerToken);
+
+              history.push('/signup');
+            }
+          }
         }}
       />
     </div>
