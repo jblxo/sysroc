@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Box, Button, Checkbox, FormControlLabel, Typography } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import { MyField } from './MyField';
+import { getUserTemp } from '../auth/userTemp';
 
 interface Values {
   name: string;
-  changes: boolean;
+  email: string;
+  password: string;
 }
 
 interface Props {
@@ -14,10 +16,18 @@ interface Props {
 
 export const SignUpForm: React.FC<Props> = ({ onSubmit }) => {
   const [showFields, setShowFields] = useState(false);
+  const userTemp = getUserTemp();
+
+  let name: string = '';
+  let email: string = '';
+  if (userTemp !== undefined) {
+    name = userTemp!.name;
+    email = userTemp!.email;
+  }
 
   return (
     <Formik
-      initialValues={{ name: '', changes: true }}
+      initialValues={{ name, email, password: '' }}
       onSubmit={values => {
         onSubmit(values);
       }}
@@ -43,14 +53,33 @@ export const SignUpForm: React.FC<Props> = ({ onSubmit }) => {
           </div>
           { showFields &&
             <Box mb="0.7rem">
-              <Field
-                name="name"
-                type="text"
-                placeholder="Username"
-                label="Username"
-                component={MyField}
-                required
-              />
+              <div>
+                <Field
+                  name="name"
+                  type="text"
+                  placeholder="Username"
+                  label="Username"
+                  component={MyField}
+                />
+              </div>
+              <div>
+                <Field
+                  name="email"
+                  type="text"
+                  placeholder="Email"
+                  label="Email"
+                  component={MyField}
+                />
+              </div>
+              <div>
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="Password"
+                  label="Password"
+                  component={MyField}
+                />
+              </div>
             </Box>
           }
           <Button type="submit" variant="contained" color="primary">

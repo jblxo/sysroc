@@ -11,7 +11,8 @@ import { map } from 'rxjs/operators';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
-import { DeleteUserDto } from './dto/delete-user.dto';
+import { UserAuthInputDto } from './dto/user-auth.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -50,8 +51,8 @@ export class UsersService {
     return user;
   }
 
-  async getADUser(createUserDto: CreateUserDto): Promise<ADResponse> {
-    const { email: username, password } = createUserDto;
+  async getADUser(authInputDto: UserAuthInputDto): Promise<ADResponse> {
+    const { email: username, password } = authInputDto;
 
     return await this.httpService
       .post(`${this.ADEndpoint}/auth/login`, {
@@ -65,15 +66,29 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const response = await this.getADUser(createUserDto);
 
-    const groups: Group[] = response.user.dn
+    const password = await this.hashPassword(createUserDto.password);
+
+    return this.register({
+      name: response.user.cn,
+      email: createUserDto.email,
+      adEmail: createUserDto.email,
+      password,
+      dn: response.user.dn,
+    });
+  }
+
+  async register(registerUserDto: RegisterUserDto): Promise<User> {
+    const groups: Group[] = registerUserDto.dn
       .split(',')
       .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
 
     const createdGroups = await this.groupsService.createMany(groups);
 
     const createUser = {
-      ...createUserDto,
-      name: response.user.cn,
+      email: registerUserDto.email,
+      adEmail: registerUserDto.adEmail,
+      password: registerUserDto.password,
+      name: registerUserDto.name,
       groups: [],
     };
 
@@ -81,7 +96,6 @@ export class UsersService {
       createUser.groups.push(group._id);
     });
 
-    createUser.password = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
@@ -93,10 +107,7 @@ export class UsersService {
     return await newUser.populate('groups').execPopulate();
   }
 
-  async delete(deleteUserDto: DeleteUserDto): Promise<number> {
-    const result = await this.userModel.deleteOne({
-      email: deleteUserDto.email,
-    });
-    return result.deletedCount;
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 10);
   }
 }

@@ -1,5 +1,6 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
 import { UserDto } from './user.dto';
+import { UserTempDto } from './user-temp.dto';
 
 @InputType()
 export class UserAuthInputDto {
@@ -15,6 +16,8 @@ export class UserAuthDto {
   readonly accessToken: string;
   @Field({ nullable: true })
   readonly user: UserDto;
+  @Field({ nullable: true })
+  readonly userTemp: UserTempDto;
   @Field({ nullable: true })
   readonly registerToken: string;
 }

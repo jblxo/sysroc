@@ -14,10 +14,6 @@ input CreateUserDto {
   password: String!
 }
 
-input DeleteUserDto {
-  email: String!
-}
-
 type Group {
   name: String!
   users: [User!]
@@ -28,31 +24,33 @@ type Mutation {
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
-  delete(input: DeleteUserDto!): Boolean!
 }
 
 type Query {
   authUser(auth: CreateUserDto!): ADUser!
-  user(_id: String, email: String, name: String): UserDto!
+  user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserDto
 }
 
 input SignUpUserDto {
-  name: String!
-  password: String!
+  name: String
+  email: String
+  password: String
 }
 
 type User {
   name: String!
   password: String!
   email: String!
+  adEmail: String!
   groups: [Group!]
 }
 
 type UserAuthDto {
   accessToken: String
   user: UserDto
+  userTemp: UserTempDto
   registerToken: String
 }
 
@@ -65,6 +63,12 @@ type UserDto {
   _id: ID!
   name: String!
   email: String!
+  adEmail: String!
   password: String!
   groups: [Group!]
+}
+
+type UserTempDto {
+  name: String!
+  email: String!
 }

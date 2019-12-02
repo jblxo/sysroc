@@ -1,4 +1,4 @@
-import { Field, ObjectType, ID } from 'type-graphql';
+import { Field, ID, ObjectType } from 'type-graphql';
 import { Group } from '../../groups/models/groups.model';
 import { Ref } from '@typegoose/typegoose';
 
@@ -10,6 +10,8 @@ export class UserDto {
   readonly name: string;
   @Field()
   readonly email: string;
+  @Field()
+  readonly adEmail: string;
   @Field()
   readonly password?: string;
   @Field(type => [Group], { nullable: true })

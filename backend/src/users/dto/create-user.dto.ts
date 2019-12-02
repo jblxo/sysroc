@@ -8,12 +8,3 @@ export class CreateUserDto {
   @Field()
   readonly password: string;
 }
-
-@InputType()
-export class SignUpUserDto {
-  @Field()
-  readonly name: string;
-
-  @Field()
-  readonly password: string;
-}

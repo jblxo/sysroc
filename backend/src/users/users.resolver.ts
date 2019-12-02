@@ -1,12 +1,11 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UsersService } from './users.service';
-import { CreateUserDto, SignUpUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersFilter } from './filters/users.filter';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import { HttpService, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserAuthDto, UserAuthInputDto } from './dto/user-auth.dto';
-import { DeleteUserDto } from './dto/delete-user.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -16,6 +15,8 @@ import { RedisService } from 'nestjs-redis';
 import { Redis } from 'ioredis';
 import * as crypto from 'crypto';
 import { ConfigService } from '../config/config.service';
+import { SignUpUserDto } from './dto/sign-up-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -62,10 +63,48 @@ export class UsersResolver {
     @Args('input') input: SignUpUserDto,
     @Context() { res, req }: MyContext,
   ) {
-    const registerToken = req.cookies;
-    console.log(registerToken);
+    const cookies = req.cookies;
+    if (!cookies['register-token']) {
+      throw new UnauthorizedException('No or expired token for registration.');
+    }
 
-    const user = this.create({ email: input.name, password: input.password });
+    const registerToken = cookies['register-token'];
+    const registerUserDto: RegisterUserDto = JSON.parse(await this.redisClient.get(registerToken));
+    if (registerUserDto === undefined) {
+      throw new UnauthorizedException('No or expired token for registration.');
+    }
+
+    let name = registerUserDto.name;
+    let email = registerUserDto.adEmail;
+    let password = registerUserDto.password;
+    if (input.name !== '') {
+      name = input.name;
+    }
+    if (input.email !== '') {
+      email = input.email;
+    }
+    if (input.password !== '') {
+      password = await this.usersService.hashPassword(input.password);
+    }
+
+    const user = await this.usersService.register({
+      email,
+      adEmail: registerUserDto.adEmail,
+      name,
+      password,
+      dn: registerUserDto.dn,
+    });
+
+    // We need to get the registered user again due to the ID
+    const registeredUser = await this.usersService.findOne({ adEmail: user.adEmail });
+    const token = await this.authService.createToken(registeredUser.email, registeredUser._id);
+
+    return {
+      accessToken: token,
+      user,
+      userTemp: null,
+      registerToken: null,
+    };
   }
 
   @Mutation(() => UserAuthDto)
@@ -75,7 +114,7 @@ export class UsersResolver {
   ): Promise<UserAuthDto> {
     const user = await this.usersService
       .findOne({ email: auth.email })
-      .catch(console.error);
+      .catch(() => { console.log('User not found.'); });
 
     if (user) {
       const valid = await bcrypt.compare(auth.password, user.password);
@@ -97,6 +136,7 @@ export class UsersResolver {
       return {
         accessToken: token,
         user,
+        userTemp: null,
         registerToken: null,
       };
     }
@@ -106,7 +146,7 @@ export class UsersResolver {
       throw new UnauthorizedException('Wrong password or email!');
     }
 
-    const password = await bcrypt.hash(auth.password, 10);
+    const password = await this.usersService.hashPassword(auth.password);
     const registerToken = crypto.randomBytes(32).toString('hex');
 
     res.cookie('register-token', registerToken, {
@@ -114,14 +154,23 @@ export class UsersResolver {
       path: '/',
       maxAge: 5 * 60 * 1000,
     });
-    await this.redisClient.append(registerToken, {
+
+    const registerUserDto: RegisterUserDto = {
       email: auth.email,
+      adEmail: auth.email,
+      name: response.user.cn,
       password,
-    });
+      dn: response.user.dn,
+    };
+    await this.redisClient.append(registerToken, JSON.stringify(registerUserDto));
 
     return {
       accessToken: null,
       user: null,
+      userTemp: {
+        email: auth.email,
+        name: response.user.cn,
+      },
       registerToken,
     };
   }
@@ -135,15 +184,5 @@ export class UsersResolver {
     });
 
     return true;
-  }
-
-  // TODO: Only for GraphQL
-  @Mutation(() => Boolean)
-  @UseGuards(GqlAuthGuard)
-  async delete(
-    @Args('input') input: DeleteUserDto,
-    @Context() { res }: MyContext,
-  ): Promise<number> {
-    return await this.usersService.delete(input);
   }
 }

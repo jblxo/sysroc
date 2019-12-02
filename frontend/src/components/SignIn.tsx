@@ -3,7 +3,8 @@ import { RouteComponentProps } from 'react-router';
 import { MeDocument, MeQuery, useSignInMutation } from '../generated/graphql';
 import { setAccessToken } from '../auth/accessToke';
 import { SignInForm } from './SignInForm';
-import { setRegisterToken } from "../auth/registerToken";
+import { setRegisterToken } from '../auth/registerToken';
+import { setUserTemp } from '../auth/userTemp';
 
 export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
   const [signin] = useSignInMutation();
@@ -18,18 +19,19 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
               if (!data) {
                 return null;
               }
-              store.writeQuery<MeQuery>({
-                query: MeDocument,
-                data: {
-                  me: data.signin.user
-                }
-              });
+              if (data.signin.user !== null) {
+                store.writeQuery<MeQuery>({
+                  query: MeDocument,
+                  data: {
+                    me: data.signin.user
+                  }
+                });
+              }
             }
           });
 
           if (res && res.data) {
             const data = res.data.signin;
-            console.log(data);
 
             if (data.accessToken) {
               setAccessToken(data.accessToken);
@@ -37,6 +39,7 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
               history.push('/');
             } else if (data.registerToken) {
               setRegisterToken(data.registerToken);
+              setUserTemp(data.userTemp);
 
               history.push('/signup');
             }
