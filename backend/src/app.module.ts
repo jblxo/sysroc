@@ -28,7 +28,7 @@ import { RedisModule } from 'nestjs-redis';
     }),
     RedisModule.register([
       {
-        name: 'redis',
+        name: 'sysroc.redis.users',
         host: 'localhost',
         port: 6379,
         keyPrefix: 'sysroc',

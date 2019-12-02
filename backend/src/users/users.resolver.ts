@@ -31,7 +31,7 @@ export class UsersResolver {
     private readonly config: ConfigService,
   ) {
     this.ADEndpoint = config.get('AD_ENDPOINT');
-    this.redisClient = redisService.getClient('redis');
+    this.redisClient = redisService.getClient('sysroc.redis.users');
   }
 
   @Query(() => UserDto)
@@ -98,6 +98,8 @@ export class UsersResolver {
     // We need to get the registered user again due to the ID
     const registeredUser = await this.usersService.findOne({ adEmail: user.adEmail });
     const token = await this.authService.createToken(registeredUser.email, registeredUser._id);
+
+    await this.redisClient.del(registerToken);
 
     return {
       accessToken: token,
