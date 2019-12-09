@@ -10,10 +10,17 @@ import { UsersModule } from './users/users.module';
   imports: [
     GraphQLModule.forRoot({
       autoSchemaFile: 'schema.gql',
+      cors: {
+        origin: 'http://localhost:3000',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: true,
+        optionsSuccessStatus: 204,
+        credentials: true,
+      },
       installSubscriptionHandlers: true,
       context: ({ req, res }) => ({ req, res }),
     }),
-    TypegooseModule.forRoot('mongodb://localhost/sysroc', {
+    TypegooseModule.forRoot('mongodb://localhost/mongodb', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,

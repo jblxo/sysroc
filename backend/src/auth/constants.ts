@@ -1,6 +1,8 @@
 export const jwtConstants = {
-  accessSecret: 'accessSecretKey',
-  refreshSecret: 'refreshSecretKey',
+  accessSecret:
+    'ABDDFE600EBBE211C9823D774220C90A8FB7B984E471077FE536DFC02CC20B22',
+  refreshSecret:
+    '9E0858BB62EE742277A63D23DDB20B487668ECF818EB783798D2DA845D2A2B1A',
   expiresIn: '60s',
-  refreshPath: '/refresh_token',
+  refreshPath: '/auth/refresh_token',
 };
