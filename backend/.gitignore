@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # Config
 *.env
+
+# npm
+package-lock.json
