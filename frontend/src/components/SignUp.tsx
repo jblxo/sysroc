@@ -31,7 +31,12 @@ export const SignUp: React.FC<RouteComponentProps> = ({ history }) => {
             }
           });
 
-          if (res && res.data && res.data.signup && res.data.signup.accessToken) {
+          if (
+            res &&
+            res.data &&
+            res.data.signup &&
+            res.data.signup.accessToken
+          ) {
             setAccessToken(res.data.signup.accessToken);
 
             history.push('/');

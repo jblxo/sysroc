@@ -41,7 +41,7 @@ export class UsersResolver {
   }
 
   @Query(() => [UserDto])
-  @UseGuards(GqlAuthGuard)
+  // @UseGuards(GqlAuthGuard)
   async users() {
     return this.usersService.findAll();
   }
@@ -69,7 +69,9 @@ export class UsersResolver {
     }
 
     const registerToken = cookies['register-token'];
-    const registerUserDto: RegisterUserDto = JSON.parse(await this.redisClient.get(registerToken));
+    const registerUserDto: RegisterUserDto = JSON.parse(
+      await this.redisClient.get(registerToken),
+    );
     if (registerUserDto === undefined) {
       throw new UnauthorizedException('No or expired token for registration.');
     }
@@ -96,8 +98,13 @@ export class UsersResolver {
     });
 
     // We need to get the registered user again due to the ID
-    const registeredUser = await this.usersService.findOne({ adEmail: user.adEmail });
-    const token = await this.authService.createToken(registeredUser.email, registeredUser._id);
+    const registeredUser = await this.usersService.findOne({
+      adEmail: user.adEmail,
+    });
+    const token = await this.authService.createToken(
+      registeredUser.email,
+      registeredUser._id,
+    );
 
     await this.redisClient.del(registerToken);
 
@@ -116,7 +123,10 @@ export class UsersResolver {
   ): Promise<UserAuthDto> {
     const user = await this.usersService
       .findOne({ email: auth.email })
-      .catch(() => { console.log('User not found.'); });
+      .catch(() => {
+        // TODO: remove
+        console.log('User not found.');
+      });
 
     if (user) {
       const valid = await bcrypt.compare(auth.password, user.password);
@@ -143,7 +153,7 @@ export class UsersResolver {
       };
     }
 
-    const response = await this.usersService.getADUser(auth);
+    const response = await this.usersService.getADUser(auth).toPromise();
     if (!response) {
       throw new UnauthorizedException('Wrong password or email!');
     }
@@ -160,18 +170,24 @@ export class UsersResolver {
     const registerUserDto: RegisterUserDto = {
       email: auth.email,
       adEmail: auth.email,
-      name: response.user.cn,
+      name: response.data.user.cn,
       password,
-      dn: response.user.dn,
+      dn: response.data.user.dn,
     };
-    await this.redisClient.append(registerToken, JSON.stringify(registerUserDto));
+
+    console.log(registerUserDto);
+
+    await this.redisClient.append(
+      registerToken,
+      JSON.stringify(registerUserDto),
+    );
 
     return {
       accessToken: null,
       user: null,
       userTemp: {
         email: auth.email,
-        name: response.user.cn,
+        name: response.data.user.cn,
       },
       registerToken,
     };

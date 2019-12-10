@@ -13,6 +13,8 @@ import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
 import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { AxiosResponse } from 'axios';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -51,20 +53,22 @@ export class UsersService {
     return user;
   }
 
-  async getADUser(authInputDto: UserAuthInputDto): Promise<ADResponse> {
+  getADUser(
+    authInputDto: UserAuthInputDto,
+  ): Observable<AxiosResponse<ADResponse>> {
     const { email: username, password } = authInputDto;
 
-    return await this.httpService
-      .post(`${this.ADEndpoint}/auth/login`, {
-        username,
-        password,
-      })
-      .pipe(map(response => response.data))
-      .toPromise();
+    return this.httpService.post(`${this.ADEndpoint}/auth/login`, {
+      username,
+      password,
+    });
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const response = await this.getADUser(createUserDto);
+    let response: ADResponse = null;
+    await this.getADUser(createUserDto).subscribe(res => (response = res.data));
+
+    console.log(response);
 
     const password = await this.hashPassword(createUserDto.password);
 
