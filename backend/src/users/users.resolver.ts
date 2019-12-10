@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersFilter } from './filters/users.filter';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
-import { HttpService, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { ConflictException, HttpService, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserAuthDto, UserAuthInputDto } from './dto/user-auth.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
@@ -141,6 +141,13 @@ export class UsersResolver {
         userTemp: null,
         registerToken: null,
       };
+    }
+
+    const userWithADEmail = await this.usersService
+      .findOne({ adEmail: auth.email })
+      .catch(() => { console.log('User with the forwarded email from Active Directory not found.'); });
+    if (userWithADEmail) {
+      throw new ConflictException('This email has already been registered. Have you forgotten your customized email?');
     }
 
     const response = await this.usersService.getADUser(auth);
