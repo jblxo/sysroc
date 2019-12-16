@@ -106,12 +106,23 @@ export class UsersResolver {
     const registeredUser = await this.usersService.findOne({
       adEmail: user.adEmail,
     });
+
     const token = await this.authService.createToken(
       registeredUser.email,
       registeredUser._id,
     );
 
     await this.redisClient.del(registerToken);
+
+    const refreshToken = await this.authService.createRefreshToken(
+      registeredUser.email,
+      registeredUser._id,
+    );
+
+    res.cookie('token', refreshToken, {
+      httpOnly: true,
+      path: jwtConstants.refreshPath,
+    });
 
     return {
       accessToken: token,
@@ -192,8 +203,6 @@ export class UsersResolver {
       password,
       dn: response.data.user.dn,
     };
-
-    console.log(registerUserDto);
 
     await this.redisClient.append(
       registerToken,

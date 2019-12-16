@@ -68,8 +68,6 @@ export class UsersService {
     let response: ADResponse = null;
     await this.getADUser(createUserDto).subscribe(res => (response = res.data));
 
-    console.log(response);
-
     const password = await this.hashPassword(createUserDto.password);
 
     return this.register({
