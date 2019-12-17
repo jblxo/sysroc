@@ -25,6 +25,7 @@ import { RedisModule } from 'nestjs-redis';
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     }),
     RedisModule.register([
       {

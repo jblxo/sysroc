@@ -1,4 +1,8 @@
-import { arrayProp as ArrayProperty, prop as Property, Ref } from '@typegoose/typegoose';
+import {
+  arrayProp as ArrayProperty,
+  prop as Property,
+  Ref,
+} from '@typegoose/typegoose';
 import { Field, ObjectType } from 'type-graphql';
 import * as validator from 'validator';
 import { Group } from '../../groups/models/groups.model';

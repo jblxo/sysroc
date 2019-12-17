@@ -22,6 +22,7 @@ import * as crypto from 'crypto';
 import { ConfigService } from '../config/config.service';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { ObjectId } from 'bson';
 
 @Resolver()
 export class UsersResolver {
@@ -229,5 +230,10 @@ export class UsersResolver {
     });
 
     return true;
+  }
+
+  @Mutation(() => Boolean)
+  deleteUser(@Args('userId') userId: string): Promise<boolean> {
+    return this.usersService.delete(userId);
   }
 }

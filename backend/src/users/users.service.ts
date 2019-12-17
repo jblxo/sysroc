@@ -15,6 +15,7 @@ import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
+import { ObjectId } from 'bson';
 
 @Injectable()
 export class UsersService {
@@ -111,5 +112,19 @@ export class UsersService {
 
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
+  }
+
+  async delete(userId: string): Promise<boolean> {
+    await this.groupModel
+      .updateMany(
+        { users: userId },
+        { $pull: { users: userId } },
+        (err, raw) => {
+          if (err) throw new Error(err);
+          console.log(raw);
+        },
+      )
+      .exec();
+    return !!this.userModel.deleteOne({ _id: userId }).exec();
   }
 }
