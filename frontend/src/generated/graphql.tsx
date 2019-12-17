@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -31,14 +32,20 @@ export type Group = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  signup: UserDto,
+  create: UserDto,
+  signup: UserAuthDto,
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
 };
 
 
-export type MutationSignupArgs = {
+export type MutationCreateArgs = {
   input: CreateUserDto
+};
+
+
+export type MutationSignupArgs = {
+  input: SignUpUserDto
 };
 
 
@@ -63,7 +70,14 @@ export type QueryAuthUserArgs = {
 export type QueryUserArgs = {
   _id?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
+  adEmail?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>
+};
+
+export type SignUpUserDto = {
+  name?: Maybe<Scalars['String']>,
+  email?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>,
 };
 
 export type User = {
@@ -71,13 +85,16 @@ export type User = {
   name: Scalars['String'],
   password: Scalars['String'],
   email: Scalars['String'],
+  adEmail: Scalars['String'],
   groups?: Maybe<Array<Group>>,
 };
 
 export type UserAuthDto = {
    __typename?: 'UserAuthDto',
-  accessToken: Scalars['String'],
-  user: UserDto,
+  accessToken?: Maybe<Scalars['String']>,
+  user?: Maybe<UserDto>,
+  userTemp?: Maybe<UserTempDto>,
+  registerToken?: Maybe<Scalars['String']>,
 };
 
 export type UserAuthInputDto = {
@@ -90,8 +107,15 @@ export type UserDto = {
   _id: Scalars['ID'],
   name: Scalars['String'],
   email: Scalars['String'],
+  adEmail: Scalars['String'],
   password: Scalars['String'],
   groups?: Maybe<Array<Group>>,
+};
+
+export type UserTempDto = {
+   __typename?: 'UserTempDto',
+  name: Scalars['String'],
+  email: Scalars['String'],
 };
 
 export type LogoutMutationVariables = {};
@@ -123,11 +147,33 @@ export type SignInMutation = (
   { __typename?: 'Mutation' }
   & { signin: (
     { __typename?: 'UserAuthDto' }
-    & Pick<UserAuthDto, 'accessToken'>
-    & { user: (
+    & Pick<UserAuthDto, 'accessToken' | 'registerToken'>
+    & { user: Maybe<(
       { __typename?: 'UserDto' }
       & Pick<UserDto, '_id' | 'email'>
-    ) }
+    )>, userTemp: Maybe<(
+      { __typename?: 'UserTempDto' }
+      & Pick<UserTempDto, 'name' | 'email'>
+    )> }
+  ) }
+);
+
+export type SignUpMutationVariables = {
+  name?: Maybe<Scalars['String']>,
+  email?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>
+};
+
+
+export type SignUpMutation = (
+  { __typename?: 'Mutation' }
+  & { signup: (
+    { __typename?: 'UserAuthDto' }
+    & Pick<UserAuthDto, 'accessToken'>
+    & { user: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, '_id' | 'email'>
+    )> }
   ) }
 );
 
@@ -174,7 +220,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -202,6 +248,11 @@ export const SignInDocument = gql`
       _id
       email
     }
+    userTemp {
+      name
+      email
+    }
+    registerToken
   }
 }
     `;
@@ -231,3 +282,41 @@ export function useSignInMutation(baseOptions?: ApolloReactHooks.MutationHookOpt
 export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
 export type SignInMutationResult = ApolloReactCommon.MutationResult<SignInMutation>;
 export type SignInMutationOptions = ApolloReactCommon.BaseMutationOptions<SignInMutation, SignInMutationVariables>;
+export const SignUpDocument = gql`
+    mutation SignUp($name: String, $email: String, $password: String) {
+  signup(input: {name: $name, email: $email, password: $password}) {
+    accessToken
+    user {
+      _id
+      email
+    }
+  }
+}
+    `;
+export type SignUpMutationFn = ApolloReactCommon.MutationFunction<SignUpMutation, SignUpMutationVariables>;
+
+/**
+ * __useSignUpMutation__
+ *
+ * To run a mutation, you first call `useSignUpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignUpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signUpMutation, { data, loading, error }] = useSignUpMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useSignUpMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<SignUpMutation, SignUpMutationVariables>) {
+        return ApolloReactHooks.useMutation<SignUpMutation, SignUpMutationVariables>(SignUpDocument, baseOptions);
+      }
+export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
+export type SignUpMutationResult = ApolloReactCommon.MutationResult<SignUpMutation>;
+export type SignUpMutationOptions = ApolloReactCommon.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;

@@ -9,5 +9,8 @@ export class UsersFilter {
   email?: string;
 
   @Field({ nullable: true })
+  adEmail?: string;
+
+  @Field({ nullable: true })
   name?: string;
 }

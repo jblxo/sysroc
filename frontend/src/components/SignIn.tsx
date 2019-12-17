@@ -1,15 +1,17 @@
 import React from 'react';
 import { RouteComponentProps } from 'react-router';
-import { useSignInMutation, MeDocument, MeQuery } from '../generated/graphql';
+import { MeDocument, MeQuery, useSignInMutation } from '../generated/graphql';
 import { setAccessToken } from '../auth/accessToke';
-import { MyForm } from './MyForm';
+import { SignInForm } from './SignInForm';
+import { setRegisterToken } from '../auth/registerToken';
+import { setUserTemp } from '../auth/userTemp';
 
 export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
   const [signin] = useSignInMutation();
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <MyForm
+      <SignInForm
         onSubmit={async ({ email, password }) => {
           const res = await signin({
             variables: { email, password },
@@ -17,22 +19,31 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
               if (!data) {
                 return null;
               }
-              store.writeQuery<MeQuery>({
-                query: MeDocument,
-                data: {
-                  me: data.signin.user
-                }
-              });
+              if (data.signin.user !== null) {
+                store.writeQuery<MeQuery>({
+                  query: MeDocument,
+                  data: {
+                    me: data.signin.user
+                  }
+                });
+              }
             }
           });
 
-          console.log(res);
-
           if (res && res.data) {
-            setAccessToken(res.data.signin.accessToken);
-          }
+            const data = res.data.signin;
 
-          history.push('/');
+            if (data.accessToken) {
+              setAccessToken(data.accessToken);
+
+              history.push('/');
+            } else if (data.registerToken) {
+              setRegisterToken(data.registerToken);
+              setUserTemp(data.userTemp);
+
+              history.push('/signup');
+            }
+          }
         }}
       />
     </div>

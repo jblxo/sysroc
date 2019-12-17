@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { Group } from './models/groups.model';
 import { ReturnModelType, DocumentType } from '@typegoose/typegoose';
+import { GroupsModule } from './groups.module';
 
 @Injectable()
 export class GroupsService {
@@ -13,14 +14,15 @@ export class GroupsService {
   async createMany(groups: Group[]): Promise<DocumentType<Group>[]> {
     return Promise.all(
       groups.map(async (group: Group) => {
-        const newGroup = this.groupModel
-          .findOneAndUpdate({}, group, {
-            upsert: true,
-            new: true,
-            setDefaultsOnInsert: true,
-          })
-          .exec();
-        return newGroup;
+        const filter = { name: group.name };
+        const foundGroup = await this.groupModel.findOne(filter);
+        if (!foundGroup) {
+          return await this.groupModel.create({
+            name: group.name,
+            users: [],
+          });
+        }
+        return foundGroup;
       }),
     );
   }
