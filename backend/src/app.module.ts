@@ -5,7 +5,9 @@ import { GroupsModule } from './groups/groups.module';
 import { ConfigModule } from './config/config.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
 import { UsersModule } from './users/users.module';
-import { RedisModule } from 'nestjs-redis';
+import { RedisModule, RedisService } from 'nestjs-redis';
+import { Redis } from 'ioredis';
+import { redisConstants } from './redis/constants';
 
 @Module({
   imports: [
@@ -29,10 +31,10 @@ import { RedisModule } from 'nestjs-redis';
     }),
     RedisModule.register([
       {
-        name: 'sysroc.redis.users',
+        name: redisConstants.name,
         host: 'localhost',
         port: 6379,
-        keyPrefix: 'sysroc',
+        keyPrefix: redisConstants.keyPrefix,
       },
     ]),
     GroupsModule,
@@ -41,4 +43,16 @@ import { RedisModule } from 'nestjs-redis';
     UsersModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  private redisClient: Redis;
+
+  constructor(
+    private readonly redisService: RedisService,
+  ) {
+    this.redisClient = redisService.getClient(redisConstants.name);
+  }
+
+  async onModuleInit(): Promise<void> {
+    await this.redisClient.flushdb();
+  }
+}

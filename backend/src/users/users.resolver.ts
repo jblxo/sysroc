@@ -4,12 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersFilter } from './filters/users.filter';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
-import {
-  ConflictException,
-  HttpService,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { ConflictException, HttpService, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UserAuthDto, UserAuthInputDto } from './dto/user-auth.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
@@ -22,7 +17,7 @@ import * as crypto from 'crypto';
 import { ConfigService } from '../config/config.service';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { ObjectId } from 'bson';
+import { redisConstants } from '../redis/constants';
 
 @Resolver()
 export class UsersResolver {
@@ -37,7 +32,7 @@ export class UsersResolver {
     private readonly config: ConfigService,
   ) {
     this.ADEndpoint = config.get('AD_ENDPOINT');
-    this.redisClient = redisService.getClient('sysroc.redis.users');
+    this.redisClient = redisService.getClient(redisConstants.name);
   }
 
   @Query(() => UserDto)
@@ -223,7 +218,7 @@ export class UsersResolver {
 
   @Mutation(() => Boolean)
   @UseGuards(GqlAuthGuard)
-  async logout(@Context() { res }: MyContext): Promise<Boolean> {
+  async logout(@Context() { res }: MyContext): Promise<boolean> {
     res.cookie('token', '', {
       httpOnly: true,
       path: jwtConstants.refreshPath,
