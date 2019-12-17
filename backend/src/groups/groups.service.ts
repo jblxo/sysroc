@@ -22,6 +22,7 @@ export class GroupsService {
             users: [],
           });
         }
+        return foundGroup;
       }),
     );
   }
