@@ -21,7 +21,7 @@ import { RedisModule } from 'nestjs-redis';
       installSubscriptionHandlers: true,
       context: ({ req, res }) => ({ req, res }),
     }),
-    TypegooseModule.forRoot('mongodb://localhost/sysroc', {
+    TypegooseModule.forRoot('mongodb://localhost/mongodb', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
