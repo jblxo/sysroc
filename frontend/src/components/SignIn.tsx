@@ -7,11 +7,12 @@ import { setRegisterToken } from '../auth/registerToken';
 import { setUserTemp } from '../auth/userTemp';
 
 export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
-  const [signin] = useSignInMutation();
+  const [signin, { error }] = useSignInMutation();
 
   return (
     <div style={{ textAlign: 'center' }}>
       <SignInForm
+        error={error}
         onSubmit={async ({ email, password }) => {
           const res = await signin({
             variables: { email, password },

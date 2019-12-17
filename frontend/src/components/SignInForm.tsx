@@ -2,11 +2,13 @@ import React from 'react';
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import { MyField } from './MyField';
+import { ApolloError } from 'apollo-client';
+import { Error } from './Error';
 
 const useStyles = makeStyles({
   form: {
     padding: '2rem',
-    width: '20rem',
+    width: '30rem',
     margin: '0 auto',
     marginTop: '1.3rem'
   },
@@ -25,9 +27,10 @@ interface Values {
 
 interface Props {
   onSubmit: (values: Values) => void;
+  error: ApolloError | any;
 }
 
-export const SignInForm: React.FC<Props> = ({ onSubmit }) => {
+export const SignInForm: React.FC<Props> = ({ onSubmit, error }) => {
   const classes = useStyles();
 
   return (
@@ -42,6 +45,7 @@ export const SignInForm: React.FC<Props> = ({ onSubmit }) => {
           <Typography className={classes.formTitle} variant="h4">
             Sign In
           </Typography>
+          {error && <Error error={error} />}
           <div>
             <Field
               name="email"
