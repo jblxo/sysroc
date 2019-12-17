@@ -1,4 +1,4 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -11,13 +11,19 @@ import { map } from 'rxjs/operators';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
+import { UserAuthInputDto } from './dto/user-auth.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { AxiosResponse } from 'axios';
+import { Observable } from 'rxjs';
+import { ObjectId } from 'bson';
 
 @Injectable()
 export class UsersService {
   private ADEndpoint: string;
 
   constructor(
-    @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
+    @InjectModel(User)
+    private readonly userModel: ReturnModelType<typeof User>,
     @InjectModel(Group)
     private readonly groupModel: ReturnModelType<typeof Group>,
     private readonly httpService: HttpService,
@@ -37,7 +43,9 @@ export class UsersService {
       .populate('groups')
       .exec();
 
-    if (!user) throw new Error(`User not found!`);
+    if (!user) {
+      throw new Error(`User not found!`);
+    }
 
     await this.userModel.populate(user, {
       path: 'groups.users',
@@ -46,25 +54,44 @@ export class UsersService {
     return user;
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { email: username, password } = createUserDto;
-    const ADResponse: ADResponse = await this.httpService
-      .post(this.ADEndpoint, {
-        username,
-        password,
-      })
-      .pipe(map(response => response.data))
-      .toPromise();
+  getADUser(
+    authInputDto: UserAuthInputDto,
+  ): Observable<AxiosResponse<ADResponse>> {
+    const { email: username, password } = authInputDto;
 
-    const groups: Group[] = ADResponse.user.dn
+    return this.httpService.post(`${this.ADEndpoint}/auth/login`, {
+      username,
+      password,
+    });
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    let response: ADResponse = null;
+    await this.getADUser(createUserDto).subscribe(res => (response = res.data));
+
+    const password = await this.hashPassword(createUserDto.password);
+
+    return this.register({
+      name: response.user.cn,
+      email: createUserDto.email,
+      adEmail: createUserDto.email,
+      password,
+      dn: response.user.dn,
+    });
+  }
+
+  async register(registerUserDto: RegisterUserDto): Promise<User> {
+    const groups: Group[] = registerUserDto.dn
       .split(',')
       .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
 
     const createdGroups = await this.groupsService.createMany(groups);
 
     const createUser = {
-      ...createUserDto,
-      name: ADResponse.user.cn,
+      email: registerUserDto.email,
+      adEmail: registerUserDto.adEmail,
+      password: registerUserDto.password,
+      name: registerUserDto.name,
       groups: [],
     };
 
@@ -72,15 +99,32 @@ export class UsersService {
       createUser.groups.push(group._id);
     });
 
-    createUser.password = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
-    createdGroups.forEach(async group => {
+    for (const group of createdGroups) {
       group.users.push(newUser._id);
       await group.save();
-    });
+    }
 
     return await newUser.populate('groups').execPopulate();
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 10);
+  }
+
+  async delete(userId: string): Promise<boolean> {
+    await this.groupModel
+      .updateMany(
+        { users: userId },
+        { $pull: { users: userId } },
+        (err, raw) => {
+          if (err) throw new Error(err);
+          console.log(raw);
+        },
+      )
+      .exec();
+    return !!this.userModel.deleteOne({ _id: userId }).exec();
   }
 }

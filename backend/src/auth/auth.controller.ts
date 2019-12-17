@@ -23,7 +23,6 @@ export class AuthController {
     try {
       payload = verify(token, jwtConstants.refreshSecret!);
     } catch (err) {
-      console.log(err);
       return res.send({ ok: false, accessToken: '' });
     }
 

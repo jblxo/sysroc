@@ -1,17 +1,12 @@
 import React from 'react';
 import { useMeQuery, useLogoutMutation } from '../generated/graphql';
-import { Link } from 'react-router-dom';
 import {
-  Button,
   Toolbar,
   AppBar,
   Menu,
   MenuItem,
-  FormGroup,
-  FormControlLabel,
   IconButton,
-  Typography,
-  Switch
+  Typography
 } from '@material-ui/core';
 import { setAccessToken } from '../auth/accessToke';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
@@ -48,16 +43,6 @@ export const Header: React.FC<Props> = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  let body: any = null;
-
-  if (loading) {
-    body = null;
-  } else if (data && data.me) {
-    body = <div>You are logged in as: {data.me.email}</div>;
-  } else {
-    body = <div>You are not logged in</div>;
-  }
 
   return (
     <div className={classes.root}>
@@ -107,6 +92,7 @@ export const Header: React.FC<Props> = () => {
                     await logout();
                     setAccessToken('');
                     await client!.resetStore();
+                    handleClose();
                   }}
                 >
                   Logout

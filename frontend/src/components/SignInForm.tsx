@@ -1,7 +1,22 @@
 import React from 'react';
-import { Button } from '@material-ui/core';
-import { Formik, Form, Field } from 'formik';
+import { Button, makeStyles, Typography } from '@material-ui/core';
+import { Field, Form, Formik } from 'formik';
 import { MyField } from './MyField';
+
+const useStyles = makeStyles({
+  form: {
+    padding: '2rem',
+    width: '20rem',
+    margin: '0 auto',
+    marginTop: '1.3rem'
+  },
+  button: {
+    marginTop: '1rem'
+  },
+  formTitle: {
+    marginBottom: '0.8rem'
+  }
+});
 
 interface Values {
   email: string;
@@ -12,7 +27,9 @@ interface Props {
   onSubmit: (values: Values) => void;
 }
 
-export const MyForm: React.FC<Props> = ({ onSubmit }) => {
+export const SignInForm: React.FC<Props> = ({ onSubmit }) => {
+  const classes = useStyles();
+
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
@@ -21,7 +38,10 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
       }}
     >
       {() => (
-        <Form>
+        <Form className={classes.form}>
+          <Typography className={classes.formTitle} variant="h4">
+            Sign In
+          </Typography>
           <div>
             <Field
               name="email"
@@ -35,13 +55,18 @@ export const MyForm: React.FC<Props> = ({ onSubmit }) => {
           <div>
             <Field
               type="password"
-              name="Password"
+              name="password"
               placeholder="Password"
               label="Password"
               component={MyField}
             />
           </div>
-          <Button type="submit" variant="contained" color="primary">
+          <Button
+            className={classes.button}
+            type="submit"
+            variant="contained"
+            color="primary"
+          >
             Sign In
           </Button>
         </Form>

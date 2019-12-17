@@ -1,6 +1,6 @@
 import {
-  prop as Property,
   arrayProp as ArrayProperty,
+  prop as Property,
   Ref,
 } from '@typegoose/typegoose';
 import { Field, ObjectType } from 'type-graphql';
@@ -27,6 +27,17 @@ export class User {
     message: `{VALUE} is not valid email`,
   })
   email: string;
+
+  @Field()
+  @Property({
+    required: true,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    validate: value => validator.isEmail(value),
+    message: `{VALUE} is not valid email`,
+  })
+  adEmail: string;
 
   @Field(type => [Group], { nullable: true })
   @ArrayProperty({ itemsRef: 'Group', default: undefined })

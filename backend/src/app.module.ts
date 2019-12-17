@@ -5,6 +5,9 @@ import { GroupsModule } from './groups/groups.module';
 import { ConfigModule } from './config/config.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
 import { UsersModule } from './users/users.module';
+import { RedisModule, RedisService } from 'nestjs-redis';
+import { Redis } from 'ioredis';
+import { redisConstants } from './redis/constants';
 
 @Module({
   imports: [
@@ -24,11 +27,32 @@ import { UsersModule } from './users/users.module';
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     }),
+    RedisModule.register([
+      {
+        name: redisConstants.name,
+        host: 'localhost',
+        port: 6379,
+        keyPrefix: redisConstants.keyPrefix,
+      },
+    ]),
     GroupsModule,
     ConfigModule,
     ActiveDirectoryModule,
     UsersModule,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  private redisClient: Redis;
+
+  constructor(
+    private readonly redisService: RedisService,
+  ) {
+    this.redisClient = redisService.getClient(redisConstants.name);
+  }
+
+  async onModuleInit(): Promise<void> {
+    await this.redisClient.flushdb();
+  }
+}

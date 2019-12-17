@@ -5,5 +5,10 @@ mutation SignIn($email: String!, $password: String!) {
       _id
       email
     }
+    userTemp {
+      name
+      email
+    }
+    registerToken
   }
 }
