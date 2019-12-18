@@ -3,13 +3,17 @@ import {
   prop as Property,
   Ref,
 } from '@typegoose/typegoose';
-import { Field, ObjectType } from 'type-graphql';
+import { Field, ObjectType, ID } from 'type-graphql';
 import * as validator from 'validator';
 import { Group } from '../../groups/models/groups.model';
 import { Project } from '../../projects/models/projects.model';
 
 @ObjectType()
 export class User {
+  @Field(type => ID)
+  @Property({ required: true, index: true, unique: true })
+  _id: string;
+
   @Field()
   @Property({ required: true, trim: true })
   name: string;

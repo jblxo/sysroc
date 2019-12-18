@@ -1,0 +1,9 @@
+mutation CreateProject($name: String!) {
+  createProject(input: { name: $name }) {
+    name
+    user {
+      _id
+      email
+    }
+  }
+}

@@ -51,6 +51,7 @@ input SignUpUserDto {
 }
 
 type User {
+  _id: ID!
   name: String!
   password: String!
   email: String!

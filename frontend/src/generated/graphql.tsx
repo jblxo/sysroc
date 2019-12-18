@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
-
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -17,6 +16,10 @@ export type AdUser = {
   dn: Scalars['String'],
   userPrincipalName: Scalars['String'],
   cn: Scalars['String'],
+};
+
+export type CreateProjectDto = {
+  name: Scalars['String'],
 };
 
 export type CreateUserDto = {
@@ -36,6 +39,8 @@ export type Mutation = {
   signup: UserAuthDto,
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
+  deleteUser: Scalars['Boolean'],
+  createProject: Project,
 };
 
 
@@ -51,6 +56,22 @@ export type MutationSignupArgs = {
 
 export type MutationSigninArgs = {
   auth: UserAuthInputDto
+};
+
+
+export type MutationDeleteUserArgs = {
+  userId: Scalars['String']
+};
+
+
+export type MutationCreateProjectArgs = {
+  input: CreateProjectDto
+};
+
+export type Project = {
+   __typename?: 'Project',
+  name: Scalars['String'],
+  user?: Maybe<User>,
 };
 
 export type Query = {
@@ -82,11 +103,13 @@ export type SignUpUserDto = {
 
 export type User = {
    __typename?: 'User',
+  _id: Scalars['ID'],
   name: Scalars['String'],
   password: Scalars['String'],
   email: Scalars['String'],
   adEmail: Scalars['String'],
   groups?: Maybe<Array<Group>>,
+  projects?: Maybe<Array<Project>>,
 };
 
 export type UserAuthDto = {
@@ -117,6 +140,23 @@ export type UserTempDto = {
   name: Scalars['String'],
   email: Scalars['String'],
 };
+
+export type CreateProjectMutationVariables = {
+  name: Scalars['String']
+};
+
+
+export type CreateProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { createProject: (
+    { __typename?: 'Project' }
+    & Pick<Project, 'name'>
+    & { user: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, '_id' | 'email'>
+    )> }
+  ) }
+);
 
 export type LogoutMutationVariables = {};
 
@@ -178,6 +218,42 @@ export type SignUpMutation = (
 );
 
 
+export const CreateProjectDocument = gql`
+    mutation CreateProject($name: String!) {
+  createProject(input: {name: $name}) {
+    name
+    user {
+      _id
+      email
+    }
+  }
+}
+    `;
+export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateProjectMutation, CreateProjectMutationVariables>;
+
+/**
+ * __useCreateProjectMutation__
+ *
+ * To run a mutation, you first call `useCreateProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createProjectMutation, { data, loading, error }] = useCreateProjectMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useCreateProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateProjectMutation, CreateProjectMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateProjectMutation, CreateProjectMutationVariables>(CreateProjectDocument, baseOptions);
+      }
+export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProjectMutation>;
+export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
+export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -220,7 +296,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
