@@ -24,11 +24,12 @@ type Group {
 }
 
 type Mutation {
-  create(input: CreateProjectDto!): Project!
+  create(input: CreateUserDto!): UserDto!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
+  createProject(input: CreateProjectDto!): Project!
 }
 
 type Project {

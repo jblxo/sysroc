@@ -7,7 +7,6 @@ import { User } from './models/users.model';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { UserDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
-import { map } from 'rxjs/operators';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
@@ -15,7 +14,6 @@ import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
-import { ObjectId } from 'bson';
 
 @Injectable()
 export class UsersService {
