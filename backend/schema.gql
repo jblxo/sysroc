@@ -9,6 +9,10 @@ type ADUser {
   cn: String!
 }
 
+input CreateProjectDto {
+  name: String!
+}
+
 input CreateUserDto {
   email: String!
   password: String!
@@ -20,11 +24,16 @@ type Group {
 }
 
 type Mutation {
-  create(input: CreateUserDto!): UserDto!
+  create(input: CreateProjectDto!): Project!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
+}
+
+type Project {
+  name: String!
+  user: User
 }
 
 type Query {
