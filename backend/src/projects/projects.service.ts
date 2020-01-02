@@ -5,6 +5,8 @@ import { InjectModel } from 'nestjs-typegoose';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { User } from '../users/models/users.model';
+import { ProjectsFilter } from './filters/project.filter';
+import { ProjectDto } from './dto/project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -19,7 +21,6 @@ export class ProjectsService {
     createProjectDto: CreateProjectDto,
     user: UserDto,
   ): Promise<Project> {
-    console.log(user);
     const project = await this.projectModel.create({
       ...createProjectDto,
       user: user._id,
@@ -29,6 +30,14 @@ export class ProjectsService {
     userEntity.projects.push(project);
     await userEntity.save();
 
-    return project;
+    const populatedProject = project.populate('user').execPopulate();
+    return populatedProject;
+  }
+
+  async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
+    return this.projectModel
+      .find(filter)
+      .populate('user')
+      .exec();
   }
 }

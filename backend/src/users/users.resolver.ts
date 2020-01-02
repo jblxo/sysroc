@@ -47,7 +47,7 @@ export class UsersResolver {
   }
 
   @Query(() => [UserDto])
-  // @UseGuards(GqlAuthGuard)
+  @UseGuards(GqlAuthGuard)
   async users() {
     return this.usersService.findAll();
   }
