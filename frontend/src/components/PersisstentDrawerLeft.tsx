@@ -13,6 +13,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Header } from './Header';
 import SchoolIcon from '@material-ui/icons/School';
+import { useHistory } from 'react-router';
 
 const drawerWidth = 240;
 
@@ -78,6 +79,7 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const history = useHistory();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -111,7 +113,12 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
         </div>
         <Divider />
         <List>
-          <ListItem button>
+          <ListItem
+            button
+            onClick={() => {
+              history.push('/projects');
+            }}
+          >
             <ListItemIcon>
               <SchoolIcon />
             </ListItemIcon>
