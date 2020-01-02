@@ -23,6 +23,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "jwt-decode": "^2.2.0",
+    "notistack": "^0.9.7",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
@@ -53,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.4.4",
     "@craco/craco": "^5.6.1",
     "@graphql-codegen/cli": "^1.8.3",
     "@graphql-codegen/typescript": "1.8.3",
@@ -60,7 +62,6 @@
     "@graphql-codegen/typescript-react-apollo": "1.8.3",
     "@types/graphql": "^14.5.0",
     "@types/material-ui": "^0.21.7",
-    "@babel/core": "^7.4.4",
     "babel-loader": "^8.0.6"
   }
 }

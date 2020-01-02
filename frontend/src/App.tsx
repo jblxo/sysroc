@@ -4,6 +4,7 @@ import client from './apollo/apollo.client';
 import { setAccessToken } from './auth/accessToke';
 import { Routes } from './routes/Routes';
 import { Config } from './config/config';
+import { SnackbarProvider } from 'notistack';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -24,9 +25,11 @@ const App: React.FC = () => {
   }
 
   return (
-    <ApolloProvider client={client}>
-      <Routes />
-    </ApolloProvider>
+    <SnackbarProvider maxSnack={3}>
+      <ApolloProvider client={client}>
+        <Routes />
+      </ApolloProvider>
+    </SnackbarProvider>
   );
 };
 

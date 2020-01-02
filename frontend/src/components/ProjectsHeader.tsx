@@ -36,9 +36,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-interface Props {}
+interface Props {
+  handleOpen: () => void;
+}
 
-export const ProjectsHeader: React.FC<Props> = props => {
+export const ProjectsHeader: React.FC<Props> = ({ handleOpen }) => {
   const classes = useStyles();
 
   return (
@@ -48,7 +50,7 @@ export const ProjectsHeader: React.FC<Props> = props => {
         <p>Manage your projects</p>
       </div>
       <div className="new-project">
-        <Fab color="primary" variant="extended">
+        <Fab color="primary" variant="extended" onClick={handleOpen}>
           <AddCircleIcon className={classes.extendedIcon} />
           New Project
         </Fab>

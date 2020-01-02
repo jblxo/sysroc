@@ -129,6 +129,7 @@ export const Header: React.FC<Props> = props => {
                   setAccessToken('');
                   await client!.resetStore();
                   handleClose();
+                  history.push('/');
                 }}
               >
                 Logout

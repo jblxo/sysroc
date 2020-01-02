@@ -153,7 +153,7 @@ export type CreateProjectMutation = (
     & Pick<Project, 'name'>
     & { user: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, '_id' | 'email'>
+      & Pick<User, '_id'>
     )> }
   ) }
 );
@@ -224,7 +224,6 @@ export const CreateProjectDocument = gql`
     name
     user {
       _id
-      email
     }
   }
 }
