@@ -6,13 +6,15 @@ import {
   Menu,
   MenuItem,
   IconButton,
-  Typography
+  Typography,
+  Button
 } from '@material-ui/core';
 import { setAccessToken } from '../auth/accessToke';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import clsx from 'clsx';
+import { useHistory } from 'react-router';
 
 const drawerWidth = 240;
 
@@ -55,6 +57,7 @@ export const Header: React.FC<Props> = props => {
   const open = Boolean(anchorEl);
   const { data, loading } = useMeQuery();
   const [logout, { client }] = useLogoutMutation();
+  const history = useHistory();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -62,6 +65,10 @@ export const Header: React.FC<Props> = props => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const redirectToSignIn = () => {
+    history.push('/signin');
   };
 
   return (
@@ -72,19 +79,24 @@ export const Header: React.FC<Props> = props => {
       })}
     >
       <Toolbar>
-        <IconButton
-          edge="start"
-          className={clsx(classes.menuButton, props.drawerOpen && classes.hide)}
-          color="inherit"
-          aria-label="menu"
-          onClick={props.handleDrawerOpen}
-        >
-          <MenuIcon />
-        </IconButton>
+        {!loading && data && data.me && (
+          <IconButton
+            edge="start"
+            className={clsx(
+              classes.menuButton,
+              props.drawerOpen && classes.hide
+            )}
+            color="inherit"
+            aria-label="menu"
+            onClick={props.handleDrawerOpen}
+          >
+            <MenuIcon />
+          </IconButton>
+        )}
         <Typography variant="h6" className={classes.title}>
           Sysroc
         </Typography>
-        {!loading && data && data.me && (
+        {!loading && data && data.me ? (
           <div>
             <IconButton
               aria-label="account of current user"
@@ -111,7 +123,6 @@ export const Header: React.FC<Props> = props => {
               onClose={handleClose}
             >
               <MenuItem onClick={handleClose}>Profile</MenuItem>
-              <MenuItem onClick={handleClose}>My account</MenuItem>
               <MenuItem
                 onClick={async () => {
                   await logout();
@@ -124,6 +135,15 @@ export const Header: React.FC<Props> = props => {
               </MenuItem>
             </Menu>
           </div>
+        ) : (
+          <Button
+            aria-label="sign in button"
+            aria-controls="menu-appbar"
+            color="inherit"
+            onClick={redirectToSignIn}
+          >
+            Sign In
+          </Button>
         )}
       </Toolbar>
     </AppBar>

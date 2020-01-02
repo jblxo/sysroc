@@ -11,8 +11,7 @@ import { Project } from '../../projects/models/projects.model';
 @ObjectType()
 export class User {
   @Field(type => ID)
-  @Property({ required: true, index: true, unique: true })
-  _id: string;
+  readonly _id: string;
 
   @Field()
   @Property({ required: true, trim: true })

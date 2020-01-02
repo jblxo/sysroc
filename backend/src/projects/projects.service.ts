@@ -19,6 +19,7 @@ export class ProjectsService {
     createProjectDto: CreateProjectDto,
     user: UserDto,
   ): Promise<Project> {
+    console.log(user);
     const project = await this.projectModel.create({
       ...createProjectDto,
       user: user._id,
