@@ -127,9 +127,10 @@ export const Header: React.FC<Props> = props => {
                 onClick={async () => {
                   await logout();
                   setAccessToken('');
+                  history.push('/');
+                  window.location.reload();
                   await client!.resetStore();
                   handleClose();
-                  history.push('/');
                 }}
               >
                 Logout
