@@ -23,7 +23,12 @@ export class ProjectsResolver {
   }
 
   @Query(() => [ProjectDto])
-  projects(@Args() filter: ProjectsFilter) {
-    return this.projectsService.getMany(filter);
+  @UseGuards(GqlAuthGuard)
+  projects(@CurrentUser() user: UserDto, @Args() filter?: ProjectsFilter) {
+    const newFilter: ProjectsFilter = {
+      user: user._id,
+    };
+
+    return this.projectsService.getMany(newFilter);
   }
 }

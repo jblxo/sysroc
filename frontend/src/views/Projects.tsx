@@ -1,6 +1,7 @@
 import React from 'react';
 import { ProjectsHeader } from '../components/ProjectsHeader';
 import { NewProjectModal } from '../components/NewProjectModal';
+import { ProjectsList } from '../components/ProjectsList';
 
 interface Props {}
 
@@ -18,6 +19,7 @@ export const Projects: React.FC<Props> = props => {
   return (
     <>
       <ProjectsHeader handleOpen={handleOpen} />
+      <ProjectsList />
       <NewProjectModal handleClose={handleClose} open={open} />
     </>
   );
