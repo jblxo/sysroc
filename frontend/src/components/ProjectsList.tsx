@@ -1,5 +1,8 @@
 import React from 'react';
-import { useProjectsQuery } from '../generated/graphql';
+import {
+  useProjectsQuery,
+  useDeleteProjectMutation
+} from '../generated/graphql';
 import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
@@ -62,6 +65,11 @@ interface Props {}
 
 export const ProjectsList: React.FC<Props> = props => {
   const { data, loading } = useProjectsQuery();
+  const [deleteProject, { error }] = useDeleteProjectMutation();
+
+  const handleDeleteProject = async (id: string) => {
+    await deleteProject({ variables: { projectId: id } });
+  };
 
   return (
     <div>
@@ -111,7 +119,13 @@ export const ProjectsList: React.FC<Props> = props => {
                   <Fab color="primary" variant="extended">
                     View
                   </Fab>
-                  <Fab color="secondary" variant="extended">
+                  <Fab
+                    color="secondary"
+                    variant="extended"
+                    onClick={() => {
+                      handleDeleteProject(project._id);
+                    }}
+                  >
                     X
                   </Fab>
                 </Item>

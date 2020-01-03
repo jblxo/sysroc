@@ -41,6 +41,7 @@ export type Mutation = {
   logout: Scalars['Boolean'],
   deleteUser: Scalars['Boolean'],
   createProject: Project,
+  deleteProject: ProjectDto,
 };
 
 
@@ -66,6 +67,11 @@ export type MutationDeleteUserArgs = {
 
 export type MutationCreateProjectArgs = {
   input: CreateProjectDto
+};
+
+
+export type MutationDeleteProjectArgs = {
+  projectId: Scalars['String']
 };
 
 export type Project = {
@@ -170,6 +176,19 @@ export type CreateProjectMutation = (
       { __typename?: 'User' }
       & Pick<User, '_id'>
     )> }
+  ) }
+);
+
+export type DeleteProjectMutationVariables = {
+  projectId: Scalars['String']
+};
+
+
+export type DeleteProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProject: (
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, '_id' | 'name'>
   ) }
 );
 
@@ -283,6 +302,39 @@ export function useCreateProjectMutation(baseOptions?: ApolloReactHooks.Mutation
 export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProjectMutation>;
 export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
 export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
+export const DeleteProjectDocument = gql`
+    mutation deleteProject($projectId: String!) {
+  deleteProject(projectId: $projectId) {
+    _id
+    name
+  }
+}
+    `;
+export type DeleteProjectMutationFn = ApolloReactCommon.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>;
+
+/**
+ * __useDeleteProjectMutation__
+ *
+ * To run a mutation, you first call `useDeleteProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProjectMutation, { data, loading, error }] = useDeleteProjectMutation({
+ *   variables: {
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useDeleteProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteProjectMutation, DeleteProjectMutationVariables>) {
+        return ApolloReactHooks.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument, baseOptions);
+      }
+export type DeleteProjectMutationHookResult = ReturnType<typeof useDeleteProjectMutation>;
+export type DeleteProjectMutationResult = ApolloReactCommon.MutationResult<DeleteProjectMutation>;
+export type DeleteProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteProjectMutation, DeleteProjectMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout

@@ -8,6 +8,7 @@ import { UserDto } from '../users/dto/user.dto';
 import { UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
+import { User } from '../users/models/users.model';
 
 @Resolver('Projects')
 export class ProjectsResolver {
@@ -30,5 +31,21 @@ export class ProjectsResolver {
     };
 
     return this.projectsService.getMany(newFilter);
+  }
+
+  @Mutation(() => ProjectDto)
+  @UseGuards(GqlAuthGuard)
+  async deleteProject(
+    @CurrentUser() user: UserDto,
+    @Args('projectId') projectId: string,
+  ) {
+    const project = await this.projectsService.getOne(projectId);
+    const autor = project.user as User;
+
+    if (autor._id.toString() !== user._id.toString()) {
+      throw new Error(`You can't delete projects which you don't own!`);
+    }
+
+    return this.projectsService.deleteOne(projectId);
   }
 }

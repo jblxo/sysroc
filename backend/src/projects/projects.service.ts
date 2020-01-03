@@ -40,4 +40,15 @@ export class ProjectsService {
       .populate('user')
       .exec();
   }
+
+  deleteOne(projectId: string): Promise<ProjectDto> {
+    return this.projectModel.findByIdAndDelete(projectId).exec();
+  }
+
+  getOne(projectId: string): Promise<ProjectDto> {
+    return this.projectModel
+      .findById(projectId)
+      .populate('user')
+      .exec();
+  }
 }
