@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
+import { Fab } from '@material-ui/core';
 
 const List = styled.div`
   display: grid;
@@ -45,6 +46,15 @@ const Item = styled.div`
     width: 100%;
     height: 100%;
     text-align: center;
+  }
+
+  &.actions {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+    align-items: stretch;
+    align-content: space-between;
   }
 `;
 
@@ -97,8 +107,13 @@ export const ProjectsList: React.FC<Props> = props => {
                 <Item>
                   <div>...</div>
                 </Item>
-                <Item>
-                  <div>View</div>
+                <Item className="actions">
+                  <Fab color="primary" variant="extended">
+                    View
+                  </Fab>
+                  <Fab color="secondary" variant="extended">
+                    X
+                  </Fab>
                 </Item>
               </div>
             ))}
