@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   useProjectsQuery,
   useDeleteProjectMutation
@@ -8,6 +8,8 @@ import Paper from '@material-ui/core/Paper';
 import blue from '@material-ui/core/colors/blue';
 import grey from '@material-ui/core/colors/grey';
 import { Fab } from '@material-ui/core';
+import { useSnackbar } from 'notistack';
+import { DeleteProjectAlert } from './DeleteProjectAlert';
 
 const List = styled.div`
   display: grid;
@@ -66,10 +68,28 @@ interface Props {}
 export const ProjectsList: React.FC<Props> = props => {
   const { data, loading } = useProjectsQuery();
   const [deleteProject, { error }] = useDeleteProjectMutation();
+  const { enqueueSnackbar } = useSnackbar();
+  const [open, setOpen] = useState(false);
+  const [projectId, setProjectId] = useState<string | null>(null);
+
+  const handleAlertOpen = () => {
+    setOpen(true);
+  };
+
+  const handleAlertClose = () => {
+    setOpen(false);
+  };
+
+  if (error) {
+    enqueueSnackbar(error.message, { variant: 'error' });
+  }
 
   const handleDeleteProject = async (id: string) => {
     await deleteProject({ variables: { projectId: id } });
+    enqueueSnackbar('Project successfully deleted', { variant: 'success' });
   };
+
+  if (loading) return <span>Loading...</span>;
 
   return (
     <div>
@@ -123,7 +143,8 @@ export const ProjectsList: React.FC<Props> = props => {
                     color="secondary"
                     variant="extended"
                     onClick={() => {
-                      handleDeleteProject(project._id);
+                      setProjectId(project._id);
+                      handleAlertOpen();
                     }}
                   >
                     X
@@ -133,6 +154,12 @@ export const ProjectsList: React.FC<Props> = props => {
             ))}
         </List>
       </Paper>
+      <DeleteProjectAlert
+        open={open}
+        handleClose={handleAlertClose}
+        handleDeleteProject={handleDeleteProject}
+        projectId={projectId}
+      />
     </div>
   );
 };
