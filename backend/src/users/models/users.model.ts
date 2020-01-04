@@ -1,12 +1,9 @@
-import {
-  arrayProp as ArrayProperty,
-  prop as Property,
-  Ref,
-} from '@typegoose/typegoose';
-import { Field, ObjectType, ID } from 'type-graphql';
+import { arrayProp as ArrayProperty, prop as Property, Ref } from '@typegoose/typegoose';
+import { Field, ID, ObjectType } from 'type-graphql';
 import * as validator from 'validator';
 import { Group } from '../../groups/models/groups.model';
 import { Project } from '../../projects/models/projects.model';
+import { Role } from '../../roles/models/roles.model';
 
 @ObjectType()
 export class User {
@@ -50,4 +47,8 @@ export class User {
   @Field(type => [Project], { nullable: true })
   @ArrayProperty({ itemsRef: 'Project', default: [] })
   projects?: Ref<Project>[];
+
+  @Field(type => [Role], { nullable: true })
+  @ArrayProperty({ itemsRef: 'Role', default: [] })
+  roles?: Ref<Role>[];
 }

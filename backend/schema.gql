@@ -33,6 +33,13 @@ type Mutation {
   deleteProject(projectId: String!): ProjectDto!
 }
 
+type Permission {
+  _id: ID!
+  name: String!
+  slug: String!
+  roles: [Role!]
+}
+
 type Project {
   name: String!
   user: User
@@ -52,6 +59,14 @@ type Query {
   projects(_id: String, name: String, user: String): [ProjectDto!]!
 }
 
+type Role {
+  _id: ID!
+  name: String!
+  admin: Boolean!
+  permissions: [Permission!]
+  users: [User!]
+}
+
 input SignUpUserDto {
   name: String
   email: String
@@ -66,6 +81,7 @@ type User {
   adEmail: String!
   groups: [Group!]
   projects: [Project!]
+  roles: [Role!]
 }
 
 type UserAuthDto {

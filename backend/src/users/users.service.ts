@@ -17,7 +17,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class UsersService {
-  private ADEndpoint: string;
+  private readonly ADEndpoint: string;
 
   constructor(
     @InjectModel(User)
@@ -118,7 +118,9 @@ export class UsersService {
         { users: userId },
         { $pull: { users: userId } },
         (err, raw) => {
-          if (err) throw new Error(err);
+          if (err) {
+            throw new Error(err);
+          }
           console.log(raw);
         },
       )

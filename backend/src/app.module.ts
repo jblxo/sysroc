@@ -9,6 +9,8 @@ import { RedisModule, RedisService } from 'nestjs-redis';
 import { Redis } from 'ioredis';
 import { redisConstants } from './redis/constants';
 import { ProjectsModule } from './projects/projects.module';
+import { PermissionsModule } from './permissions/permissions.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -40,6 +42,8 @@ import { ProjectsModule } from './projects/projects.module';
     ]),
     GroupsModule,
     ConfigModule,
+    PermissionsModule,
+    RolesModule,
     ActiveDirectoryModule,
     UsersModule,
     ProjectsModule,
