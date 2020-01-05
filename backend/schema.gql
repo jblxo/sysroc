@@ -103,6 +103,7 @@ type UserDto {
   adEmail: String!
   password: String!
   groups: [Group!]
+  roles: [Role!]
 }
 
 type UserTempDto {

@@ -45,7 +45,7 @@ export class RolesService {
 
     role = await role.populate('permissions').execPopulate();
     for (const permission of createdPermissions) {
-      if (!await this.hasPermission(role, permission.slug)) {
+      if (!await this.hasPermissions(role, permission.slug)) {
         permission.roles.push(role._id);
         role.permissions.push(permission._id);
         await permission.save();
@@ -56,7 +56,7 @@ export class RolesService {
     return role;
   }
 
-  async hasPermission(role: Role, permissionSlug: string): Promise<boolean> {
+  async hasPermissions(role: Role, ...permissionSlugs: string[]): Promise<boolean> {
     if (role.admin) {
       return true;
     }
@@ -68,6 +68,11 @@ export class RolesService {
       role = await this.roleModel.findOne().populate('permissions').exec();
     }
 
-    return role.permissions.filter((rolePermission: Permission) => rolePermission.slug === permissionSlug).length !== 0;
+    for (const permissionSlug of permissionSlugs) {
+      if (role.permissions.filter((rolePermission: Permission) => rolePermission.slug === permissionSlug).length !== 0) {
+        return true;
+      }
+    }
+    return false;
   }
 }

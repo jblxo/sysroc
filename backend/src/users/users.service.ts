@@ -14,6 +14,8 @@ import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
+import { RolesService } from '../roles/roles.service';
+import { Role } from '../roles/models/roles.model';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +29,7 @@ export class UsersService {
     private readonly httpService: HttpService,
     private readonly config: ConfigService,
     private readonly groupsService: GroupsService,
+    private readonly rolesService: RolesService,
   ) {
     this.ADEndpoint = config.get('AD_ENDPOINT');
   }
@@ -39,6 +42,7 @@ export class UsersService {
     const user = await this.userModel
       .findOne(filter)
       .populate('groups')
+      .populate('roles')
       .exec();
 
     if (!user) {
@@ -110,6 +114,25 @@ export class UsersService {
 
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
+  }
+
+  async hasPermissions(userDto: UserDto, ...permissionSlugs: string[]): Promise<boolean> {
+    if (userDto.roles.length === 0) {
+      return false;
+    }
+
+    let roles = userDto.roles;
+    if (typeof roles[0] === 'string') {
+      const user = await this.findOne({ _id: userDto._id });
+      roles = user.roles;
+    }
+
+    for (const role of roles) {
+      if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async delete(userId: string): Promise<boolean> {
