@@ -12,6 +12,7 @@ import { PermissionsModule } from '../permissions/permissions.module';
     PermissionsModule,
   ],
   providers: [RolesResolver, RolesService],
+  exports: [RolesService],
 })
 export class RolesModule {
   constructor(private readonly rolesService: RolesService) {}
@@ -32,6 +33,8 @@ export class RolesModule {
       permissionSlugs: [
         PERMISSIONS.PROJECTS_MANAGE,
         PERMISSIONS.PROJECTS_CREATE,
+        PERMISSIONS.PROJECTS_VIEW,
+        PERMISSIONS.MANAGE_STUDENT_USERS,
       ],
     });
     await this.rolesService.createOrUpdate({
@@ -39,12 +42,15 @@ export class RolesModule {
       admin: false,
       permissionSlugs: [
         PERMISSIONS.PROJECTS_CREATE,
+        PERMISSIONS.PROJECTS_VIEW,
       ],
     });
     await this.rolesService.createOrUpdate({
       name: 'Guest',
       admin: false,
-      permissionSlugs: [],
+      permissionSlugs: [
+        PERMISSIONS.PROJECTS_VIEW,
+      ],
     });
   }
 }
