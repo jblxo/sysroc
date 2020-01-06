@@ -40,7 +40,7 @@ export type Mutation = {
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
   deleteUser: Scalars['Boolean'],
-  createProject: Project,
+  createProject: ProjectDto,
   deleteProject: ProjectDto,
 };
 
@@ -170,11 +170,11 @@ export type CreateProjectMutationVariables = {
 export type CreateProjectMutation = (
   { __typename?: 'Mutation' }
   & { createProject: (
-    { __typename?: 'Project' }
-    & Pick<Project, 'name'>
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, '_id' | 'name'>
     & { user: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, '_id'>
+      & Pick<User, '_id' | 'name'>
     )> }
   ) }
 );
@@ -270,9 +270,11 @@ export type SignUpMutation = (
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!) {
   createProject(input: {name: $name}) {
+    _id
     name
     user {
       _id
+      name
     }
   }
 }

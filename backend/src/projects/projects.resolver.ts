@@ -14,12 +14,12 @@ import { User } from '../users/models/users.model';
 export class ProjectsResolver {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @Mutation(() => Project)
+  @Mutation(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
   createProject(
     @CurrentUser() user: UserDto,
     @Args('input') input: CreateProjectDto,
-  ): Promise<Project> {
+  ): Promise<ProjectDto> {
     return this.projectsService.create(input, user);
   }
 

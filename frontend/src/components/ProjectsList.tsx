@@ -85,7 +85,10 @@ export const ProjectsList: React.FC<Props> = props => {
   }
 
   const handleDeleteProject = async (id: string) => {
-    await deleteProject({ variables: { projectId: id } });
+    // TODO: add refetch query
+    await deleteProject({
+      variables: { projectId: id }
+    });
     enqueueSnackbar('Project successfully deleted', { variant: 'success' });
   };
 
