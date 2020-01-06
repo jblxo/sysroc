@@ -101,7 +101,6 @@ export const ProjectsList: React.FC<Props> = props => {
   }
 
   const handleDeleteProject = async (id: string) => {
-    // TODO: add refetch query
     await deleteProject({
       variables: { projectId: id }
     });
