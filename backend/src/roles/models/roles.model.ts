@@ -13,6 +13,10 @@ export class Role {
   name: string;
 
   @Field()
+  @Property()
+  slug: string;
+
+  @Field()
   @Property({ default: false })
   admin: boolean;
 

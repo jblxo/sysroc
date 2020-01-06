@@ -62,6 +62,7 @@ type Query {
 type Role {
   _id: ID!
   name: String!
+  slug: String!
   admin: Boolean!
   permissions: [Permission!]
   users: [User!]

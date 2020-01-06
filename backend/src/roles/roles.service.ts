@@ -17,6 +17,7 @@ export class RolesService {
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     const createdRole = new this.roleModel({
       name: createRoleDto.name,
+      slug: createRoleDto.slug,
       admin: createRoleDto.admin,
       permissions: [],
     });
@@ -26,13 +27,14 @@ export class RolesService {
   }
 
   async createOrUpdate(createRoleDto: CreateRoleDto): Promise<Role> {
-    const filter = { name: createRoleDto.name };
+    const filter = { slug: createRoleDto.slug };
     const foundRole = await this.roleModel.findOne(filter);
     if (!foundRole) {
       return await this.create(createRoleDto);
     }
 
     await foundRole.updateOne({
+      name: createRoleDto.name,
       admin: createRoleDto.admin,
     });
 

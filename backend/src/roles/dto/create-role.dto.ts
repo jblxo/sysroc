@@ -5,6 +5,9 @@ export class CreateRoleDto {
   @Field()
   readonly name: string;
 
+  @Field()
+  readonly slug: string;
+
   @Field({ defaultValue: false })
   readonly admin: boolean;
 

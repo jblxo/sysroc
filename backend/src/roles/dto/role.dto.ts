@@ -10,6 +10,8 @@ export class RoleDto {
   @Field()
   readonly name: string;
   @Field()
+  readonly slug: string;
+  @Field()
   readonly admin: boolean;
   @Field(type => [User], { nullable: true })
   readonly users?: Ref<User>[];

@@ -24,11 +24,13 @@ export class RolesModule {
   async seedRoles(): Promise<void> {
     await this.rolesService.createOrUpdate({
       name: 'Super Administrator',
+      slug: 'admin',
       admin: true,
       permissionSlugs: [],
     });
     await this.rolesService.createOrUpdate({
       name: 'Teacher',
+      slug: 'teacher',
       admin: false,
       permissionSlugs: [
         PERMISSIONS.PROJECTS_MANAGE,
@@ -39,6 +41,7 @@ export class RolesModule {
     });
     await this.rolesService.createOrUpdate({
       name: 'Student',
+      slug: 'student',
       admin: false,
       permissionSlugs: [
         PERMISSIONS.PROJECTS_CREATE,
@@ -47,6 +50,7 @@ export class RolesModule {
     });
     await this.rolesService.createOrUpdate({
       name: 'Guest',
+      slug: 'guest',
       admin: false,
       permissionSlugs: [
         PERMISSIONS.PROJECTS_VIEW,

@@ -9,6 +9,9 @@ export class RolesFilter {
   name?: string;
 
   @Field({ nullable: true })
+  slug?: string;
+
+  @Field({ nullable: true })
   admin?: boolean;
 
   @Field({ nullable: true })
