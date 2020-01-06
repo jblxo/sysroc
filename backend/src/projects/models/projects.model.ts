@@ -8,6 +8,10 @@ export class Project {
   @Property({ required: true })
   name: string;
 
+  @Field()
+  @Property({ required: false, default: '' })
+  description: string;
+
   @Field(type => User, { nullable: false })
   @Property({ ref: 'User', default: undefined })
   user: Ref<User>;

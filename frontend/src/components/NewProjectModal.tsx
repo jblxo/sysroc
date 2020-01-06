@@ -75,9 +75,9 @@ export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
         <p id="new-project-modal-description">Create something great</p>
         <NewProjectForm
           error={error}
-          onSubmit={async ({ name }) => {
+          onSubmit={async ({ name, description }) => {
             const res = await createProject({
-              variables: { name }
+              variables: { name, description }
             });
             if (res.data) {
               enqueueSnackbar('Project created!', { variant: 'success' });

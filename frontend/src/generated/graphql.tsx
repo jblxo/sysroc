@@ -20,6 +20,7 @@ export type AdUser = {
 
 export type CreateProjectDto = {
   name: Scalars['String'],
+  description?: Maybe<Scalars['String']>,
 };
 
 export type CreateUserDto = {
@@ -77,6 +78,7 @@ export type MutationDeleteProjectArgs = {
 export type Project = {
    __typename?: 'Project',
   name: Scalars['String'],
+  description: Scalars['String'],
   user: User,
 };
 
@@ -84,6 +86,7 @@ export type ProjectDto = {
    __typename?: 'ProjectDto',
   _id: Scalars['ID'],
   name: Scalars['String'],
+  description: Scalars['String'],
   user?: Maybe<User>,
 };
 
@@ -171,7 +174,8 @@ export type UserTempDto = {
 };
 
 export type CreateProjectMutationVariables = {
-  name: Scalars['String']
+  name: Scalars['String'],
+  description?: Maybe<Scalars['String']>
 };
 
 
@@ -228,7 +232,7 @@ export type ProjectQuery = (
   { __typename?: 'Query' }
   & { project: (
     { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
   ) }
 );
 
@@ -289,8 +293,8 @@ export type SignUpMutation = (
 
 
 export const CreateProjectDocument = gql`
-    mutation CreateProject($name: String!) {
-  createProject(input: {name: $name}) {
+    mutation CreateProject($name: String!, $description: String) {
+  createProject(input: {name: $name, description: $description}) {
     _id
     name
     user {
@@ -315,6 +319,7 @@ export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateP
  * const [createProjectMutation, { data, loading, error }] = useCreateProjectMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *   },
  * });
  */
@@ -424,6 +429,7 @@ export const ProjectDocument = gql`
   project(_id: $_id) {
     _id
     name
+    description
   }
 }
     `;

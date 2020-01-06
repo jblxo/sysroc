@@ -41,7 +41,10 @@ export const SingleProject: React.FC<Props> = props => {
         </Fab>
       </ProjectControls>
       {data ? (
-        <h2>{data.project.name}</h2>
+        <>
+          <h2>{data.project.name}</h2>
+          <h3>{data.project.description}</h3>
+        </>
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>
       )}

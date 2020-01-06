@@ -21,6 +21,7 @@ const useStyles = makeStyles({
 
 interface Values {
   name: string;
+  description: string;
 }
 
 interface Props {
@@ -33,7 +34,7 @@ export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
 
   return (
     <Formik
-      initialValues={{ name: '' }}
+      initialValues={{ name: '', description: '' }}
       onSubmit={values => {
         onSubmit(values);
       }}
@@ -52,6 +53,15 @@ export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
               label="Project Name"
               component={MyField}
               required
+            />
+          </div>
+          <div>
+            <Field
+              name="description"
+              type="text"
+              placeholder="Project Description"
+              label="Project Description"
+              component={MyField}
             />
           </div>
           <Button

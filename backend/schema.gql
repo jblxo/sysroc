@@ -11,6 +11,7 @@ type ADUser {
 
 input CreateProjectDto {
   name: String!
+  description: String
 }
 
 input CreateUserDto {
@@ -35,12 +36,14 @@ type Mutation {
 
 type Project {
   name: String!
+  description: String!
   user: User!
 }
 
 type ProjectDto {
   _id: ID!
   name: String!
+  description: String!
   user: User
 }
 
