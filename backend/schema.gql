@@ -50,6 +50,7 @@ type Query {
   users: [UserDto!]!
   me: UserDto
   projects(_id: String, name: String, user: String): [ProjectDto!]!
+  project(_id: String, name: String, user: String): ProjectDto!
 }
 
 input SignUpUserDto {

@@ -1,0 +1,6 @@
+query Project($_id: String) {
+  project(_id: $_id) {
+    _id
+    name
+  }
+}

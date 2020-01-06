@@ -11,6 +11,7 @@ import { Fab } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { DeleteProjectAlert } from './DeleteProjectAlert';
 import { GET_PROJECTS } from './NewProjectModal';
+import { useHistory } from 'react-router';
 
 const List = styled.div`
   display: grid;
@@ -87,6 +88,7 @@ export const ProjectsList: React.FC<Props> = props => {
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const history = useHistory();
 
   const handleAlertOpen = () => {
     setOpen(true);
@@ -154,7 +156,13 @@ export const ProjectsList: React.FC<Props> = props => {
                   <div>...</div>
                 </Item>
                 <Item className="actions">
-                  <Fab color="primary" variant="extended">
+                  <Fab
+                    color="primary"
+                    variant="extended"
+                    onClick={() => {
+                      history.push(`/projects/${project._id}`);
+                    }}
+                  >
                     View
                   </Fab>
                   <Fab

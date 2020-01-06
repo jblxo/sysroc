@@ -48,4 +48,17 @@ export class ProjectsResolver {
 
     return this.projectsService.deleteOne(projectId);
   }
+
+  @Query(() => ProjectDto)
+  @UseGuards(GqlAuthGuard)
+  async project(@CurrentUser() user: UserDto, @Args() filter: ProjectsFilter) {
+    const project = await this.projectsService.getOne(filter._id && filter._id);
+    const autor = project.user && (project.user as UserDto);
+    if (autor._id.toString() !== user._id.toString()) {
+      throw new Error(
+        `You can not view projects that you don't have access to!`,
+      );
+    }
+    return project;
+  }
 }
