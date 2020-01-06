@@ -35,7 +35,7 @@ interface Props {
   handleClose: () => void;
 }
 
-const GET_PROJECTS = gql`
+export const GET_PROJECTS = gql`
   query Projects {
     projects {
       _id
@@ -53,6 +53,7 @@ export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
   const [createProject, { error }] = useCreateProjectMutation({
     update(cache, result) {
       const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
+
       cache.writeQuery({
         query: GET_PROJECTS,
         data: {
