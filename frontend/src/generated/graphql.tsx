@@ -77,7 +77,7 @@ export type MutationDeleteProjectArgs = {
 export type Project = {
    __typename?: 'Project',
   name: Scalars['String'],
-  user?: Maybe<User>,
+  user: User,
 };
 
 export type ProjectDto = {

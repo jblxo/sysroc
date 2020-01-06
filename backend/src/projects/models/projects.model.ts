@@ -8,7 +8,7 @@ export class Project {
   @Property({ required: true })
   name: string;
 
-  @Field(type => User, { nullable: true })
+  @Field(type => User, { nullable: false })
   @Property({ ref: 'User', default: undefined })
-  user?: Ref<User>;
+  user: Ref<User>;
 }
