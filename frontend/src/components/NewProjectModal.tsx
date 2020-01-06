@@ -53,7 +53,6 @@ export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
   const [createProject, { error }] = useCreateProjectMutation({
     update(cache, result) {
       const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
-
       cache.writeQuery({
         query: GET_PROJECTS,
         data: {
