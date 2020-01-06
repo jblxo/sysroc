@@ -5,5 +5,9 @@ mutation SignUp($name: String, $email: String, $password: String) {
       _id
       email
     }
+    permissions {
+      slug
+      permitted
+    }
   }
 }

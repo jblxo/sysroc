@@ -7,6 +7,8 @@ import { RolesGuard } from '../../roles/roles.guard';
  *
  * The user must have at least one of the presented permissions.
  * Permissions are forwarded as a parameter each, not as a single list.
+ *
+ * @param permissions
  */
 export function HasPermissions(...permissions: string[]) {
   return applyDecorators(

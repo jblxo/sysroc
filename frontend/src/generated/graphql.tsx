@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -74,6 +75,20 @@ export type MutationDeleteProjectArgs = {
   projectId: Scalars['String']
 };
 
+export type Permission = {
+   __typename?: 'Permission',
+  _id: Scalars['ID'],
+  name: Scalars['String'],
+  slug: Scalars['String'],
+  roles?: Maybe<Array<Role>>,
+};
+
+export type PermissionStateDto = {
+   __typename?: 'PermissionStateDto',
+  slug: Scalars['String'],
+  permitted: Scalars['Boolean'],
+};
+
 export type Project = {
    __typename?: 'Project',
   name: Scalars['String'],
@@ -92,7 +107,7 @@ export type Query = {
   authUser: AdUser,
   user: UserDto,
   users: Array<UserDto>,
-  me?: Maybe<UserDto>,
+  me?: Maybe<UserAuthDto>,
   projects: Array<ProjectDto>,
 };
 
@@ -116,6 +131,16 @@ export type QueryProjectsArgs = {
   user?: Maybe<Scalars['String']>
 };
 
+export type Role = {
+   __typename?: 'Role',
+  _id: Scalars['ID'],
+  name: Scalars['String'],
+  slug: Scalars['String'],
+  admin: Scalars['Boolean'],
+  permissions?: Maybe<Array<Permission>>,
+  users?: Maybe<Array<User>>,
+};
+
 export type SignUpUserDto = {
   name?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
@@ -131,12 +156,14 @@ export type User = {
   adEmail: Scalars['String'],
   groups?: Maybe<Array<Group>>,
   projects?: Maybe<Array<Project>>,
+  roles?: Maybe<Array<Role>>,
 };
 
 export type UserAuthDto = {
    __typename?: 'UserAuthDto',
   accessToken?: Maybe<Scalars['String']>,
   user?: Maybe<UserDto>,
+  permissions?: Maybe<Array<PermissionStateDto>>,
   userTemp?: Maybe<UserTempDto>,
   registerToken?: Maybe<Scalars['String']>,
 };
@@ -154,6 +181,7 @@ export type UserDto = {
   adEmail: Scalars['String'],
   password: Scalars['String'],
   groups?: Maybe<Array<Group>>,
+  roles?: Maybe<Array<Role>>,
 };
 
 export type UserTempDto = {
@@ -206,8 +234,14 @@ export type MeQueryVariables = {};
 export type MeQuery = (
   { __typename?: 'Query' }
   & { me: Maybe<(
-    { __typename?: 'UserDto' }
-    & Pick<UserDto, '_id' | 'email'>
+    { __typename?: 'UserAuthDto' }
+    & { user: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, '_id' | 'email'>
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>> }
   )> }
 );
 
@@ -240,7 +274,10 @@ export type SignInMutation = (
     & { user: Maybe<(
       { __typename?: 'UserDto' }
       & Pick<UserDto, '_id' | 'email'>
-    )>, userTemp: Maybe<(
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>>, userTemp: Maybe<(
       { __typename?: 'UserTempDto' }
       & Pick<UserTempDto, 'name' | 'email'>
     )> }
@@ -262,7 +299,10 @@ export type SignUpMutation = (
     & { user: Maybe<(
       { __typename?: 'UserDto' }
       & Pick<UserDto, '_id' | 'email'>
-    )> }
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>> }
   ) }
 );
 
@@ -367,8 +407,14 @@ export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<Logout
 export const MeDocument = gql`
     query Me {
   me {
-    _id
-    email
+    user {
+      _id
+      email
+    }
+    permissions {
+      slug
+      permitted
+    }
   }
 }
     `;
@@ -377,7 +423,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -413,7 +459,7 @@ export const ProjectsDocument = gql`
  * __useProjectsQuery__
  *
  * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -440,6 +486,10 @@ export const SignInDocument = gql`
     user {
       _id
       email
+    }
+    permissions {
+      slug
+      permitted
     }
     userTemp {
       name
@@ -482,6 +532,10 @@ export const SignUpDocument = gql`
     user {
       _id
       email
+    }
+    permissions {
+      slug
+      permitted
     }
   }
 }

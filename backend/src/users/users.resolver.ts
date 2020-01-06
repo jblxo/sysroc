@@ -47,10 +47,15 @@ export class UsersResolver {
     return this.usersService.findAll();
   }
 
-  @Query(() => UserDto, { nullable: true })
+  @Query(() => UserAuthDto, { nullable: true })
   @UseGuards(GqlAuthGuard)
-  me(@CurrentUser() user: UserDto) {
-    return user;
+  async me(@CurrentUser() user: UserDto) {
+    const permissions = await this.usersService.getPermissionStates(user);
+
+    return {
+      user,
+      permissions,
+    };
   }
 
   // TODO: Only for GraphQL
@@ -97,8 +102,9 @@ export class UsersResolver {
       password,
       dn: registerUserDto.dn,
     });
+    const permissions = await this.usersService.getPermissionStates(user);
 
-    // We need to get the registered user again due to the ID
+    // We need to fetch the registered user again to get the ID
     const registeredUser = await this.usersService.findOne({
       adEmail: user.adEmail,
     });
@@ -123,6 +129,7 @@ export class UsersResolver {
     return {
       accessToken: token,
       user,
+      permissions,
       userTemp: null,
       registerToken: null,
     };
@@ -146,6 +153,8 @@ export class UsersResolver {
         throw new UnauthorizedException('Wrong password or email!');
       }
 
+      const permissions = await this.usersService.getPermissionStates(user);
+
       const token = await this.authService.createToken(user.email, user._id);
       const refreshToken = await this.authService.createRefreshToken(
         user.email,
@@ -160,6 +169,7 @@ export class UsersResolver {
       return {
         accessToken: token,
         user,
+        permissions,
         userTemp: null,
         registerToken: null,
       };
@@ -208,6 +218,7 @@ export class UsersResolver {
     return {
       accessToken: null,
       user: null,
+      permissions: null,
       userTemp: {
         email: auth.email,
         name: response.data.user.cn,

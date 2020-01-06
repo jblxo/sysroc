@@ -16,6 +16,8 @@ import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
 import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/models/roles.model';
+import { PermissionStateDto } from './dto/permission-state.dto';
+import { PERMISSIONS } from '../permissions/permissions';
 
 @Injectable()
 export class UsersService {
@@ -109,7 +111,7 @@ export class UsersService {
       await group.save();
     }
 
-    return await newUser.populate('groups').execPopulate();
+    return await newUser.populate('groups').populate('roles').execPopulate();
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -133,6 +135,24 @@ export class UsersService {
       }
     }
     return false;
+  }
+
+  /**
+   * Run check on all permissions for the user.
+   *
+   * @param userDto
+   */
+  async getPermissionStates(userDto: UserDto): Promise<PermissionStateDto[]> {
+    const permissions = [];
+    for (const permission in PERMISSIONS) {
+      if (PERMISSIONS.hasOwnProperty(permission)) {
+        permissions.push({
+          slug: PERMISSIONS[permission],
+          permitted: await this.hasPermissions(userDto, PERMISSIONS[permission]),
+        });
+      }
+    }
+    return permissions;
   }
 
   async delete(userId: string): Promise<boolean> {

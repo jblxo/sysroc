@@ -24,7 +24,11 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
                 store.writeQuery<MeQuery>({
                   query: MeDocument,
                   data: {
-                    me: data.signin.user
+                    me: {
+                      user: data.signin.user,
+                      permissions: data.signin.permissions,
+                      __typename: data.signin.__typename,
+                    }
                   }
                 });
               }
