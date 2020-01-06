@@ -4,6 +4,7 @@ import { ProjectsService } from './projects.service';
 import { TypegooseModule } from 'nestjs-typegoose';
 import { Project } from './models/projects.model';
 import { User } from '../users/models/users.model';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { User } from '../users/models/users.model';
       { typegooseClass: Project, schemaOptions: {} },
       { typegooseClass: User, schemaOptions: {} },
     ]),
+    UsersModule,
   ],
   providers: [ProjectsResolver, ProjectsService],
 })

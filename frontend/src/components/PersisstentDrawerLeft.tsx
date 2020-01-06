@@ -15,6 +15,8 @@ import { Header } from './Header';
 import SchoolIcon from '@material-ui/icons/School';
 import HomeIcon from '@material-ui/icons/Home';
 import { useHistory } from 'react-router';
+import { useMeQuery } from '../generated/graphql';
+import { hasPermissions } from '../auth/hasPermissions';
 
 const drawerWidth = 240;
 
@@ -81,6 +83,7 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const history = useHistory();
+  const { data, loading } = useMeQuery();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -125,17 +128,19 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
-          <ListItem
-            button
-            onClick={() => {
-              history.push('/projects');
-            }}
-          >
-            <ListItemIcon>
-              <SchoolIcon />
-            </ListItemIcon>
-            <ListItemText primary="Projects" />
-          </ListItem>
+          { !loading && data && data.me && hasPermissions(data.me, 'projects.view') &&
+            <ListItem
+              button
+              onClick={() => {
+                history.push('/projects');
+              }}
+            >
+              <ListItemIcon>
+                <SchoolIcon />
+              </ListItemIcon>
+              <ListItemText primary="Projects" />
+            </ListItem>
+          }
         </List>
       </Drawer>
       <main

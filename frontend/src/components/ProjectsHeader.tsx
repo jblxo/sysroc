@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Fab, makeStyles } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
+import { useMeQuery } from '../generated/graphql';
+import { hasPermissions } from '../auth/hasPermissions';
 
 const ProjectsHeaderStyles = styled.div`
   display: grid;
@@ -42,6 +44,7 @@ interface Props {
 
 export const ProjectsHeader: React.FC<Props> = ({ handleOpen }) => {
   const classes = useStyles();
+  const { data, loading } = useMeQuery();
 
   return (
     <ProjectsHeaderStyles>
@@ -49,12 +52,14 @@ export const ProjectsHeader: React.FC<Props> = ({ handleOpen }) => {
         <h2>Projects</h2>
         <p>Manage your projects</p>
       </div>
-      <div className="new-project">
-        <Fab color="primary" variant="extended" onClick={handleOpen}>
-          <AddCircleIcon className={classes.extendedIcon} />
-          New Project
-        </Fab>
-      </div>
+      { !loading && data && data.me && hasPermissions(data.me, 'projects.create') &&
+        <div className="new-project">
+          <Fab color="primary" variant="extended" onClick={handleOpen}>
+              <AddCircleIcon className={classes.extendedIcon}/>
+              New Project
+          </Fab>
+        </div>
+      }
     </ProjectsHeaderStyles>
   );
 };
