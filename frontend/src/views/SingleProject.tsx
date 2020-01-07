@@ -1,16 +1,30 @@
 import React from 'react';
 import { useProjectQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { Fab } from '@material-ui/core';
+import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
 
 const ProjectControls = styled.div`
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 15rem 1fr 1fr;
 
   button {
     width: 5.5rem;
+  }
+`;
+
+const Actions = styled.div`
+  display: flex;
+  justify-content: space-around;
+  grid-column: 1 / 1;
+  grid-row: 1 / 1;
+`;
+
+const Project = styled.div`
+  h4,
+  h5 {
+    text-align: center;
   }
 `;
 
@@ -30,21 +44,32 @@ export const SingleProject: React.FC<Props> = props => {
   return (
     <>
       <ProjectControls>
-        <Fab
-          color="primary"
-          variant="extended"
-          onClick={() => {
-            history.push(`/projects`);
-          }}
-        >
-          Back
-        </Fab>
+        <Actions>
+          <Fab
+            color="primary"
+            variant="extended"
+            onClick={() => {
+              history.push(`/projects`);
+            }}
+          >
+            Back
+          </Fab>
+          <Fab
+            color="secondary"
+            variant="extended"
+            onClick={() => {
+              history.push(`/projects`);
+            }}
+          >
+            Edit
+          </Fab>
+        </Actions>
       </ProjectControls>
       {data ? (
-        <>
-          <h2>{data.project.name}</h2>
-          <h3>{data.project.description}</h3>
-        </>
+        <Project>
+          <Typography variant="h4">{data.project.name}</Typography>
+          <Typography variant="h5">{data.project.description}</Typography>
+        </Project>
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>
       )}
