@@ -11,6 +11,7 @@ type ADUser {
 
 input CreateProjectDto {
   name: String!
+  description: String
 }
 
 input CreateUserDto {
@@ -29,7 +30,7 @@ type Mutation {
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
-  createProject(input: CreateProjectDto!): Project!
+  createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
 }
 
@@ -47,12 +48,14 @@ type PermissionStateDto {
 
 type Project {
   name: String!
-  user: User
+  description: String!
+  user: User!
 }
 
 type ProjectDto {
   _id: ID!
   name: String!
+  description: String!
   user: User
 }
 
@@ -62,6 +65,7 @@ type Query {
   users: [UserDto!]!
   me: UserAuthDto
   projects(_id: String, name: String, user: String): [ProjectDto!]!
+  project(_id: String, name: String, user: String): ProjectDto!
 }
 
 type Role {

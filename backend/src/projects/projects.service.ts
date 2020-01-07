@@ -20,7 +20,7 @@ export class ProjectsService {
   async create(
     createProjectDto: CreateProjectDto,
     user: UserDto,
-  ): Promise<Project> {
+  ): Promise<ProjectDto> {
     const project = await this.projectModel.create({
       ...createProjectDto,
       user: user._id,

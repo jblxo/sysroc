@@ -10,6 +10,8 @@ import grey from '@material-ui/core/colors/grey';
 import { Fab } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { DeleteProjectAlert } from './DeleteProjectAlert';
+import { GET_PROJECTS } from './NewProjectModal';
+import { useHistory } from 'react-router';
 
 const List = styled.div`
   display: grid;
@@ -67,10 +69,26 @@ interface Props {}
 
 export const ProjectsList: React.FC<Props> = props => {
   const { data, loading } = useProjectsQuery();
-  const [deleteProject, { error }] = useDeleteProjectMutation();
+  const [deleteProject, { error }] = useDeleteProjectMutation({
+    update(cache, result) {
+      const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
+      cache.writeQuery({
+        query: GET_PROJECTS,
+        data: {
+          projects: projects.filter((project: { _id: string }) => {
+            if (result.data) {
+              return project._id !== result.data.deleteProject._id;
+            }
+            return false;
+          })
+        }
+      });
+    }
+  });
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const history = useHistory();
 
   const handleAlertOpen = () => {
     setOpen(true);
@@ -85,7 +103,9 @@ export const ProjectsList: React.FC<Props> = props => {
   }
 
   const handleDeleteProject = async (id: string) => {
-    await deleteProject({ variables: { projectId: id } });
+    await deleteProject({
+      variables: { projectId: id }
+    });
     enqueueSnackbar('Project successfully deleted', { variant: 'success' });
   };
 
@@ -133,10 +153,16 @@ export const ProjectsList: React.FC<Props> = props => {
                   <div>{project.name}_db</div>
                 </Item>
                 <Item>
-                  <div>...</div>
+                  <div>{project.description.slice(0, 10)}...</div>
                 </Item>
                 <Item className="actions">
-                  <Fab color="primary" variant="extended">
+                  <Fab
+                    color="primary"
+                    variant="extended"
+                    onClick={() => {
+                      history.push(`/projects/${project._id}`);
+                    }}
+                  >
                     View
                   </Fab>
                   <Fab

@@ -4,4 +4,6 @@ import { Field, InputType } from 'type-graphql';
 export class CreateProjectDto {
   @Field()
   readonly name: string;
+  @Field({ nullable: true })
+  readonly description?: string;
 }

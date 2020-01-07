@@ -21,6 +21,7 @@ export type AdUser = {
 
 export type CreateProjectDto = {
   name: Scalars['String'],
+  description?: Maybe<Scalars['String']>,
 };
 
 export type CreateUserDto = {
@@ -41,7 +42,7 @@ export type Mutation = {
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
   deleteUser: Scalars['Boolean'],
-  createProject: Project,
+  createProject: ProjectDto,
   deleteProject: ProjectDto,
 };
 
@@ -92,13 +93,15 @@ export type PermissionStateDto = {
 export type Project = {
    __typename?: 'Project',
   name: Scalars['String'],
-  user?: Maybe<User>,
+  description: Scalars['String'],
+  user: User,
 };
 
 export type ProjectDto = {
    __typename?: 'ProjectDto',
   _id: Scalars['ID'],
   name: Scalars['String'],
+  description: Scalars['String'],
   user?: Maybe<User>,
 };
 
@@ -109,6 +112,7 @@ export type Query = {
   users: Array<UserDto>,
   me?: Maybe<UserAuthDto>,
   projects: Array<ProjectDto>,
+  project: ProjectDto,
 };
 
 
@@ -126,6 +130,13 @@ export type QueryUserArgs = {
 
 
 export type QueryProjectsArgs = {
+  _id?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>,
+  user?: Maybe<Scalars['String']>
+};
+
+
+export type QueryProjectArgs = {
   _id?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>,
   user?: Maybe<Scalars['String']>
@@ -191,18 +202,19 @@ export type UserTempDto = {
 };
 
 export type CreateProjectMutationVariables = {
-  name: Scalars['String']
+  name: Scalars['String'],
+  description?: Maybe<Scalars['String']>
 };
 
 
 export type CreateProjectMutation = (
   { __typename?: 'Mutation' }
   & { createProject: (
-    { __typename?: 'Project' }
-    & Pick<Project, 'name'>
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, '_id' | 'name'>
     & { user: Maybe<(
       { __typename?: 'User' }
-      & Pick<User, '_id'>
+      & Pick<User, 'name'>
     )> }
   ) }
 );
@@ -245,6 +257,19 @@ export type MeQuery = (
   )> }
 );
 
+export type ProjectQueryVariables = {
+  _id?: Maybe<Scalars['String']>
+};
+
+
+export type ProjectQuery = (
+  { __typename?: 'Query' }
+  & { project: (
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
+  ) }
+);
+
 export type ProjectsQueryVariables = {};
 
 
@@ -252,7 +277,7 @@ export type ProjectsQuery = (
   { __typename?: 'Query' }
   & { projects: Array<(
     { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
     & { user: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'name'>
@@ -308,11 +333,12 @@ export type SignUpMutation = (
 
 
 export const CreateProjectDocument = gql`
-    mutation CreateProject($name: String!) {
-  createProject(input: {name: $name}) {
+    mutation CreateProject($name: String!, $description: String) {
+  createProject(input: {name: $name, description: $description}) {
+    _id
     name
     user {
-      _id
+      name
     }
   }
 }
@@ -333,6 +359,7 @@ export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateP
  * const [createProjectMutation, { data, loading, error }] = useCreateProjectMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *   },
  * });
  */
@@ -443,11 +470,47 @@ export function useMeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptio
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
+export const ProjectDocument = gql`
+    query Project($_id: String) {
+  project(_id: $_id) {
+    _id
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useProjectQuery__
+ *
+ * To run a query within a React component, call `useProjectQuery` and pass it any options that fit your needs.
+ * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useProjectQuery({
+ *   variables: {
+ *      _id: // value for '_id'
+ *   },
+ * });
+ */
+export function useProjectQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ProjectQuery, ProjectQueryVariables>) {
+        return ApolloReactHooks.useQuery<ProjectQuery, ProjectQueryVariables>(ProjectDocument, baseOptions);
+      }
+export function useProjectLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ProjectQuery, ProjectQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ProjectQuery, ProjectQueryVariables>(ProjectDocument, baseOptions);
+        }
+export type ProjectQueryHookResult = ReturnType<typeof useProjectQuery>;
+export type ProjectLazyQueryHookResult = ReturnType<typeof useProjectLazyQuery>;
+export type ProjectQueryResult = ApolloReactCommon.QueryResult<ProjectQuery, ProjectQueryVariables>;
 export const ProjectsDocument = gql`
     query Projects {
   projects {
     _id
     name
+    description
     user {
       name
     }

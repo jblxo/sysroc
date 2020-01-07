@@ -8,6 +8,8 @@ export class ProjectDto {
   readonly _id: string;
   @Field()
   readonly name: string;
+  @Field()
+  readonly description: string;
   @Field(type => User, { nullable: true })
   readonly user?: Ref<User>;
 }

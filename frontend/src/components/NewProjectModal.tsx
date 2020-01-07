@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { NewProjectForm } from './NewProjectForm';
 import { useCreateProjectMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
+import gql from 'graphql-tag';
 
 function getModalStyle() {
   const top = 50;
@@ -34,10 +35,32 @@ interface Props {
   handleClose: () => void;
 }
 
+export const GET_PROJECTS = gql`
+  query Projects {
+    projects {
+      _id
+      name
+      user {
+        name
+      }
+    }
+  }
+`;
+
 export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
   const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
-  const [createProject, { error }] = useCreateProjectMutation();
+  const [createProject, { error }] = useCreateProjectMutation({
+    update(cache, result) {
+      const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
+      cache.writeQuery({
+        query: GET_PROJECTS,
+        data: {
+          projects: projects.concat([result.data && result.data.createProject])
+        }
+      });
+    }
+  });
   const { enqueueSnackbar } = useSnackbar();
 
   return (
@@ -52,9 +75,9 @@ export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
         <p id="new-project-modal-description">Create something great</p>
         <NewProjectForm
           error={error}
-          onSubmit={async ({ name }) => {
+          onSubmit={async ({ name, description }) => {
             const res = await createProject({
-              variables: { name }
+              variables: { name, description }
             });
             if (res.data) {
               enqueueSnackbar('Project created!', { variant: 'success' });
