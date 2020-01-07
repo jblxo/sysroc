@@ -153,7 +153,7 @@ export const ProjectsList: React.FC<Props> = props => {
                   <div>{project.name}_db</div>
                 </Item>
                 <Item>
-                  <div>...</div>
+                  <div>{project.description.slice(0, 10)}...</div>
                 </Item>
                 <Item className="actions">
                   <Fab

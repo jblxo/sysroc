@@ -243,7 +243,7 @@ export type ProjectsQuery = (
   { __typename?: 'Query' }
   & { projects: Array<(
     { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
     & { user: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'name'>
@@ -464,6 +464,7 @@ export const ProjectsDocument = gql`
   projects {
     _id
     name
+    description
     user {
       name
     }
