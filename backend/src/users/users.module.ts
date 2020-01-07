@@ -24,4 +24,27 @@ import { RolesModule } from '../roles/roles.module';
   providers: [UsersResolver, UsersService],
   exports: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule {
+  constructor(private readonly usersService: UsersService) {}
+
+  async onModuleInit(): Promise<void> {
+    await this._seedUsers();
+  }
+
+  async _seedUsers(): Promise<void> {
+    const adminEmail = 'admin@spsul.cz';
+
+    try {
+      await this.usersService.findOne({ email: adminEmail });
+      // The admin account is already created, no action has to be performed anymore as
+      // we are only catching the error that occurs when the account does not exist
+    } catch {
+      await this.usersService.createRaw({
+        name: 'Super Administrator',
+        email: adminEmail,
+        password: 'admin123',
+        roleSlugs: ['admin'],
+      });
+    }
+  }
+}

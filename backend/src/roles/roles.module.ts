@@ -18,10 +18,10 @@ export class RolesModule {
   constructor(private readonly rolesService: RolesService) {}
 
   async onModuleInit(): Promise<void> {
-    await this.seedRoles();
+    await this._seedRoles();
   }
 
-  async seedRoles(): Promise<void> {
+  async _seedRoles(): Promise<void> {
     await this.rolesService.createOrUpdate({
       name: 'Super Administrator',
       slug: 'admin',

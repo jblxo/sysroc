@@ -5,6 +5,7 @@ import { mongoose, ReturnModelType } from '@typegoose/typegoose';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
 import { Permission } from '../permissions/models/permissions.model';
+import { RolesFilter } from './filters/role.filter';
 
 @Injectable()
 export class RolesService {
@@ -13,6 +14,23 @@ export class RolesService {
     private readonly roleModel: ReturnModelType<typeof Role>,
     private readonly permissionsService: PermissionsService,
   ) {}
+
+  async findOne(rolesFilter: RolesFilter): Promise<Role & mongoose.Document | undefined> {
+    const role = await this.roleModel
+      .findOne(rolesFilter)
+      .populate('permissions')
+      .exec();
+
+    if (!role) {
+      throw new Error(`Role not found!`);
+    }
+
+    return role;
+  }
+
+  async findOneBySlug(slug: string): Promise<Role & mongoose.Document | undefined> {
+    return await this.findOne({ slug });
+  }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
     const createdRole = new this.roleModel({
@@ -62,7 +80,7 @@ export class RolesService {
     if (role.admin) {
       return true;
     }
-    if (role.permissions.length === 0) {
+    if (!role.permissions || role.permissions.length === 0) {
       return false;
     }
 

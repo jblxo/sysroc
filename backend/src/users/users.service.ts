@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
 import { User } from './models/users.model';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { mongoose, ReturnModelType } from '@typegoose/typegoose';
 import { UserDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
 import { ADResponse } from '../active-directory/models/ad-response.model';
@@ -18,6 +18,7 @@ import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/models/roles.model';
 import { PermissionStateDto } from './dto/permission-state.dto';
 import { PERMISSIONS } from '../permissions/permissions';
+import { CreateUserRawDto } from './dto/create-user-raw.dto';
 
 @Injectable()
 export class UsersService {
@@ -97,11 +98,15 @@ export class UsersService {
       password: registerUserDto.password,
       name: registerUserDto.name,
       groups: [],
+      roles: [],
     };
 
     createdGroups.forEach(group => {
       createUser.groups.push(group._id);
     });
+
+    const guestRole = await this.rolesService.findOneBySlug('guest');
+    createUser.roles.push(guestRole._id);
 
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
@@ -110,6 +115,34 @@ export class UsersService {
       group.users.push(newUser._id);
       await group.save();
     }
+
+    guestRole.users.push(newUser._id);
+    await guestRole.save();
+
+    return await newUser.populate('groups').populate('roles').execPopulate();
+  }
+
+  async createRaw(createUserRawDto: CreateUserRawDto): Promise<User & mongoose.Document> {
+    const password = await this.hashPassword(createUserRawDto.password);
+
+    const createUser = {
+      email: createUserRawDto.email,
+      adEmail: createUserRawDto.email,
+      password,
+      name: createUserRawDto.name,
+      roles: [],
+    };
+
+    const createdUser = new this.userModel(createUser);
+    const newUser = await createdUser.save();
+
+    for (const roleSlug of createUserRawDto.roleSlugs) {
+      const role = await this.rolesService.findOneBySlug(roleSlug);
+      role.users.push(newUser._id);
+      newUser.roles.push(role._id);
+      await role.save();
+    }
+    await newUser.save();
 
     return await newUser.populate('groups').populate('roles').execPopulate();
   }
