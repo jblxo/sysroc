@@ -61,7 +61,10 @@ export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
               type="text"
               placeholder="Project Description"
               label="Project Description"
+              multiline={true}
               component={MyField}
+              rows={4}
+              rowsMax={8}
             />
           </div>
           <Button
