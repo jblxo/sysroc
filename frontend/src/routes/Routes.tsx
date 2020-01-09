@@ -7,10 +7,10 @@ import { PersistentDrawerLeft } from '../components/PersisstentDrawerLeft';
 import { Projects } from '../views/Projects';
 import { SingleProject } from '../views/SingleProject';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { getAccessToken } from '../auth/accessToke';
+import { useMeQuery } from '../generated/graphql';
 
 export const Routes: React.FC = () => {
-  const token = getAccessToken();
+  const { data } = useMeQuery();
 
   return (
     <BrowserRouter>
@@ -21,8 +21,8 @@ export const Routes: React.FC = () => {
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
             <ProtectedRoute
-              isAuthenticated={!!token}
-              isAllowed={!!token}
+              isAuthenticated={!!data?.me}
+              isAllowed={!!data?.me}
               restrictedPath={'/signin'}
               authenticationPath={'/signin'}
               exact
@@ -30,8 +30,8 @@ export const Routes: React.FC = () => {
               component={Projects}
             />
             <ProtectedRoute
-              isAuthenticated={!!token}
-              isAllowed={!!token}
+              isAuthenticated={!!data?.me}
+              isAllowed={!!data?.me}
               restrictedPath={'/signin'}
               authenticationPath={'/signin'}
               exact

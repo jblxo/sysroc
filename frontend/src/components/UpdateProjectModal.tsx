@@ -50,7 +50,9 @@ export const UpdateProjectModal: React.FC<Props> = ({
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
-  const [updateProject, { error }] = useUpdateProjectMutation();
+  const [updateProject, { error }] = useUpdateProjectMutation({
+    update(cache, result) {}
+  });
 
   return (
     <Modal
