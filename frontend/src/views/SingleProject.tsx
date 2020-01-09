@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useProjectQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
+import { UpdateProjectModal } from '../components/UpdateProjectModal';
 
 const ProjectControls = styled.div`
   display: grid;
@@ -34,10 +35,19 @@ interface Props
   }> {}
 
 export const SingleProject: React.FC<Props> = props => {
+  const [modalOpen, setModalOpen] = useState(false);
   const { data, loading } = useProjectQuery({
     variables: { _id: props.match.params.projectId }
   });
   const history = useHistory();
+
+  const handleModalOpen = () => {
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
 
   if (loading) return <div>Loading...</div>;
 
@@ -58,7 +68,7 @@ export const SingleProject: React.FC<Props> = props => {
             color="secondary"
             variant="extended"
             onClick={() => {
-              history.push(`/projects`);
+              handleModalOpen();
             }}
           >
             Edit
@@ -72,6 +82,14 @@ export const SingleProject: React.FC<Props> = props => {
         </Project>
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>
+      )}
+      {data && (
+        <UpdateProjectModal
+          open={modalOpen}
+          handleClose={handleModalClose}
+          projectId={props.match.params.projectId}
+          data={data?.project}
+        />
       )}
     </>
   );
