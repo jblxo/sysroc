@@ -37,8 +37,8 @@ interface Props {
 }
 
 export const GET_PROJECTS = gql`
-  query Projects {
-    projects(filter: {}) {
+  query Projects($userId: String) {
+    projects(filter: { user: $userId }) {
       _id
       name
       description
@@ -61,11 +61,13 @@ export const NewProjectModal: React.FC<Props> = ({
     update(cache, result) {
       try {
         const { projects }: any = cache.readQuery({
-          query: GET_PROJECTS
+          query: GET_PROJECTS,
+          variables: { userId }
         });
 
         cache.writeQuery({
           query: GET_PROJECTS,
+          variables: { userId },
           data: {
             projects: projects.concat([result.data?.createProject])
           }

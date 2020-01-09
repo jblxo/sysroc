@@ -70,10 +70,13 @@ interface Props {
 }
 
 export const ProjectsList: React.FC<Props> = ({ userId }) => {
-  const { data, loading } = useProjectsQuery();
+  const { data, loading } = useProjectsQuery({ variables: { userId } });
   const [deleteProject, { error }] = useDeleteProjectMutation({
     update(cache, result) {
-      const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
+      const { projects }: any = cache.readQuery({
+        query: GET_PROJECTS,
+        variables: { userId }
+      });
       cache.writeQuery({
         query: GET_PROJECTS,
         variables: { userId },
