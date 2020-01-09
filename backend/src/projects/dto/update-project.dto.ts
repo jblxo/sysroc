@@ -1,13 +1,9 @@
 import { Field, InputType } from 'type-graphql';
 
 @InputType()
-export class ProjectsFilter {
+export class UpdateProjectDto {
   @Field({ nullable: true })
-  _id?: string;
-
+  readonly name?: string;
   @Field({ nullable: true })
-  name?: string;
-
-  @Field({ nullable: true })
-  user?: string;
+  readonly description?: string;
 }

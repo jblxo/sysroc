@@ -43,6 +43,7 @@ export type Mutation = {
   deleteUser: Scalars['Boolean'],
   createProject: ProjectDto,
   deleteProject: ProjectDto,
+  updateProject: ProjectDto,
 };
 
 
@@ -75,6 +76,12 @@ export type MutationDeleteProjectArgs = {
   projectId: Scalars['String']
 };
 
+
+export type MutationUpdateProjectArgs = {
+  updates: UpdateProjectDto,
+  filter: ProjectsFilter
+};
+
 export type Project = {
    __typename?: 'Project',
   name: Scalars['String'],
@@ -88,6 +95,12 @@ export type ProjectDto = {
   name: Scalars['String'],
   description: Scalars['String'],
   user?: Maybe<User>,
+};
+
+export type ProjectsFilter = {
+  _id?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>,
+  user?: Maybe<Scalars['String']>,
 };
 
 export type Query = {
@@ -115,22 +128,23 @@ export type QueryUserArgs = {
 
 
 export type QueryProjectsArgs = {
-  _id?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
-  user?: Maybe<Scalars['String']>
+  filter: ProjectsFilter
 };
 
 
 export type QueryProjectArgs = {
-  _id?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
-  user?: Maybe<Scalars['String']>
+  filter: ProjectsFilter
 };
 
 export type SignUpUserDto = {
   name?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   password?: Maybe<Scalars['String']>,
+};
+
+export type UpdateProjectDto = {
+  name?: Maybe<Scalars['String']>,
+  description?: Maybe<Scalars['String']>,
 };
 
 export type User = {
@@ -183,7 +197,7 @@ export type CreateProjectMutation = (
   { __typename?: 'Mutation' }
   & { createProject: (
     { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
     & { user: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'name'>
@@ -236,7 +250,9 @@ export type ProjectQuery = (
   ) }
 );
 
-export type ProjectsQueryVariables = {};
+export type ProjectsQueryVariables = {
+  userId?: Maybe<Scalars['String']>
+};
 
 
 export type ProjectsQuery = (
@@ -297,6 +313,7 @@ export const CreateProjectDocument = gql`
   createProject(input: {name: $name, description: $description}) {
     _id
     name
+    description
     user {
       name
     }
@@ -426,7 +443,7 @@ export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
 export const ProjectDocument = gql`
     query Project($_id: String) {
-  project(_id: $_id) {
+  project(filter: {_id: $_id}) {
     _id
     name
     description
@@ -460,8 +477,8 @@ export type ProjectQueryHookResult = ReturnType<typeof useProjectQuery>;
 export type ProjectLazyQueryHookResult = ReturnType<typeof useProjectLazyQuery>;
 export type ProjectQueryResult = ApolloReactCommon.QueryResult<ProjectQuery, ProjectQueryVariables>;
 export const ProjectsDocument = gql`
-    query Projects {
-  projects {
+    query Projects($userId: String) {
+  projects(filter: {user: $userId}) {
     _id
     name
     description
@@ -484,6 +501,7 @@ export const ProjectsDocument = gql`
  * @example
  * const { data, loading, error } = useProjectsQuery({
  *   variables: {
+ *      userId: // value for 'userId'
  *   },
  * });
  */

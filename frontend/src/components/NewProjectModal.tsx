@@ -33,13 +33,15 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
+  userId?: string;
 }
 
 export const GET_PROJECTS = gql`
   query Projects {
-    projects {
+    projects(filter: {}) {
       _id
       name
+      description
       user {
         name
       }
@@ -47,21 +49,35 @@ export const GET_PROJECTS = gql`
   }
 `;
 
-export const NewProjectModal: React.FC<Props> = ({ open, handleClose }) => {
+export const NewProjectModal: React.FC<Props> = ({
+  open,
+  handleClose,
+  userId
+}) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
   const [createProject, { error }] = useCreateProjectMutation({
     update(cache, result) {
-      const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
-      cache.writeQuery({
-        query: GET_PROJECTS,
-        data: {
-          projects: projects.concat([result.data && result.data.createProject])
+      try {
+        const { projects }: any = cache.readQuery({
+          query: GET_PROJECTS
+        });
+
+        cache.writeQuery({
+          query: GET_PROJECTS,
+          data: {
+            projects: projects.concat([result.data?.createProject])
+          }
+        });
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message);
+          enqueueSnackbar(error.message, { variant: 'error' });
         }
-      });
+      }
     }
   });
-  const { enqueueSnackbar } = useSnackbar();
 
   return (
     <Modal

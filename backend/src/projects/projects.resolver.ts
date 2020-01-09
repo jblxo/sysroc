@@ -1,5 +1,4 @@
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
-import { Project } from './models/projects.model';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
@@ -9,6 +8,7 @@ import { UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
 import { User } from '../users/models/users.model';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Resolver('Projects')
 export class ProjectsResolver {
@@ -24,13 +24,11 @@ export class ProjectsResolver {
   }
 
   @Query(() => [ProjectDto])
-  @UseGuards(GqlAuthGuard)
-  projects(@CurrentUser() user: UserDto, @Args() filter?: ProjectsFilter) {
-    const newFilter: ProjectsFilter = {
-      user: user._id,
-    };
-
-    return this.projectsService.getMany(newFilter);
+  projects(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+  ) {
+    return this.projectsService.getMany(filter);
   }
 
   @Mutation(() => ProjectDto)
@@ -51,7 +49,10 @@ export class ProjectsResolver {
 
   @Query(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async project(@CurrentUser() user: UserDto, @Args() filter: ProjectsFilter) {
+  async project(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+  ) {
     const project = await this.projectsService.getOne(filter._id && filter._id);
     const autor = project.user && (project.user as UserDto);
     if (autor._id.toString() !== user._id.toString()) {
@@ -60,5 +61,23 @@ export class ProjectsResolver {
       );
     }
     return project;
+  }
+
+  @Mutation(() => ProjectDto)
+  @UseGuards(GqlAuthGuard)
+  async updateProject(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+    @Args('updates') updates: UpdateProjectDto,
+  ) {
+    const project = await this.projectsService.getOne(filter._id && filter._id);
+    const autor = project.user && (project.user as UserDto);
+    if (autor._id.toString() !== user._id.toString()) {
+      throw new Error(
+        `You can not view projects that you don't have access to!`,
+      );
+    }
+
+    return this.projectsService.updateOne(filter, updates);
   }
 }

@@ -32,6 +32,7 @@ type Mutation {
   deleteUser(userId: String!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
+  updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
 }
 
 type Project {
@@ -47,19 +48,30 @@ type ProjectDto {
   user: User
 }
 
+input ProjectsFilter {
+  _id: String
+  name: String
+  user: String
+}
+
 type Query {
   authUser(auth: CreateUserDto!): ADUser!
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserDto
-  projects(_id: String, name: String, user: String): [ProjectDto!]!
-  project(_id: String, name: String, user: String): ProjectDto!
+  projects(filter: ProjectsFilter!): [ProjectDto!]!
+  project(filter: ProjectsFilter!): ProjectDto!
 }
 
 input SignUpUserDto {
   name: String
   email: String
   password: String
+}
+
+input UpdateProjectDto {
+  name: String
+  description: String
 }
 
 type User {
