@@ -6,8 +6,12 @@ import { SignUp } from '../components/SignUp';
 import { PersistentDrawerLeft } from '../components/PersisstentDrawerLeft';
 import { Projects } from '../views/Projects';
 import { SingleProject } from '../views/SingleProject';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { getAccessToken } from '../auth/accessToke';
 
 export const Routes: React.FC = () => {
+  const token = getAccessToken();
+
   return (
     <BrowserRouter>
       <div>
@@ -16,8 +20,20 @@ export const Routes: React.FC = () => {
             <Route exact path="/" component={Home} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/projects" component={Projects} />
-            <Route
+            <ProtectedRoute
+              isAuthenticated={!!token}
+              isAllowed={!!token}
+              restrictedPath={'/signin'}
+              authenticationPath={'/signin'}
+              exact
+              path="/projects"
+              component={Projects}
+            />
+            <ProtectedRoute
+              isAuthenticated={!!token}
+              isAllowed={!!token}
+              restrictedPath={'/signin'}
+              authenticationPath={'/signin'}
               exact
               path="/projects/:projectId"
               component={SingleProject}
