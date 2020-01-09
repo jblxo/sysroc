@@ -60,6 +60,7 @@ export const UpdateProjectForm: React.FC<Props> = ({
               placeholder="Project Name"
               label="Project Name"
               component={MyField}
+              required
             />
           </div>
           <div>
