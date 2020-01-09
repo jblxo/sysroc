@@ -307,6 +307,25 @@ export type SignUpMutation = (
   ) }
 );
 
+export type UpdateProjectMutationVariables = {
+  name?: Maybe<Scalars['String']>,
+  description?: Maybe<Scalars['String']>,
+  projectId?: Maybe<Scalars['String']>
+};
+
+
+export type UpdateProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProject: (
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, '_id' | 'name' | 'description'>
+    & { user: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, '_id'>
+    )> }
+  ) }
+);
+
 
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!, $description: String) {
@@ -594,3 +613,42 @@ export function useSignUpMutation(baseOptions?: ApolloReactHooks.MutationHookOpt
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult = ApolloReactCommon.MutationResult<SignUpMutation>;
 export type SignUpMutationOptions = ApolloReactCommon.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export const UpdateProjectDocument = gql`
+    mutation UpdateProject($name: String, $description: String, $projectId: String) {
+  updateProject(updates: {name: $name, description: $description}, filter: {_id: $projectId}) {
+    _id
+    name
+    description
+    user {
+      _id
+    }
+  }
+}
+    `;
+export type UpdateProjectMutationFn = ApolloReactCommon.MutationFunction<UpdateProjectMutation, UpdateProjectMutationVariables>;
+
+/**
+ * __useUpdateProjectMutation__
+ *
+ * To run a mutation, you first call `useUpdateProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProjectMutation, { data, loading, error }] = useUpdateProjectMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useUpdateProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateProjectMutation, UpdateProjectMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UpdateProjectDocument, baseOptions);
+      }
+export type UpdateProjectMutationHookResult = ReturnType<typeof useUpdateProjectMutation>;
+export type UpdateProjectMutationResult = ApolloReactCommon.MutationResult<UpdateProjectMutation>;
+export type UpdateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProjectMutation, UpdateProjectMutationVariables>;
