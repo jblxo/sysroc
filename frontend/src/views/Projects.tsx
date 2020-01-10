@@ -23,11 +23,11 @@ export const Projects: React.FC<Props> = props => {
   return (
     <>
       <ProjectsHeader handleOpen={handleOpen} />
-      <ProjectsList userId={data?.me?._id} />
+      <ProjectsList userId={data?.me?.user?._id} />
       <NewProjectModal
         handleClose={handleClose}
         open={open}
-        userId={data?.me?._id}
+        userId={data?.me?.user?._id}
       />
     </>
   );

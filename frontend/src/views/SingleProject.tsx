@@ -90,7 +90,7 @@ export const SingleProject: React.FC<Props> = props => {
           handleClose={handleModalClose}
           projectId={props.match.params.projectId}
           data={data?.project}
-          userId={meData?.me?._id}
+          userId={meData?.me?.user?._id}
         />
       )}
     </>
