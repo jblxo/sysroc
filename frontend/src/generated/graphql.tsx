@@ -5,345 +5,351 @@ import * as ApolloReactHooks from '@apollo/react-hooks';
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string,
-  String: string,
-  Boolean: boolean,
-  Int: number,
-  Float: number,
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
 };
 
 export type AdUser = {
-   __typename?: 'ADUser',
-  dn: Scalars['String'],
-  userPrincipalName: Scalars['String'],
-  cn: Scalars['String'],
+  __typename?: 'ADUser';
+  dn: Scalars['String'];
+  userPrincipalName: Scalars['String'];
+  cn: Scalars['String'];
 };
 
 export type CreateProjectDto = {
-  name: Scalars['String'],
-  description?: Maybe<Scalars['String']>,
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type CreateUserDto = {
-  email: Scalars['String'],
-  password: Scalars['String'],
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Group = {
-   __typename?: 'Group',
-  name: Scalars['String'],
-  users?: Maybe<Array<User>>,
+  __typename?: 'Group';
+  name: Scalars['String'];
+  users?: Maybe<Array<User>>;
 };
 
 export type Mutation = {
-   __typename?: 'Mutation',
-  create: UserDto,
-  signup: UserAuthDto,
-  signin: UserAuthDto,
-  logout: Scalars['Boolean'],
-  deleteUser: Scalars['Boolean'],
-  createProject: ProjectDto,
-  deleteProject: ProjectDto,
+  __typename?: 'Mutation';
+  create: UserDto;
+  signup: UserAuthDto;
+  signin: UserAuthDto;
+  logout: Scalars['Boolean'];
+  deleteUser: Scalars['Boolean'];
+  createProject: ProjectDto;
+  deleteProject: ProjectDto;
+  updateProject: ProjectDto;
 };
-
 
 export type MutationCreateArgs = {
-  input: CreateUserDto
+  input: CreateUserDto;
 };
-
 
 export type MutationSignupArgs = {
-  input: SignUpUserDto
+  input: SignUpUserDto;
 };
-
 
 export type MutationSigninArgs = {
-  auth: UserAuthInputDto
+  auth: UserAuthInputDto;
 };
-
 
 export type MutationDeleteUserArgs = {
-  userId: Scalars['String']
+  userId: Scalars['String'];
 };
-
 
 export type MutationCreateProjectArgs = {
-  input: CreateProjectDto
+  input: CreateProjectDto;
 };
 
-
 export type MutationDeleteProjectArgs = {
-  projectId: Scalars['String']
+  projectId: Scalars['String'];
 };
 
 export type Permission = {
-   __typename?: 'Permission',
-  _id: Scalars['ID'],
-  name: Scalars['String'],
-  slug: Scalars['String'],
-  roles?: Maybe<Array<Role>>,
+  __typename?: 'Permission';
+  _id: Scalars['ID'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  roles?: Maybe<Array<Role>>;
 };
 
 export type PermissionStateDto = {
-   __typename?: 'PermissionStateDto',
-  slug: Scalars['String'],
-  permitted: Scalars['Boolean'],
+  __typename?: 'PermissionStateDto';
+  slug: Scalars['String'];
+  permitted: Scalars['Boolean'];
+};
+
+export type MutationUpdateProjectArgs = {
+  updates: UpdateProjectDto;
+  filter: ProjectsFilter;
 };
 
 export type Project = {
-   __typename?: 'Project',
-  name: Scalars['String'],
-  description: Scalars['String'],
-  user: User,
+  __typename?: 'Project';
+  name: Scalars['String'];
+  description: Scalars['String'];
+  user: User;
 };
 
 export type ProjectDto = {
-   __typename?: 'ProjectDto',
-  _id: Scalars['ID'],
-  name: Scalars['String'],
-  description: Scalars['String'],
-  user?: Maybe<User>,
+  __typename?: 'ProjectDto';
+  _id: Scalars['ID'];
+  name: Scalars['String'];
+  description: Scalars['String'];
+  user?: Maybe<User>;
+};
+
+export type ProjectsFilter = {
+  _id?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  user?: Maybe<Scalars['String']>;
 };
 
 export type Query = {
-   __typename?: 'Query',
-  authUser: AdUser,
-  user: UserDto,
-  users: Array<UserDto>,
-  me?: Maybe<UserAuthDto>,
-  projects: Array<ProjectDto>,
-  project: ProjectDto,
+  __typename?: 'Query';
+  authUser: AdUser;
+  user: UserDto;
+  users: Array<UserDto>;
+  me?: Maybe<UserAuthDto>;
+  projects: Array<ProjectDto>;
+  project: ProjectDto;
 };
-
 
 export type QueryAuthUserArgs = {
-  auth: CreateUserDto
+  auth: CreateUserDto;
 };
-
 
 export type QueryUserArgs = {
-  _id?: Maybe<Scalars['String']>,
-  email?: Maybe<Scalars['String']>,
-  adEmail?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>
+  _id?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  adEmail?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
 };
-
 
 export type QueryProjectsArgs = {
-  _id?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
-  user?: Maybe<Scalars['String']>
+  filter: ProjectsFilter;
 };
 
-
 export type QueryProjectArgs = {
-  _id?: Maybe<Scalars['String']>,
-  name?: Maybe<Scalars['String']>,
-  user?: Maybe<Scalars['String']>
+  filter: ProjectsFilter;
 };
 
 export type Role = {
-   __typename?: 'Role',
-  _id: Scalars['ID'],
-  name: Scalars['String'],
-  slug: Scalars['String'],
-  admin: Scalars['Boolean'],
-  permissions?: Maybe<Array<Permission>>,
-  users?: Maybe<Array<User>>,
+  __typename?: 'Role';
+  _id: Scalars['ID'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  admin: Scalars['Boolean'];
+  permissions?: Maybe<Array<Permission>>;
+  users?: Maybe<Array<User>>;
 };
 
 export type SignUpUserDto = {
-  name?: Maybe<Scalars['String']>,
-  email?: Maybe<Scalars['String']>,
-  password?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
+};
+
+export type UpdateProjectDto = {
+  name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
 };
 
 export type User = {
-   __typename?: 'User',
-  _id: Scalars['ID'],
-  name: Scalars['String'],
-  password: Scalars['String'],
-  email: Scalars['String'],
-  adEmail: Scalars['String'],
-  groups?: Maybe<Array<Group>>,
-  projects?: Maybe<Array<Project>>,
-  roles?: Maybe<Array<Role>>,
+  __typename?: 'User';
+  _id: Scalars['ID'];
+  name: Scalars['String'];
+  password: Scalars['String'];
+  email: Scalars['String'];
+  adEmail: Scalars['String'];
+  groups?: Maybe<Array<Group>>;
+  projects?: Maybe<Array<Project>>;
+  roles?: Maybe<Array<Role>>;
 };
 
 export type UserAuthDto = {
-   __typename?: 'UserAuthDto',
-  accessToken?: Maybe<Scalars['String']>,
-  user?: Maybe<UserDto>,
-  permissions?: Maybe<Array<PermissionStateDto>>,
-  userTemp?: Maybe<UserTempDto>,
-  registerToken?: Maybe<Scalars['String']>,
+  __typename?: 'UserAuthDto';
+  accessToken?: Maybe<Scalars['String']>;
+  user?: Maybe<UserDto>;
+  permissions?: Maybe<Array<PermissionStateDto>>;
+  userTemp?: Maybe<UserTempDto>;
+  registerToken?: Maybe<Scalars['String']>;
 };
 
 export type UserAuthInputDto = {
-  email: Scalars['String'],
-  password: Scalars['String'],
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type UserDto = {
-   __typename?: 'UserDto',
-  _id: Scalars['ID'],
-  name: Scalars['String'],
-  email: Scalars['String'],
-  adEmail: Scalars['String'],
-  password: Scalars['String'],
-  groups?: Maybe<Array<Group>>,
-  roles?: Maybe<Array<Role>>,
+  __typename?: 'UserDto';
+  _id: Scalars['ID'];
+  name: Scalars['String'];
+  email: Scalars['String'];
+  adEmail: Scalars['String'];
+  password: Scalars['String'];
+  groups?: Maybe<Array<Group>>;
+  roles?: Maybe<Array<Role>>;
 };
 
 export type UserTempDto = {
-   __typename?: 'UserTempDto',
-  name: Scalars['String'],
-  email: Scalars['String'],
+  __typename?: 'UserTempDto';
+  name: Scalars['String'];
+  email: Scalars['String'];
 };
 
 export type CreateProjectMutationVariables = {
-  name: Scalars['String'],
-  description?: Maybe<Scalars['String']>
+  name: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
-
-export type CreateProjectMutation = (
-  { __typename?: 'Mutation' }
-  & { createProject: (
-    { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
-    & { user: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'name'>
-    )> }
-  ) }
-);
+export type CreateProjectMutation = { __typename?: 'Mutation' } & {
+  createProject: { __typename?: 'ProjectDto' } & Pick<
+    ProjectDto,
+    '_id' | 'name' | 'description'
+  > & { user: Maybe<{ __typename?: 'User' } & Pick<User, 'name'>> };
+};
 
 export type DeleteProjectMutationVariables = {
-  projectId: Scalars['String']
+  projectId: Scalars['String'];
 };
 
-
-export type DeleteProjectMutation = (
-  { __typename?: 'Mutation' }
-  & { deleteProject: (
-    { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name'>
-  ) }
-);
+export type DeleteProjectMutation = { __typename?: 'Mutation' } & {
+  deleteProject: { __typename?: 'ProjectDto' } & Pick<
+    ProjectDto,
+    '_id' | 'name'
+  >;
+};
 
 export type LogoutMutationVariables = {};
 
-
-export type LogoutMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'logout'>
-);
+export type LogoutMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'logout'
+>;
 
 export type MeQueryVariables = {};
 
-
-export type MeQuery = (
-  { __typename?: 'Query' }
-  & { me: Maybe<(
-    { __typename?: 'UserAuthDto' }
-    & { user: Maybe<(
-      { __typename?: 'UserDto' }
-      & Pick<UserDto, '_id' | 'email'>
-    )>, permissions: Maybe<Array<(
-      { __typename?: 'PermissionStateDto' }
-      & Pick<PermissionStateDto, 'slug' | 'permitted'>
-    )>> }
-  )> }
-);
+export type MeQuery = { __typename?: 'Query' } & {
+  me: Maybe<
+    { __typename?: 'UserAuthDto' } & {
+      user: Maybe<{ __typename?: 'UserDto' } & Pick<UserDto, '_id' | 'email'>>;
+      permissions: Maybe<
+        Array<
+          { __typename?: 'PermissionStateDto' } & Pick<
+            PermissionStateDto,
+            'slug' | 'permitted'
+          >
+        >
+      >;
+    }
+  >;
+};
 
 export type ProjectQueryVariables = {
-  _id?: Maybe<Scalars['String']>
+  _id?: Maybe<Scalars['String']>;
 };
 
+export type ProjectQuery = { __typename?: 'Query' } & {
+  project: { __typename?: 'ProjectDto' } & Pick<
+    ProjectDto,
+    '_id' | 'name' | 'description'
+  >;
+};
 
-export type ProjectQuery = (
-  { __typename?: 'Query' }
-  & { project: (
-    { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name' | 'description'>
-  ) }
-);
+export type ProjectsQueryVariables = {
+  userId?: Maybe<Scalars['String']>;
+};
 
-export type ProjectsQueryVariables = {};
-
-
-export type ProjectsQuery = (
-  { __typename?: 'Query' }
-  & { projects: Array<(
-    { __typename?: 'ProjectDto' }
-    & Pick<ProjectDto, '_id' | 'name' | 'description'>
-    & { user: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'name'>
-    )> }
-  )> }
-);
+export type ProjectsQuery = { __typename?: 'Query' } & {
+  projects: Array<
+    { __typename?: 'ProjectDto' } & Pick<
+      ProjectDto,
+      '_id' | 'name' | 'description'
+    > & { user: Maybe<{ __typename?: 'User' } & Pick<User, 'name'>> }
+  >;
+};
 
 export type SignInMutationVariables = {
-  email: Scalars['String'],
-  password: Scalars['String']
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
-
-export type SignInMutation = (
-  { __typename?: 'Mutation' }
-  & { signin: (
-    { __typename?: 'UserAuthDto' }
-    & Pick<UserAuthDto, 'accessToken' | 'registerToken'>
-    & { user: Maybe<(
-      { __typename?: 'UserDto' }
-      & Pick<UserDto, '_id' | 'email'>
-    )>, permissions: Maybe<Array<(
-      { __typename?: 'PermissionStateDto' }
-      & Pick<PermissionStateDto, 'slug' | 'permitted'>
-    )>>, userTemp: Maybe<(
-      { __typename?: 'UserTempDto' }
-      & Pick<UserTempDto, 'name' | 'email'>
-    )> }
-  ) }
-);
+export type SignInMutation = { __typename?: 'Mutation' } & {
+  signin: { __typename?: 'UserAuthDto' } & Pick<
+    UserAuthDto,
+    'accessToken' | 'registerToken'
+  > & {
+      user: Maybe<{ __typename?: 'UserDto' } & Pick<UserDto, '_id' | 'email'>>;
+      permissions: Maybe<
+        Array<
+          { __typename?: 'PermissionStateDto' } & Pick<
+            PermissionStateDto,
+            'slug' | 'permitted'
+          >
+        >
+      >;
+      userTemp: Maybe<
+        { __typename?: 'UserTempDto' } & Pick<UserTempDto, 'name' | 'email'>
+      >;
+    };
+};
 
 export type SignUpMutationVariables = {
-  name?: Maybe<Scalars['String']>,
-  email?: Maybe<Scalars['String']>,
-  password?: Maybe<Scalars['String']>
+  name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
 };
 
+export type SignUpMutation = { __typename?: 'Mutation' } & {
+  signup: { __typename?: 'UserAuthDto' } & Pick<UserAuthDto, 'accessToken'> & {
+      user: Maybe<{ __typename?: 'UserDto' } & Pick<UserDto, '_id' | 'email'>>;
+      permissions: Maybe<
+        Array<
+          { __typename?: 'PermissionStateDto' } & Pick<
+            PermissionStateDto,
+            'slug' | 'permitted'
+          >
+        >
+      >;
+    };
+};
 
-export type SignUpMutation = (
-  { __typename?: 'Mutation' }
-  & { signup: (
-    { __typename?: 'UserAuthDto' }
-    & Pick<UserAuthDto, 'accessToken'>
-    & { user: Maybe<(
-      { __typename?: 'UserDto' }
-      & Pick<UserDto, '_id' | 'email'>
-    )>, permissions: Maybe<Array<(
-      { __typename?: 'PermissionStateDto' }
-      & Pick<PermissionStateDto, 'slug' | 'permitted'>
-    )>> }
-  ) }
-);
+export type UpdateProjectMutationVariables = {
+  name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  projectId?: Maybe<Scalars['String']>;
+};
 
+export type UpdateProjectMutation = { __typename?: 'Mutation' } & {
+  updateProject: { __typename?: 'ProjectDto' } & Pick<
+    ProjectDto,
+    '_id' | 'name' | 'description'
+  > & { user: Maybe<{ __typename?: 'User' } & Pick<User, '_id'>> };
+};
 
 export const CreateProjectDocument = gql`
-    mutation CreateProject($name: String!, $description: String) {
-  createProject(input: {name: $name, description: $description}) {
-    _id
-    name
-    user {
+  mutation CreateProject($name: String!, $description: String) {
+    createProject(input: { name: $name, description: $description }) {
+      _id
       name
+      description
+      user {
+        name
+      }
     }
   }
-}
-    `;
-export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateProjectMutation, CreateProjectMutationVariables>;
+`;
+export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<
+  CreateProjectMutation,
+  CreateProjectMutationVariables
+>;
 
 /**
  * __useCreateProjectMutation__
@@ -363,21 +369,39 @@ export type CreateProjectMutationFn = ApolloReactCommon.MutationFunction<CreateP
  *   },
  * });
  */
-export function useCreateProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateProjectMutation, CreateProjectMutationVariables>) {
-        return ApolloReactHooks.useMutation<CreateProjectMutation, CreateProjectMutationVariables>(CreateProjectDocument, baseOptions);
-      }
-export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProjectMutation>;
-export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
-export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
-export const DeleteProjectDocument = gql`
-    mutation deleteProject($projectId: String!) {
-  deleteProject(projectId: $projectId) {
-    _id
-    name
-  }
+export function useCreateProjectMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    CreateProjectMutation,
+    CreateProjectMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    CreateProjectMutation,
+    CreateProjectMutationVariables
+  >(CreateProjectDocument, baseOptions);
 }
-    `;
-export type DeleteProjectMutationFn = ApolloReactCommon.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>;
+export type CreateProjectMutationHookResult = ReturnType<
+  typeof useCreateProjectMutation
+>;
+export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<
+  CreateProjectMutation
+>;
+export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  CreateProjectMutation,
+  CreateProjectMutationVariables
+>;
+export const DeleteProjectDocument = gql`
+  mutation deleteProject($projectId: String!) {
+    deleteProject(projectId: $projectId) {
+      _id
+      name
+    }
+  }
+`;
+export type DeleteProjectMutationFn = ApolloReactCommon.MutationFunction<
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables
+>;
 
 /**
  * __useDeleteProjectMutation__
@@ -396,18 +420,36 @@ export type DeleteProjectMutationFn = ApolloReactCommon.MutationFunction<DeleteP
  *   },
  * });
  */
-export function useDeleteProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteProjectMutation, DeleteProjectMutationVariables>) {
-        return ApolloReactHooks.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument, baseOptions);
-      }
-export type DeleteProjectMutationHookResult = ReturnType<typeof useDeleteProjectMutation>;
-export type DeleteProjectMutationResult = ApolloReactCommon.MutationResult<DeleteProjectMutation>;
-export type DeleteProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteProjectMutation, DeleteProjectMutationVariables>;
-export const LogoutDocument = gql`
-    mutation Logout {
-  logout
+export function useDeleteProjectMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    DeleteProjectMutation,
+    DeleteProjectMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    DeleteProjectMutation,
+    DeleteProjectMutationVariables
+  >(DeleteProjectDocument, baseOptions);
 }
-    `;
-export type LogoutMutationFn = ApolloReactCommon.MutationFunction<LogoutMutation, LogoutMutationVariables>;
+export type DeleteProjectMutationHookResult = ReturnType<
+  typeof useDeleteProjectMutation
+>;
+export type DeleteProjectMutationResult = ApolloReactCommon.MutationResult<
+  DeleteProjectMutation
+>;
+export type DeleteProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables
+>;
+export const LogoutDocument = gql`
+  mutation Logout {
+    logout
+  }
+`;
+export type LogoutMutationFn = ApolloReactCommon.MutationFunction<
+  LogoutMutation,
+  LogoutMutationVariables
+>;
 
 /**
  * __useLogoutMutation__
@@ -425,26 +467,39 @@ export type LogoutMutationFn = ApolloReactCommon.MutationFunction<LogoutMutation
  *   },
  * });
  */
-export function useLogoutMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
-        return ApolloReactHooks.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, baseOptions);
-      }
+export function useLogoutMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    LogoutMutation,
+    LogoutMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<LogoutMutation, LogoutMutationVariables>(
+    LogoutDocument,
+    baseOptions
+  );
+}
 export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
-export type LogoutMutationResult = ApolloReactCommon.MutationResult<LogoutMutation>;
-export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export type LogoutMutationResult = ApolloReactCommon.MutationResult<
+  LogoutMutation
+>;
+export type LogoutMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  LogoutMutation,
+  LogoutMutationVariables
+>;
 export const MeDocument = gql`
-    query Me {
-  me {
-    user {
-      _id
-      email
-    }
-    permissions {
-      slug
-      permitted
+  query Me {
+    me {
+      user {
+        _id
+        email
+      }
+      permissions {
+        slug
+        permitted
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useMeQuery__
@@ -461,24 +516,37 @@ export const MeDocument = gql`
  *   },
  * });
  */
-export function useMeQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MeQuery, MeQueryVariables>) {
-        return ApolloReactHooks.useQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
-      }
-export function useMeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
-        }
+export function useMeQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<MeQuery, MeQueryVariables>
+) {
+  return ApolloReactHooks.useQuery<MeQuery, MeQueryVariables>(
+    MeDocument,
+    baseOptions
+  );
+}
+export function useMeLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MeQuery, MeQueryVariables>
+) {
+  return ApolloReactHooks.useLazyQuery<MeQuery, MeQueryVariables>(
+    MeDocument,
+    baseOptions
+  );
+}
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
-export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
+export type MeQueryResult = ApolloReactCommon.QueryResult<
+  MeQuery,
+  MeQueryVariables
+>;
 export const ProjectDocument = gql`
-    query Project($_id: String) {
-  project(_id: $_id) {
-    _id
-    name
-    description
+  query Project($_id: String) {
+    project(filter: { _id: $_id }) {
+      _id
+      name
+      description
+    }
   }
-}
-    `;
+`;
 
 /**
  * __useProjectQuery__
@@ -496,27 +564,46 @@ export const ProjectDocument = gql`
  *   },
  * });
  */
-export function useProjectQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ProjectQuery, ProjectQueryVariables>) {
-        return ApolloReactHooks.useQuery<ProjectQuery, ProjectQueryVariables>(ProjectDocument, baseOptions);
-      }
-export function useProjectLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ProjectQuery, ProjectQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ProjectQuery, ProjectQueryVariables>(ProjectDocument, baseOptions);
-        }
+export function useProjectQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    ProjectQuery,
+    ProjectQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<ProjectQuery, ProjectQueryVariables>(
+    ProjectDocument,
+    baseOptions
+  );
+}
+export function useProjectLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    ProjectQuery,
+    ProjectQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<ProjectQuery, ProjectQueryVariables>(
+    ProjectDocument,
+    baseOptions
+  );
+}
 export type ProjectQueryHookResult = ReturnType<typeof useProjectQuery>;
 export type ProjectLazyQueryHookResult = ReturnType<typeof useProjectLazyQuery>;
-export type ProjectQueryResult = ApolloReactCommon.QueryResult<ProjectQuery, ProjectQueryVariables>;
+export type ProjectQueryResult = ApolloReactCommon.QueryResult<
+  ProjectQuery,
+  ProjectQueryVariables
+>;
 export const ProjectsDocument = gql`
-    query Projects {
-  projects {
-    _id
-    name
-    description
-    user {
+  query Projects($userId: String) {
+    projects(filter: { user: $userId }) {
+      _id
       name
+      description
+      user {
+        name
+      }
     }
   }
-}
-    `;
+`;
 
 /**
  * __useProjectsQuery__
@@ -530,39 +617,64 @@ export const ProjectsDocument = gql`
  * @example
  * const { data, loading, error } = useProjectsQuery({
  *   variables: {
+ *      userId: // value for 'userId'
  *   },
  * });
  */
-export function useProjectsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-        return ApolloReactHooks.useQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, baseOptions);
-      }
-export function useProjectsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, baseOptions);
-        }
-export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
-export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
-export type ProjectsQueryResult = ApolloReactCommon.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
-export const SignInDocument = gql`
-    mutation SignIn($email: String!, $password: String!) {
-  signin(auth: {email: $email, password: $password}) {
-    accessToken
-    user {
-      _id
-      email
-    }
-    permissions {
-      slug
-      permitted
-    }
-    userTemp {
-      name
-      email
-    }
-    registerToken
-  }
+export function useProjectsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    ProjectsQuery,
+    ProjectsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useQuery<ProjectsQuery, ProjectsQueryVariables>(
+    ProjectsDocument,
+    baseOptions
+  );
 }
-    `;
-export type SignInMutationFn = ApolloReactCommon.MutationFunction<SignInMutation, SignInMutationVariables>;
+export function useProjectsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    ProjectsQuery,
+    ProjectsQueryVariables
+  >
+) {
+  return ApolloReactHooks.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(
+    ProjectsDocument,
+    baseOptions
+  );
+}
+export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
+export type ProjectsLazyQueryHookResult = ReturnType<
+  typeof useProjectsLazyQuery
+>;
+export type ProjectsQueryResult = ApolloReactCommon.QueryResult<
+  ProjectsQuery,
+  ProjectsQueryVariables
+>;
+export const SignInDocument = gql`
+  mutation SignIn($email: String!, $password: String!) {
+    signin(auth: { email: $email, password: $password }) {
+      accessToken
+      user {
+        _id
+        email
+      }
+      permissions {
+        slug
+        permitted
+      }
+      userTemp {
+        name
+        email
+      }
+      registerToken
+    }
+  }
+`;
+export type SignInMutationFn = ApolloReactCommon.MutationFunction<
+  SignInMutation,
+  SignInMutationVariables
+>;
 
 /**
  * __useSignInMutation__
@@ -582,28 +694,44 @@ export type SignInMutationFn = ApolloReactCommon.MutationFunction<SignInMutation
  *   },
  * });
  */
-export function useSignInMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<SignInMutation, SignInMutationVariables>) {
-        return ApolloReactHooks.useMutation<SignInMutation, SignInMutationVariables>(SignInDocument, baseOptions);
-      }
+export function useSignInMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    SignInMutation,
+    SignInMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<SignInMutation, SignInMutationVariables>(
+    SignInDocument,
+    baseOptions
+  );
+}
 export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
-export type SignInMutationResult = ApolloReactCommon.MutationResult<SignInMutation>;
-export type SignInMutationOptions = ApolloReactCommon.BaseMutationOptions<SignInMutation, SignInMutationVariables>;
+export type SignInMutationResult = ApolloReactCommon.MutationResult<
+  SignInMutation
+>;
+export type SignInMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  SignInMutation,
+  SignInMutationVariables
+>;
 export const SignUpDocument = gql`
-    mutation SignUp($name: String, $email: String, $password: String) {
-  signup(input: {name: $name, email: $email, password: $password}) {
-    accessToken
-    user {
-      _id
-      email
-    }
-    permissions {
-      slug
-      permitted
+  mutation SignUp($name: String, $email: String, $password: String) {
+    signup(input: { name: $name, email: $email, password: $password }) {
+      accessToken
+      user {
+        _id
+        email
+      }
+      permissions {
+        slug
+        permitted
+      }
     }
   }
-}
-    `;
-export type SignUpMutationFn = ApolloReactCommon.MutationFunction<SignUpMutation, SignUpMutationVariables>;
+`;
+export type SignUpMutationFn = ApolloReactCommon.MutationFunction<
+  SignUpMutation,
+  SignUpMutationVariables
+>;
 
 /**
  * __useSignUpMutation__
@@ -624,9 +752,86 @@ export type SignUpMutationFn = ApolloReactCommon.MutationFunction<SignUpMutation
  *   },
  * });
  */
-export function useSignUpMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<SignUpMutation, SignUpMutationVariables>) {
-        return ApolloReactHooks.useMutation<SignUpMutation, SignUpMutationVariables>(SignUpDocument, baseOptions);
-      }
+export function useSignUpMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    SignUpMutation,
+    SignUpMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<SignUpMutation, SignUpMutationVariables>(
+    SignUpDocument,
+    baseOptions
+  );
+}
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
-export type SignUpMutationResult = ApolloReactCommon.MutationResult<SignUpMutation>;
-export type SignUpMutationOptions = ApolloReactCommon.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export type SignUpMutationResult = ApolloReactCommon.MutationResult<
+  SignUpMutation
+>;
+export type SignUpMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  SignUpMutation,
+  SignUpMutationVariables
+>;
+export const UpdateProjectDocument = gql`
+  mutation UpdateProject(
+    $name: String
+    $description: String
+    $projectId: String
+  ) {
+    updateProject(
+      updates: { name: $name, description: $description }
+      filter: { _id: $projectId }
+    ) {
+      _id
+      name
+      description
+      user {
+        _id
+      }
+    }
+  }
+`;
+export type UpdateProjectMutationFn = ApolloReactCommon.MutationFunction<
+  UpdateProjectMutation,
+  UpdateProjectMutationVariables
+>;
+
+/**
+ * __useUpdateProjectMutation__
+ *
+ * To run a mutation, you first call `useUpdateProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProjectMutation, { data, loading, error }] = useUpdateProjectMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useUpdateProjectMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    UpdateProjectMutation,
+    UpdateProjectMutationVariables
+  >
+) {
+  return ApolloReactHooks.useMutation<
+    UpdateProjectMutation,
+    UpdateProjectMutationVariables
+  >(UpdateProjectDocument, baseOptions);
+}
+export type UpdateProjectMutationHookResult = ReturnType<
+  typeof useUpdateProjectMutation
+>;
+export type UpdateProjectMutationResult = ApolloReactCommon.MutationResult<
+  UpdateProjectMutation
+>;
+export type UpdateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  UpdateProjectMutation,
+  UpdateProjectMutationVariables
+>;

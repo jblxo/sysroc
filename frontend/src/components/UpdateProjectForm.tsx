@@ -27,14 +27,22 @@ interface Values {
 interface Props {
   onSubmit: (values: Values) => void;
   error: ApolloError | any;
+  data: {
+    name: string;
+    description?: string;
+  };
 }
 
-export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
+export const UpdateProjectForm: React.FC<Props> = ({
+  onSubmit,
+  error,
+  data
+}) => {
   const classes = useStyles();
 
   return (
     <Formik
-      initialValues={{ name: '', description: '' }}
+      initialValues={{ name: data.name, description: data.description || '' }}
       onSubmit={values => {
         onSubmit(values);
       }}
@@ -42,7 +50,7 @@ export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
       {() => (
         <Form className={classes.form}>
           <Typography className={classes.formTitle} variant="h4">
-            New Project
+            Update Project
           </Typography>
           {error && <Error error={error} />}
           <div>
@@ -73,7 +81,7 @@ export const NewProjectForm: React.FC<Props> = ({ onSubmit, error }) => {
             variant="contained"
             color="primary"
           >
-            Create
+            Update
           </Button>
         </Form>
       )}

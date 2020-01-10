@@ -65,15 +65,21 @@ const Item = styled.div`
   }
 `;
 
-interface Props {}
+interface Props {
+  userId?: string;
+}
 
-export const ProjectsList: React.FC<Props> = props => {
-  const { data, loading } = useProjectsQuery();
+export const ProjectsList: React.FC<Props> = ({ userId }) => {
+  const { data, loading } = useProjectsQuery({ variables: { userId } });
   const [deleteProject, { error }] = useDeleteProjectMutation({
     update(cache, result) {
-      const { projects }: any = cache.readQuery({ query: GET_PROJECTS });
+      const { projects }: any = cache.readQuery({
+        query: GET_PROJECTS,
+        variables: { userId }
+      });
       cache.writeQuery({
         query: GET_PROJECTS,
+        variables: { userId },
         data: {
           projects: projects.filter((project: { _id: string }) => {
             if (result.data) {

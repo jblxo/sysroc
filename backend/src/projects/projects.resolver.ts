@@ -1,5 +1,4 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Project } from './models/projects.model';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
@@ -12,6 +11,7 @@ import { User } from '../users/models/users.model';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
 import { UsersService } from '../users/users.service';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Resolver('Projects')
 export class ProjectsResolver {
@@ -32,13 +32,16 @@ export class ProjectsResolver {
 
   @Query(() => [ProjectDto])
   @UseGuards(GqlAuthGuard)
-  @HasPermissions(PERMISSIONS.PROJECTS_VIEW, PERMISSIONS.PROJECTS_CREATE, PERMISSIONS.PROJECTS_MANAGE)
-  projects(@CurrentUser() user: UserDto, @Args() filter?: ProjectsFilter) {
-    const newFilter: ProjectsFilter = {
-      user: user._id,
-    };
-
-    return this.projectsService.getMany(newFilter);
+  @HasPermissions(
+    PERMISSIONS.PROJECTS_VIEW,
+    PERMISSIONS.PROJECTS_CREATE,
+    PERMISSIONS.PROJECTS_MANAGE,
+  )
+  projects(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+  ) {
+    return this.projectsService.getMany(filter);
   }
 
   @Mutation(() => ProjectDto)
@@ -50,7 +53,10 @@ export class ProjectsResolver {
   ) {
     const project = await this.projectsService.getOne(projectId);
     const author = project.user as User;
-    const canManageProjects = await this.usersService.hasPermissions(author, PERMISSIONS.PROJECTS_MANAGE);
+    const canManageProjects = await this.usersService.hasPermissions(
+      author,
+      PERMISSIONS.PROJECTS_MANAGE,
+    );
 
     if (author._id.toString() !== user._id.toString() && !canManageProjects) {
       throw new Error(`You can't delete projects which you don't own!`);
@@ -61,7 +67,10 @@ export class ProjectsResolver {
 
   @Query(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async project(@CurrentUser() user: UserDto, @Args() filter: ProjectsFilter) {
+  async project(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+  ) {
     const project = await this.projectsService.getOne(filter._id && filter._id);
     const autor = project.user && (project.user as UserDto);
     if (autor._id.toString() !== user._id.toString()) {
@@ -70,5 +79,24 @@ export class ProjectsResolver {
       );
     }
     return project;
+  }
+
+  @Mutation(() => ProjectDto)
+  @UseGuards(GqlAuthGuard)
+  async updateProject(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+    @Args('updates') updates: UpdateProjectDto,
+  ) {
+    const project = await this.projectsService.getOne(filter._id && filter._id);
+    const autor = project.user && (project.user as UserDto);
+    if (autor._id.toString() !== user._id.toString()) {
+      throw new Error(
+        `You can not view projects that you don't have access to!`,
+      );
+    }
+
+    await this.projectsService.updateOne(filter, updates);
+    return this.projectsService.getOne(filter._id);
   }
 }

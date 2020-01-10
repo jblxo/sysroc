@@ -1,0 +1,17 @@
+mutation UpdateProject(
+  $name: String!
+  $description: String
+  $projectId: String!
+) {
+  updateProject(
+    updates: { name: $name, description: $description }
+    filter: { _id: $projectId }
+  ) {
+    _id
+    name
+    description
+    user {
+      _id
+    }
+  }
+}

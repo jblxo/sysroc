@@ -6,8 +6,13 @@ import { SignUp } from '../components/SignUp';
 import { PersistentDrawerLeft } from '../components/PersisstentDrawerLeft';
 import { Projects } from '../views/Projects';
 import { SingleProject } from '../views/SingleProject';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { useMeQuery } from '../generated/graphql';
 
 export const Routes: React.FC = () => {
+  const { data, loading } = useMeQuery();
+
+  if (loading) return <div>Loading...</div>;
   return (
     <BrowserRouter>
       <div>
@@ -16,8 +21,20 @@ export const Routes: React.FC = () => {
             <Route exact path="/" component={Home} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
-            <Route exact path="/projects" component={Projects} />
-            <Route
+            <ProtectedRoute
+              isAuthenticated={!!data?.me}
+              isAllowed={!!data?.me}
+              restrictedPath={'/signin'}
+              authenticationPath={'/signin'}
+              exact
+              path="/projects"
+              component={Projects}
+            />
+            <ProtectedRoute
+              isAuthenticated={!!data?.me}
+              isAllowed={!!data?.me}
+              restrictedPath={'/signin'}
+              authenticationPath={'/signin'}
               exact
               path="/projects/:projectId"
               component={SingleProject}

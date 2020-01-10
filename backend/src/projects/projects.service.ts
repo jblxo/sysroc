@@ -7,6 +7,7 @@ import { UserDto } from '../users/dto/user.dto';
 import { User } from '../users/models/users.model';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -50,5 +51,12 @@ export class ProjectsService {
       .findById(projectId)
       .populate('user')
       .exec();
+  }
+
+  updateOne(
+    filter: ProjectsFilter,
+    updates: UpdateProjectDto,
+  ): Promise<ProjectDto> {
+    return this.projectModel.findOneAndUpdate(filter, updates).exec();
   }
 }
