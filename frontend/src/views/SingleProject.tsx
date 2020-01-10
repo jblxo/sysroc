@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useProjectQuery } from '../generated/graphql';
+import { useProjectQuery, useMeQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
@@ -36,6 +36,7 @@ interface Props
 
 export const SingleProject: React.FC<Props> = props => {
   const [modalOpen, setModalOpen] = useState(false);
+  const { data: meData, loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
     variables: { _id: props.match.params.projectId }
   });
@@ -49,7 +50,7 @@ export const SingleProject: React.FC<Props> = props => {
     setModalOpen(false);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading || meLoading) return <div>Loading...</div>;
 
   return (
     <>
@@ -89,6 +90,7 @@ export const SingleProject: React.FC<Props> = props => {
           handleClose={handleModalClose}
           projectId={props.match.params.projectId}
           data={data?.project}
+          userId={meData?.me?._id}
         />
       )}
     </>

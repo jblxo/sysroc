@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { UpdateProjectForm } from './UpdateProjectForm';
 import { useUpdateProjectMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
+import gql from 'graphql-tag';
 
 function getModalStyle() {
   const top = 50;
@@ -29,6 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const GET_PROJECT = gql`
+  query Project($_id: String) {
+    project(filter: { _id: $_id }) {
+      _id
+      name
+      description
+    }
+  }
+`;
+
 interface Props {
   open: boolean;
   handleClose: () => void;
@@ -43,15 +54,30 @@ interface Props {
 export const UpdateProjectModal: React.FC<Props> = ({
   open,
   handleClose,
-  userId,
   projectId,
-  data
+  data,
+  userId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
   const [updateProject, { error }] = useUpdateProjectMutation({
-    update(cache, result) {}
+    update(cache, result) {
+      try {
+        cache.writeQuery({
+          query: GET_PROJECT,
+          variables: { _id: projectId },
+          data: {
+            project: result.data?.updateProject
+          }
+        });
+      } catch (e) {
+        console.log(e);
+        if (e instanceof Error) {
+          enqueueSnackbar(e.message, { variant: 'error' });
+        }
+      }
+    }
   });
 
   return (

@@ -78,6 +78,7 @@ export class ProjectsResolver {
       );
     }
 
-    return this.projectsService.updateOne(filter, updates);
+    await this.projectsService.updateOne(filter, updates);
+    return this.projectsService.getOne(filter._id);
   }
 }

@@ -10,8 +10,9 @@ import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useMeQuery } from '../generated/graphql';
 
 export const Routes: React.FC = () => {
-  const { data } = useMeQuery();
+  const { data, loading } = useMeQuery();
 
+  if (loading) return <div>Loading...</div>;
   return (
     <BrowserRouter>
       <div>
