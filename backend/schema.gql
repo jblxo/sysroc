@@ -9,6 +9,11 @@ type ADUser {
   cn: String!
 }
 
+input CreateProjectDto {
+  name: String!
+  description: String
+}
+
 input CreateUserDto {
   email: String!
   password: String!
@@ -25,13 +30,51 @@ type Mutation {
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
+  createProject(input: CreateProjectDto!): ProjectDto!
+  deleteProject(projectId: String!): ProjectDto!
+}
+
+type Permission {
+  _id: ID!
+  name: String!
+  slug: String!
+  roles: [Role!]
+}
+
+type PermissionStateDto {
+  slug: String!
+  permitted: Boolean!
+}
+
+type Project {
+  name: String!
+  description: String!
+  user: User!
+}
+
+type ProjectDto {
+  _id: ID!
+  name: String!
+  description: String!
+  user: User
 }
 
 type Query {
   authUser(auth: CreateUserDto!): ADUser!
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
-  me: UserDto
+  me: UserAuthDto
+  projects(_id: String, name: String, user: String): [ProjectDto!]!
+  project(_id: String, name: String, user: String): ProjectDto!
+}
+
+type Role {
+  _id: ID!
+  name: String!
+  slug: String!
+  admin: Boolean!
+  permissions: [Permission!]
+  users: [User!]
 }
 
 input SignUpUserDto {
@@ -41,16 +84,20 @@ input SignUpUserDto {
 }
 
 type User {
+  _id: ID!
   name: String!
   password: String!
   email: String!
   adEmail: String!
   groups: [Group!]
+  projects: [Project!]
+  roles: [Role!]
 }
 
 type UserAuthDto {
   accessToken: String
   user: UserDto
+  permissions: [PermissionStateDto!]
   userTemp: UserTempDto
   registerToken: String
 }
@@ -67,6 +114,7 @@ type UserDto {
   adEmail: String!
   password: String!
   groups: [Group!]
+  roles: [Role!]
 }
 
 type UserTempDto {

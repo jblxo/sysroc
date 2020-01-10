@@ -1,0 +1,10 @@
+query Projects {
+  projects {
+    _id
+    name
+    description
+    user {
+      name
+    }
+  }
+}

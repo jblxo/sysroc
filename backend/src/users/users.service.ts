@@ -4,10 +4,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
 import { User } from './models/users.model';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { mongoose, ReturnModelType } from '@typegoose/typegoose';
 import { UserDto } from './dto/user.dto';
 import { ConfigService } from '../config/config.service';
-import { map } from 'rxjs/operators';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
@@ -15,11 +14,15 @@ import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
-import { ObjectId } from 'bson';
+import { RolesService } from '../roles/roles.service';
+import { Role } from '../roles/models/roles.model';
+import { PermissionStateDto } from './dto/permission-state.dto';
+import { PERMISSIONS } from '../permissions/permissions';
+import { CreateUserRawDto } from './dto/create-user-raw.dto';
 
 @Injectable()
 export class UsersService {
-  private ADEndpoint: string;
+  private readonly ADEndpoint: string;
 
   constructor(
     @InjectModel(User)
@@ -29,6 +32,7 @@ export class UsersService {
     private readonly httpService: HttpService,
     private readonly config: ConfigService,
     private readonly groupsService: GroupsService,
+    private readonly rolesService: RolesService,
   ) {
     this.ADEndpoint = config.get('AD_ENDPOINT');
   }
@@ -41,6 +45,7 @@ export class UsersService {
     const user = await this.userModel
       .findOne(filter)
       .populate('groups')
+      .populate('roles')
       .exec();
 
     if (!user) {
@@ -93,11 +98,15 @@ export class UsersService {
       password: registerUserDto.password,
       name: registerUserDto.name,
       groups: [],
+      roles: [],
     };
 
     createdGroups.forEach(group => {
       createUser.groups.push(group._id);
     });
+
+    const guestRole = await this.rolesService.findOneBySlug('guest');
+    createUser.roles.push(guestRole._id);
 
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
@@ -107,11 +116,76 @@ export class UsersService {
       await group.save();
     }
 
-    return await newUser.populate('groups').execPopulate();
+    guestRole.users.push(newUser._id);
+    await guestRole.save();
+
+    return await newUser.populate('groups').populate('roles').execPopulate();
+  }
+
+  async createRaw(createUserRawDto: CreateUserRawDto): Promise<User & mongoose.Document> {
+    const password = await this.hashPassword(createUserRawDto.password);
+
+    const createUser = {
+      email: createUserRawDto.email,
+      adEmail: createUserRawDto.email,
+      password,
+      name: createUserRawDto.name,
+      roles: [],
+    };
+
+    const createdUser = new this.userModel(createUser);
+    const newUser = await createdUser.save();
+
+    for (const roleSlug of createUserRawDto.roleSlugs) {
+      const role = await this.rolesService.findOneBySlug(roleSlug);
+      role.users.push(newUser._id);
+      newUser.roles.push(role._id);
+      await role.save();
+    }
+    await newUser.save();
+
+    return await newUser.populate('groups').populate('roles').execPopulate();
   }
 
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
+  }
+
+  async hasPermissions(userDto: UserDto, ...permissionSlugs: string[]): Promise<boolean> {
+    if (userDto.roles.length === 0) {
+      return false;
+    }
+
+    let roles = userDto.roles;
+    if (typeof roles[0] === 'string') {
+      const user = await this.findOne({ _id: userDto._id });
+      roles = user.roles;
+    }
+
+    for (const role of roles) {
+      if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Run check on all permissions for the user.
+   *
+   * @param userDto
+   */
+  async getPermissionStates(userDto: UserDto): Promise<PermissionStateDto[]> {
+    const permissions = [];
+    for (const permission in PERMISSIONS) {
+      if (PERMISSIONS.hasOwnProperty(permission)) {
+        permissions.push({
+          slug: PERMISSIONS[permission],
+          permitted: await this.hasPermissions(userDto, PERMISSIONS[permission]),
+        });
+      }
+    }
+    return permissions;
   }
 
   async delete(userId: string): Promise<boolean> {
@@ -120,7 +194,9 @@ export class UsersService {
         { users: userId },
         { $pull: { users: userId } },
         (err, raw) => {
-          if (err) throw new Error(err);
+          if (err) {
+            throw new Error(err);
+          }
           console.log(raw);
         },
       )

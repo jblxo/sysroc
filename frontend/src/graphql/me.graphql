@@ -1,6 +1,12 @@
 query Me {
   me {
-    _id
-    email
+    user {
+      _id
+      email
+    }
+    permissions {
+      slug
+      permitted
+    }
   }
 }

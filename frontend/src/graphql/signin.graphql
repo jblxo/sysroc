@@ -5,6 +5,10 @@ mutation SignIn($email: String!, $password: String!) {
       _id
       email
     }
+    permissions {
+      slug
+      permitted
+    }
     userTemp {
       name
       email
