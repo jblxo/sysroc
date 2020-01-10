@@ -1,0 +1,10 @@
+query Projects($userId: String) {
+  projects(filter: { user: $userId }) {
+    _id
+    name
+    description
+    user {
+      name
+    }
+  }
+}

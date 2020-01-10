@@ -3,12 +3,16 @@ import {
   prop as Property,
   Ref,
 } from '@typegoose/typegoose';
-import { Field, ObjectType } from 'type-graphql';
+import { Field, ObjectType, ID } from 'type-graphql';
 import * as validator from 'validator';
 import { Group } from '../../groups/models/groups.model';
+import { Project } from '../../projects/models/projects.model';
 
 @ObjectType()
 export class User {
+  @Field(type => ID)
+  readonly _id: string;
+
   @Field()
   @Property({ required: true, trim: true })
   name: string;
@@ -40,6 +44,10 @@ export class User {
   adEmail: string;
 
   @Field(type => [Group], { nullable: true })
-  @ArrayProperty({ itemsRef: 'Group', default: undefined })
+  @ArrayProperty({ itemsRef: 'Group', default: [] })
   groups?: Ref<Group>[];
+
+  @Field(type => [Project], { nullable: true })
+  @ArrayProperty({ itemsRef: 'Project', default: [] })
+  projects?: Ref<Project>[];
 }

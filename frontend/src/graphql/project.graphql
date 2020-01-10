@@ -1,0 +1,7 @@
+query Project($_id: String) {
+  project(filter: { _id: $_id }) {
+    _id
+    name
+    description
+  }
+}

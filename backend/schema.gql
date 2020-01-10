@@ -9,6 +9,11 @@ type ADUser {
   cn: String!
 }
 
+input CreateProjectDto {
+  name: String!
+  description: String
+}
+
 input CreateUserDto {
   email: String!
   password: String!
@@ -25,6 +30,28 @@ type Mutation {
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
+  createProject(input: CreateProjectDto!): ProjectDto!
+  deleteProject(projectId: String!): ProjectDto!
+  updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
+}
+
+type Project {
+  name: String!
+  description: String!
+  user: User!
+}
+
+type ProjectDto {
+  _id: ID!
+  name: String!
+  description: String!
+  user: User
+}
+
+input ProjectsFilter {
+  _id: String
+  name: String
+  user: String
 }
 
 type Query {
@@ -32,6 +59,8 @@ type Query {
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserDto
+  projects(filter: ProjectsFilter!): [ProjectDto!]!
+  project(filter: ProjectsFilter!): ProjectDto!
 }
 
 input SignUpUserDto {
@@ -40,12 +69,19 @@ input SignUpUserDto {
   password: String
 }
 
+input UpdateProjectDto {
+  name: String
+  description: String
+}
+
 type User {
+  _id: ID!
   name: String!
   password: String!
   email: String!
   adEmail: String!
   groups: [Group!]
+  projects: [Project!]
 }
 
 type UserAuthDto {

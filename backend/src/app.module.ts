@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { RedisModule, RedisService } from 'nestjs-redis';
 import { Redis } from 'ioredis';
 import { redisConstants } from './redis/constants';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -41,14 +42,13 @@ import { redisConstants } from './redis/constants';
     ConfigModule,
     ActiveDirectoryModule,
     UsersModule,
+    ProjectsModule,
   ],
 })
 export class AppModule {
   private redisClient: Redis;
 
-  constructor(
-    private readonly redisService: RedisService,
-  ) {
+  constructor(private readonly redisService: RedisService) {
     this.redisClient = redisService.getClient(redisConstants.name);
   }
 
