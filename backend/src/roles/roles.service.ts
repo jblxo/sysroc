@@ -18,8 +18,6 @@ export class RolesService {
   async findOne(
     rolesFilter: RolesFilter,
   ): Promise<Role & mongoose.Document | undefined> {
-    console.log(rolesFilter);
-
     const role = await this.roleModel
       .findOne(rolesFilter)
       .populate('permissions')

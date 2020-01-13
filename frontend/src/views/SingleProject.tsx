@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useProjectQuery, useMeQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { Fab, Typography } from '@material-ui/core';
+import { Fab, Typography, Paper } from '@material-ui/core';
 import styled from 'styled-components';
 import { UpdateProjectModal } from '../components/UpdateProjectModal';
 
@@ -9,6 +9,8 @@ const ProjectControls = styled.div`
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 15rem 1fr 1fr;
+
+  margin-bottom: 2rem;
 
   button {
     width: 5.5rem;
@@ -26,6 +28,11 @@ const Project = styled.div`
   h4,
   h5 {
     text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  h5 {
+    font-size: 1.2rem;
   }
 `;
 
@@ -80,6 +87,7 @@ export const SingleProject: React.FC<Props> = props => {
         <Project>
           <Typography variant="h4">{data.project.name}</Typography>
           <Typography variant="h5">{data.project.description}</Typography>
+          <Paper elevation={3}></Paper>
         </Project>
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>
