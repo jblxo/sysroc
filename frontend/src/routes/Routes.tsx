@@ -8,13 +8,20 @@ import { Projects } from '../views/Projects';
 import { SingleProject } from '../views/SingleProject';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useMeQuery } from '../generated/graphql';
+import { NotAllowed } from '../views/NotAllowed';
 
 export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
 
-  if (loading) return <div>Loading...</div>;
+  const hasPermissions = (permissions: any[], neededPermissions: any[]) => {
+    for (const requiredPerm of neededPermissions) {
+      const found = permissions.find((perm: any) => perm.slug === requiredPerm);
+      if (!found || !found.permitted) return false;
+    }
+    return true;
+  };
 
-  console.log(data?.me?.permissions);
+  if (loading) return <div>Loading...</div>;
 
   return (
     <BrowserRouter>
@@ -24,12 +31,15 @@ export const Routes: React.FC = () => {
             <Route exact path="/" component={Home} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
+            <Route exact path="/notallowed" component={NotAllowed} />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={
-                (data?.me?.permissions || []).some(perm => true) ?? false
-              }
-              restrictedPath={'/signin'}
+              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+                'projects.create',
+                'projects.view',
+                'projects.manage'
+              ])}
+              restrictedPath={'/notallowed'}
               authenticationPath={'/signin'}
               exact
               path="/projects"
@@ -37,8 +47,12 @@ export const Routes: React.FC = () => {
             />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={!!data?.me}
-              restrictedPath={'/signin'}
+              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+                'projects.create',
+                'projects.view',
+                'projects.manage'
+              ])}
+              restrictedPath={'/notallowed'}
               authenticationPath={'/signin'}
               exact
               path="/projects/:projectId"
