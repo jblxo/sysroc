@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -18,7 +18,7 @@ import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/models/roles.model';
 import { PermissionStateDto } from './dto/permission-state.dto';
 import { PERMISSIONS } from '../permissions/permissions';
-import { CreateUserRawDto } from './dto/create-user-raw.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -70,22 +70,7 @@ export class UsersService {
     });
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    let response: ADResponse = null;
-    await this.getADUser(createUserDto).subscribe(res => (response = res.data));
-
-    const password = await this.hashPassword(createUserDto.password);
-
-    return this.register({
-      name: response.user.cn,
-      email: createUserDto.email,
-      adEmail: createUserDto.email,
-      password,
-      dn: response.user.dn,
-    });
-  }
-
-  async register(registerUserDto: RegisterUserDto): Promise<User> {
+  async register(registerUserDto: RegisterUserDto): Promise<User & mongoose.Document> {
     const groups: Group[] = registerUserDto.dn
       .split(',')
       .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
@@ -125,23 +110,45 @@ export class UsersService {
       .execPopulate();
   }
 
-  async createRaw(
-    createUserRawDto: CreateUserRawDto,
+  async create(
+    createUserDto: CreateUserDto,
   ): Promise<User & mongoose.Document> {
-    const password = await this.hashPassword(createUserRawDto.password);
+    // Unencrypted password that can be sent to the user via a mail, for example
+    const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
+    const password = await this.hashPassword(passwordRaw);
+
+    if (createUserDto.adEmail && createUserDto.password) {
+      let response: ADResponse = null;
+      await this.getADUser({
+        email: createUserDto.adEmail,
+        password: passwordRaw,
+      }).subscribe(res => (response = res.data));
+
+      if (!response) {
+        throw new NotFoundException('Incorrect Active Directory email address or password.');
+      }
+
+      return await this.register({
+        name: response.user.cn,
+        email: createUserDto.email,
+        adEmail: createUserDto.adEmail,
+        password,
+        dn: response.user.dn,
+      });
+    }
 
     const createUser = {
-      email: createUserRawDto.email,
-      adEmail: createUserRawDto.email,
+      email: createUserDto.email,
+      adEmail: createUserDto.adEmail ? createUserDto.adEmail : createUserDto.email,
       password,
-      name: createUserRawDto.name,
+      name: createUserDto.name,
       roles: [],
     };
 
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
-    for (const roleSlug of createUserRawDto.roleSlugs) {
+    for (const roleSlug of createUserDto.roleSlugs) {
       const role = await this.rolesService.findOneBySlug(roleSlug);
       role.users.push(newUser._id);
       newUser.roles.push(role._id);

@@ -1,7 +1,7 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { ActiveDirectoryService } from './active-directory.service';
 import { ADUser } from './models/ad-user.model';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { UserAuthInputDto } from '../users/dto/user-auth.dto';
 
 @Resolver('ActiveDirectory')
 export class ActiveDirectoryResolver {
@@ -10,7 +10,7 @@ export class ActiveDirectoryResolver {
   ) {}
 
   @Query(() => ADUser)
-  async authUser(@Args('auth') auth: CreateUserDto) {
+  async authUser(@Args('auth') auth: UserAuthInputDto) {
     return this.activeDirectoryService.authUser(auth);
   }
 }

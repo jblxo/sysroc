@@ -15,8 +15,11 @@ input CreateProjectDto {
 }
 
 input CreateUserDto {
+  name: String!
+  adEmail: String
   email: String!
-  password: String!
+  password: String
+  roleSlugs: [String!]!
 }
 
 type Group {
@@ -67,7 +70,7 @@ input ProjectsFilter {
 }
 
 type Query {
-  authUser(auth: CreateUserDto!): ADUser!
+  authUser(auth: UserAuthInputDto!): ADUser!
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserAuthDto

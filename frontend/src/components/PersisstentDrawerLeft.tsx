@@ -14,6 +14,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Header } from './Header';
 import SchoolIcon from '@material-ui/icons/School';
 import HomeIcon from '@material-ui/icons/Home';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { useHistory } from 'react-router';
 import { useMeQuery } from '../generated/graphql';
 import { hasPermissions } from '../auth/hasPermissions';
@@ -139,6 +140,19 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
                 <SchoolIcon />
               </ListItemIcon>
               <ListItemText primary="Projects" />
+            </ListItem>
+          }
+          { !loading && data && data.me && hasPermissions(data.me, 'users.students.manage', 'users.teachers.manage') &&
+            <ListItem
+              button
+              onClick={() => {
+                history.push('/users');
+              }}
+            >
+              <ListItemIcon>
+                  <AccountCircleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Users" />
             </ListItem>
           }
         </List>

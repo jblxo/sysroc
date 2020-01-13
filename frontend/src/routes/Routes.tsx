@@ -9,6 +9,7 @@ import { SingleProject } from '../views/SingleProject';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { useMeQuery } from '../generated/graphql';
 import { NotAllowed } from '../views/NotAllowed';
+import { Users } from '../views/Users';
 
 export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
@@ -57,6 +58,18 @@ export const Routes: React.FC = () => {
               exact
               path="/projects/:projectId"
               component={SingleProject}
+            />
+            <ProtectedRoute
+              isAuthenticated={!!data?.me}
+              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+                'users.students.manage',
+                'users.teachers.manage'
+              ])}
+              restrictedPath={'/notallowed'}
+              authenticationPath={'/signin'}
+              exact
+              path="/users"
+              component={Users}
             />
           </Switch>
         </PersistentDrawerLeft>

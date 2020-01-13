@@ -38,13 +38,13 @@ export class UsersResolver {
   @Query(() => UserDto)
   @UseGuards(GqlAuthGuard)
   async user(@Args() filter: UsersFilter) {
-    return this.usersService.findOne(filter);
+    return await this.usersService.findOne(filter);
   }
 
   @Query(() => [UserDto])
   @UseGuards(GqlAuthGuard)
   async users() {
-    return this.usersService.findAll();
+    return await this.usersService.findAll();
   }
 
   @Query(() => UserAuthDto, { nullable: true })
@@ -58,10 +58,9 @@ export class UsersResolver {
     };
   }
 
-  // TODO: Only for GraphQL
   @Mutation(() => UserDto)
   async create(@Args('input') input: CreateUserDto) {
-    return this.usersService.create(input);
+    return await this.usersService.create(input);
   }
 
   @Mutation(() => UserAuthDto)

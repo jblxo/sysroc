@@ -39,7 +39,7 @@ export class UsersModule {
       // The admin account is already created, no action has to be performed anymore as
       // we are only catching the error that occurs when the account does not exist
     } catch {
-      await this.usersService.createRaw({
+      await this.usersService.create({
         name: 'Super Administrator',
         email: adminEmail,
         password: 'admin123',
