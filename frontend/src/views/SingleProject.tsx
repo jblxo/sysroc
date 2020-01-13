@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useProjectQuery, useMeQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
-import { Fab, Typography, Paper } from '@material-ui/core';
+import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { UpdateProjectModal } from '../components/UpdateProjectModal';
+import { TasksList } from '../components/TasksList';
 
 const ProjectControls = styled.div`
   display: grid;
@@ -87,7 +88,11 @@ export const SingleProject: React.FC<Props> = props => {
         <Project>
           <Typography variant="h4">{data.project.name}</Typography>
           <Typography variant="h5">{data.project.description}</Typography>
-          <Paper elevation={3}></Paper>
+          {data.project.tasks ? (
+            <TasksList tasks={data.project.tasks} />
+          ) : (
+            <div>You have no tasks</div>
+          )}
         </Project>
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>

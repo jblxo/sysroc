@@ -72,6 +72,7 @@ export class ProjectsResolver {
     @Args('filter') filter: ProjectsFilter,
   ) {
     const project = await this.projectsService.getOne(filter._id && filter._id);
+    console.log(project);
     const autor = project.user && (project.user as UserDto);
     if (autor._id.toString() !== user._id.toString()) {
       throw new Error(

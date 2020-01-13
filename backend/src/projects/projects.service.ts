@@ -50,6 +50,7 @@ export class ProjectsService {
     return this.projectModel
       .findById(projectId)
       .populate('user')
+      .populate('tasks')
       .exec();
   }
 
