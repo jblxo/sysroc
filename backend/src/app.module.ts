@@ -43,7 +43,6 @@ import { RolesModule } from './roles/roles.module';
     GroupsModule,
     ConfigModule,
     PermissionsModule,
-    RolesModule,
     ActiveDirectoryModule,
     UsersModule,
     ProjectsModule,

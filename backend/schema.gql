@@ -32,10 +32,7 @@ type Mutation {
   deleteUser(userId: String!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
-  updateProject(
-    updates: UpdateProjectDto!
-    filter: ProjectsFilter!
-  ): ProjectDto!
+  updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
 }
 
 type Permission {

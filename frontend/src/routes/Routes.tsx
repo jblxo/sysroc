@@ -13,6 +13,9 @@ export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
 
   if (loading) return <div>Loading...</div>;
+
+  console.log(data?.me?.permissions);
+
   return (
     <BrowserRouter>
       <div>
@@ -23,7 +26,9 @@ export const Routes: React.FC = () => {
             <Route exact path="/signup" component={SignUp} />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={!!data?.me}
+              isAllowed={
+                (data?.me?.permissions || []).some(perm => true) ?? false
+              }
               restrictedPath={'/signin'}
               authenticationPath={'/signin'}
               exact

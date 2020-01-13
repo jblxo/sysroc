@@ -119,10 +119,15 @@ export class UsersService {
     guestRole.users.push(newUser._id);
     await guestRole.save();
 
-    return await newUser.populate('groups').populate('roles').execPopulate();
+    return await newUser
+      .populate('groups')
+      .populate('roles')
+      .execPopulate();
   }
 
-  async createRaw(createUserRawDto: CreateUserRawDto): Promise<User & mongoose.Document> {
+  async createRaw(
+    createUserRawDto: CreateUserRawDto,
+  ): Promise<User & mongoose.Document> {
     const password = await this.hashPassword(createUserRawDto.password);
 
     const createUser = {
@@ -144,14 +149,20 @@ export class UsersService {
     }
     await newUser.save();
 
-    return await newUser.populate('groups').populate('roles').execPopulate();
+    return await newUser
+      .populate('groups')
+      .populate('roles')
+      .execPopulate();
   }
 
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
 
-  async hasPermissions(userDto: UserDto, ...permissionSlugs: string[]): Promise<boolean> {
+  async hasPermissions(
+    userDto: UserDto,
+    ...permissionSlugs: string[]
+  ): Promise<boolean> {
     if (userDto.roles.length === 0) {
       return false;
     }
@@ -163,7 +174,9 @@ export class UsersService {
     }
 
     for (const role of roles) {
-      if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
+      if (
+        await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)
+      ) {
         return true;
       }
     }
@@ -181,7 +194,10 @@ export class UsersService {
       if (PERMISSIONS.hasOwnProperty(permission)) {
         permissions.push({
           slug: PERMISSIONS[permission],
-          permitted: await this.hasPermissions(userDto, PERMISSIONS[permission]),
+          permitted: await this.hasPermissions(
+            userDto,
+            PERMISSIONS[permission],
+          ),
         });
       }
     }
@@ -197,7 +213,6 @@ export class UsersService {
           if (err) {
             throw new Error(err);
           }
-          console.log(raw);
         },
       )
       .exec();
