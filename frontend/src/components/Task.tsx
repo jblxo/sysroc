@@ -1,17 +1,26 @@
 import React from 'react';
-import { Typography, Fab } from '@material-ui/core';
+import { Typography, Fab, IconButton } from '@material-ui/core';
 import styled from 'styled-components';
 import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import grey from '@material-ui/core/colors/grey';
 
 const TaskStyles = styled.div`
   padding: 1rem 1.4rem;
+  width: 100%;
   display: grid;
-  grid-template-columns: 20rem 1fr 20rem;
+  grid-template-columns: 1fr minmax(10rem, 1fr) 1fr;
   grid-template-rows: 2.3rem 2rem 1fr;
-  &:not(:last-child) {
-    border-bottom: 1px solid black;
+
+  &:hover {
+    .task-actions {
+      opacity: 1;
+    }
+  }
+
+  &:nth-child(odd) {
+    background-color: ${grey[100]};
   }
 
   .task-title {
@@ -40,6 +49,8 @@ const TaskStyles = styled.div`
   }
 
   .task-actions {
+    opacity: 0;
+    transition: opacity 0.3s ease;
     grid-column: 3 / 4;
     grid-row: 3 / 4;
     display: flex;
@@ -79,24 +90,20 @@ export const Task: React.FC<Props> = ({ task }) => (
       {moment(task.dueDate).format('DD. MM. YYYY, dddd')}
     </div>
     <div className="task-actions">
-      <Fab
-        color="primary"
-        variant="extended"
+      <IconButton
         onClick={() => {
           // TODO
         }}
       >
         <EditIcon />
-      </Fab>
-      <Fab
-        color="secondary"
-        variant="extended"
+      </IconButton>
+      <IconButton
         onClick={() => {
           // TODO
         }}
       >
         <DeleteIcon />
-      </Fab>
+      </IconButton>
     </div>
   </TaskStyles>
 );

@@ -82,6 +82,7 @@ export const CreateTaskModal: React.FC<Props> = ({
               enqueueSnackbar('Task successfully created!', {
                 variant: 'success'
               });
+              handleClose();
             }
           }}
         />

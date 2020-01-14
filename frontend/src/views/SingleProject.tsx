@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { UpdateProjectModal } from '../components/UpdateProjectModal';
 import { TasksList } from '../components/TasksList';
 import { CreateTaskModal } from '../components/CreateTaskModal';
+import moment from 'moment';
+import { ITask } from '../components/Task';
 
 const ProjectControls = styled.div`
   display: grid;
@@ -47,6 +49,14 @@ const Project = styled.div`
   }
 `;
 
+const TaskLists = styled.div`
+  max-width: 100%;
+  display: grid;
+  grid-template-columns: minmax(25rem, 1fr) minmax(25rem, 1fr);
+  grid-gap: 4rem;
+  margin: 3rem auto;
+`;
+
 interface Props
   extends RouteComponentProps<{
     projectId: string;
@@ -76,6 +86,16 @@ export const SingleProject: React.FC<Props> = props => {
   const handleCreateTaskClose = () => {
     setCreateTaskOpen(false);
   };
+
+  const tasksByMonth: { [key: string]: ITask[] } = {};
+  for (const task of data?.project.tasks ?? []) {
+    const key: string = moment(task.dueDate).format('MM. YYYY');
+    if (tasksByMonth[key] === undefined) {
+      tasksByMonth[key] = [];
+    }
+
+    tasksByMonth[key].push(task);
+  }
 
   if (loading || meLoading) return <div>Loading...</div>;
 
@@ -117,7 +137,11 @@ export const SingleProject: React.FC<Props> = props => {
             </Fab>
           </div>
           {data.project.tasks ? (
-            <TasksList tasks={data.project.tasks} />
+            <TaskLists>
+              {Object.keys(tasksByMonth).map(key => (
+                <TasksList key={key} tasks={tasksByMonth[key]} date={key} />
+              ))}
+            </TaskLists>
           ) : (
             <div>You have no tasks</div>
           )}

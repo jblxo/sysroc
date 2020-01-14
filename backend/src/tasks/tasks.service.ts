@@ -27,6 +27,7 @@ export class TasksService {
     project.tasks.push(newTask);
     await project.save();
 
+    // TODO: add sorting
     return newTask
       .populate([
         {
