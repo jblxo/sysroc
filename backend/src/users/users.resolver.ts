@@ -59,7 +59,7 @@ export class UsersResolver {
   }
 
   @Mutation(() => UserDto)
-  async create(@Args('input') input: CreateUserDto) {
+  async createUser(@Args('input') input: CreateUserDto) {
     return await this.usersService.create(input);
   }
 

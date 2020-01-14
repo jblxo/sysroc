@@ -1,4 +1,4 @@
-query {
+query Users {
   users {
     _id
     name
@@ -11,10 +11,6 @@ query {
       name
       slug
       admin
-      permissions {
-        name
-        slug
-      }
     }
   }
 }

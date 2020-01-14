@@ -38,7 +38,11 @@ export class UsersService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    return await this.userModel.find().exec();
+    return await this.userModel
+      .find()
+      .populate('groups')
+      .populate('roles')
+      .exec();
   }
 
   async findOne(filter: UsersFilter): Promise<UserDto | undefined> {
@@ -113,29 +117,31 @@ export class UsersService {
   async create(
     createUserDto: CreateUserDto,
   ): Promise<User & mongoose.Document> {
-    // Unencrypted password that can be sent to the user via a mail, for example
-    const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
-    const password = await this.hashPassword(passwordRaw);
-
     if (createUserDto.adEmail && createUserDto.password) {
       let response: ADResponse = null;
       await this.getADUser({
         email: createUserDto.adEmail,
-        password: passwordRaw,
+        password: createUserDto.password,
       }).subscribe(res => (response = res.data));
 
       if (!response) {
         throw new NotFoundException('Incorrect Active Directory email address or password.');
       }
 
+      const adPassword = await this.hashPassword(createUserDto.password);
+
       return await this.register({
         name: response.user.cn,
         email: createUserDto.email,
         adEmail: createUserDto.adEmail,
-        password,
+        password: adPassword,
         dn: response.user.dn,
       });
     }
+
+    // Unencrypted password that can be sent to the user via a mail, for example
+    const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
+    const password = await this.hashPassword(passwordRaw);
 
     const createUser = {
       email: createUserDto.email,
@@ -149,6 +155,10 @@ export class UsersService {
     const newUser = await createdUser.save();
 
     for (const roleSlug of createUserDto.roleSlugs) {
+      if (!roleSlug) {
+        continue;
+      }
+
       const role = await this.rolesService.findOneBySlug(roleSlug);
       role.users.push(newUser._id);
       newUser.roles.push(role._id);

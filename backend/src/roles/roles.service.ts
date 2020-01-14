@@ -6,6 +6,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
 import { Permission } from '../permissions/models/permissions.model';
 import { RolesFilter } from './filters/role.filter';
+import { RoleDto } from './dto/role.dto';
 
 @Injectable()
 export class RolesService {
@@ -36,6 +37,14 @@ export class RolesService {
     slug: string,
   ): Promise<Role & mongoose.Document | undefined> {
     return await this.findOne({ slug });
+  }
+
+  async findAll(filter: RolesFilter): Promise<RoleDto[]> {
+    return await this.roleModel
+      .find(filter)
+      .populate('users')
+      .populate('permissions')
+      .exec();
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {

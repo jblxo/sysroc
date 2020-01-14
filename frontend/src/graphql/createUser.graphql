@@ -1,0 +1,16 @@
+mutation CreateUser($name: String!, $adEmail: String, $email: String!, $password: String, $roleSlugs: [String!]) {
+  createUser(input: { name: $name, adEmail: $adEmail, email: $email, password: $password, roleSlugs: $roleSlugs }) {
+    _id
+    name
+    adEmail
+    email
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}

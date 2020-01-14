@@ -19,7 +19,7 @@ input CreateUserDto {
   adEmail: String
   email: String!
   password: String
-  roleSlugs: [String!]!
+  roleSlugs: [String!]
 }
 
 type Group {
@@ -28,7 +28,7 @@ type Group {
 }
 
 type Mutation {
-  create(input: CreateUserDto!): UserDto!
+  createUser(input: CreateUserDto!): UserDto!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
@@ -74,6 +74,7 @@ type Query {
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserAuthDto
+  roles(filter: RolesFilter!): [RoleDto!]!
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
 }
@@ -85,6 +86,24 @@ type Role {
   admin: Boolean!
   permissions: [Permission!]
   users: [User!]
+}
+
+type RoleDto {
+  _id: ID!
+  name: String!
+  slug: String!
+  admin: Boolean!
+  users: [User!]
+  permissions: [Permission!]
+}
+
+input RolesFilter {
+  _id: String
+  name: String
+  slug: String
+  admin: Boolean
+  permission: String
+  user: String
 }
 
 input SignUpUserDto {

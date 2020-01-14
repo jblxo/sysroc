@@ -14,6 +14,6 @@ export class CreateUserDto {
   @Field({ nullable: true })
   readonly password?: string;
 
-  @Field(type => [String])
+  @Field(type => [String], { nullable: true })
   readonly roleSlugs?: string[];
 }

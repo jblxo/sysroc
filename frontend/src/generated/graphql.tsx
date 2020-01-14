@@ -29,7 +29,7 @@ export type CreateUserDto = {
   adEmail?: Maybe<Scalars['String']>,
   email: Scalars['String'],
   password?: Maybe<Scalars['String']>,
-  roleSlugs: Array<Scalars['String']>,
+  roleSlugs?: Maybe<Array<Scalars['String']>>,
 };
 
 export type Group = {
@@ -40,7 +40,7 @@ export type Group = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  create: UserDto,
+  createUser: UserDto,
   signup: UserAuthDto,
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
@@ -51,7 +51,7 @@ export type Mutation = {
 };
 
 
-export type MutationCreateArgs = {
+export type MutationCreateUserArgs = {
   input: CreateUserDto
 };
 
@@ -127,6 +127,7 @@ export type Query = {
   user: UserDto,
   users: Array<UserDto>,
   me?: Maybe<UserAuthDto>,
+  roles: Array<RoleDto>,
   projects: Array<ProjectDto>,
   project: ProjectDto,
 };
@@ -142,6 +143,11 @@ export type QueryUserArgs = {
   email?: Maybe<Scalars['String']>,
   adEmail?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>
+};
+
+
+export type QueryRolesArgs = {
+  filter: RolesFilter
 };
 
 
@@ -162,6 +168,25 @@ export type Role = {
   admin: Scalars['Boolean'],
   permissions?: Maybe<Array<Permission>>,
   users?: Maybe<Array<User>>,
+};
+
+export type RoleDto = {
+   __typename?: 'RoleDto',
+  _id: Scalars['ID'],
+  name: Scalars['String'],
+  slug: Scalars['String'],
+  admin: Scalars['Boolean'],
+  users?: Maybe<Array<User>>,
+  permissions?: Maybe<Array<Permission>>,
+};
+
+export type RolesFilter = {
+  _id?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>,
+  slug?: Maybe<Scalars['String']>,
+  admin?: Maybe<Scalars['Boolean']>,
+  permission?: Maybe<Scalars['String']>,
+  user?: Maybe<Scalars['String']>,
 };
 
 export type SignUpUserDto = {
@@ -236,6 +261,30 @@ export type CreateProjectMutation = (
   ) }
 );
 
+export type CreateUserMutationVariables = {
+  name: Scalars['String'],
+  adEmail?: Maybe<Scalars['String']>,
+  email: Scalars['String'],
+  password?: Maybe<Scalars['String']>,
+  roleSlugs?: Maybe<Array<Scalars['String']>>
+};
+
+
+export type CreateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { createUser: (
+    { __typename?: 'UserDto' }
+    & Pick<UserDto, '_id' | 'name' | 'adEmail' | 'email'>
+    & { groups: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name'>
+    )>>, roles: Maybe<Array<(
+      { __typename?: 'Role' }
+      & Pick<Role, 'name' | 'slug' | 'admin'>
+    )>> }
+  ) }
+);
+
 export type DeleteProjectMutationVariables = {
   projectId: Scalars['String']
 };
@@ -304,6 +353,23 @@ export type ProjectsQuery = (
   )> }
 );
 
+export type RolesQueryVariables = {
+  admin?: Maybe<Scalars['Boolean']>
+};
+
+
+export type RolesQuery = (
+  { __typename?: 'Query' }
+  & { roles: Array<(
+    { __typename?: 'RoleDto' }
+    & Pick<RoleDto, '_id' | 'name' | 'slug' | 'admin'>
+    & { permissions: Maybe<Array<(
+      { __typename?: 'Permission' }
+      & Pick<Permission, 'name' | 'slug'>
+    )>> }
+  )> }
+);
+
 export type SignInMutationVariables = {
   email: Scalars['String'],
   password: Scalars['String']
@@ -369,10 +435,10 @@ export type UpdateProjectMutation = (
   ) }
 );
 
-export type Unnamed_1_QueryVariables = {};
+export type UsersQueryVariables = {};
 
 
-export type Unnamed_1_Query = (
+export type UsersQuery = (
   { __typename?: 'Query' }
   & { users: Array<(
     { __typename?: 'UserDto' }
@@ -383,10 +449,6 @@ export type Unnamed_1_Query = (
     )>>, roles: Maybe<Array<(
       { __typename?: 'Role' }
       & Pick<Role, 'name' | 'slug' | 'admin'>
-      & { permissions: Maybe<Array<(
-        { __typename?: 'Permission' }
-        & Pick<Permission, 'name' | 'slug'>
-      )>> }
     )>> }
   )> }
 );
@@ -430,6 +492,53 @@ export function useCreateProjectMutation(baseOptions?: ApolloReactHooks.Mutation
 export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProjectMutation>;
 export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
 export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($name: String!, $adEmail: String, $email: String!, $password: String, $roleSlugs: [String!]) {
+  createUser(input: {name: $name, adEmail: $adEmail, email: $email, password: $password, roleSlugs: $roleSlugs}) {
+    _id
+    name
+    adEmail
+    email
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}
+    `;
+export type CreateUserMutationFn = ApolloReactCommon.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      adEmail: // value for 'adEmail'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      roleSlugs: // value for 'roleSlugs'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, baseOptions);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const DeleteProjectDocument = gql`
     mutation deleteProject($projectId: String!) {
   deleteProject(projectId: $projectId) {
@@ -604,6 +713,46 @@ export function useProjectsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHoo
 export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
 export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
 export type ProjectsQueryResult = ApolloReactCommon.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
+export const RolesDocument = gql`
+    query Roles($admin: Boolean) {
+  roles(filter: {admin: $admin}) {
+    _id
+    name
+    slug
+    admin
+    permissions {
+      name
+      slug
+    }
+  }
+}
+    `;
+
+/**
+ * __useRolesQuery__
+ *
+ * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolesQuery({
+ *   variables: {
+ *      admin: // value for 'admin'
+ *   },
+ * });
+ */
+export function useRolesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RolesQuery, RolesQueryVariables>) {
+        return ApolloReactHooks.useQuery<RolesQuery, RolesQueryVariables>(RolesDocument, baseOptions);
+      }
+export function useRolesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RolesQuery, RolesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<RolesQuery, RolesQueryVariables>(RolesDocument, baseOptions);
+        }
+export type RolesQueryHookResult = ReturnType<typeof useRolesQuery>;
+export type RolesLazyQueryHookResult = ReturnType<typeof useRolesLazyQuery>;
+export type RolesQueryResult = ApolloReactCommon.QueryResult<RolesQuery, RolesQueryVariables>;
 export const SignInDocument = gql`
     mutation SignIn($email: String!, $password: String!) {
   signin(auth: {email: $email, password: $password}) {
@@ -731,3 +880,46 @@ export function useUpdateProjectMutation(baseOptions?: ApolloReactHooks.Mutation
 export type UpdateProjectMutationHookResult = ReturnType<typeof useUpdateProjectMutation>;
 export type UpdateProjectMutationResult = ApolloReactCommon.MutationResult<UpdateProjectMutation>;
 export type UpdateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProjectMutation, UpdateProjectMutationVariables>;
+export const UsersDocument = gql`
+    query Users {
+  users {
+    _id
+    name
+    email
+    adEmail
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}
+    `;
+
+/**
+ * __useUsersQuery__
+ *
+ * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUsersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
+        return ApolloReactHooks.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+      }
+export function useUsersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+        }
+export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
+export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
+export type UsersQueryResult = ApolloReactCommon.QueryResult<UsersQuery, UsersQueryVariables>;
