@@ -1,6 +1,9 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
+import { CreateTaskForm } from './CreateTaskForm';
+import { useCreateTaskMutation } from '../generated/graphql';
+import { useSnackbar } from 'notistack';
 
 function getModalStyle() {
   const top = 50;
@@ -29,11 +32,18 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
+  project: string;
 }
 
-export const CreateTaskModal: React.FC<Props> = ({ open, handleClose }) => {
+export const CreateTaskModal: React.FC<Props> = ({
+  open,
+  handleClose,
+  project
+}) => {
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
+  const [createTask, { error }] = useCreateTaskMutation();
 
   return (
     <Modal
@@ -45,6 +55,19 @@ export const CreateTaskModal: React.FC<Props> = ({ open, handleClose }) => {
       <div style={modalStyle} className={classes.paper}>
         <h2 id="new-project-modal-title">New Task</h2>
         <p id="new-project-modal-description">Get the work done.</p>
+        <CreateTaskForm
+          error={error}
+          onSubmit={async ({ name, description, dueDate }) => {
+            const res = await createTask({
+              variables: { name, dueDate, description, project }
+            });
+            if (res.data) {
+              enqueueSnackbar('Task successfully created!', {
+                variant: 'success'
+              });
+            }
+          }}
+        />
       </div>
     </Modal>
   );

@@ -11,8 +11,8 @@ export class CreateTaskDto {
   @Field(type => Date)
   dueDate: Date;
 
-  @Field(type => Boolean)
-  completed: boolean;
+  @Field(type => Boolean, { nullable: true })
+  completed?: boolean;
 
   @Field({ nullable: false })
   project: string;

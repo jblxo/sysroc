@@ -18,7 +18,7 @@ input CreateTaskDto {
   name: String!
   description: String
   dueDate: DateTime!
-  completed: Boolean!
+  completed: Boolean
   project: String!
 }
 

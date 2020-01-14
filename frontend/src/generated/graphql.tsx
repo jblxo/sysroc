@@ -9,7 +9,6 @@ export type Scalars = {
   Boolean: boolean,
   Int: number,
   Float: number,
-  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
   DateTime: any,
 };
 
@@ -29,7 +28,7 @@ export type CreateTaskDto = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
   dueDate: Scalars['DateTime'],
-  completed: Scalars['Boolean'],
+  completed?: Maybe<Scalars['Boolean']>,
   project: Scalars['String'],
 };
 
@@ -274,6 +273,26 @@ export type CreateProjectMutation = (
   ) }
 );
 
+export type CreateTaskMutationVariables = {
+  name: Scalars['String'],
+  description?: Maybe<Scalars['String']>,
+  dueDate: Scalars['DateTime'],
+  project: Scalars['String']
+};
+
+
+export type CreateTaskMutation = (
+  { __typename?: 'Mutation' }
+  & { createTask: (
+    { __typename?: 'TaskDto' }
+    & Pick<TaskDto, '_id' | 'name' | 'description' | 'completed' | 'createdAt' | 'dueDate'>
+    & { project: (
+      { __typename?: 'Project' }
+      & Pick<Project, '_id' | 'name' | 'description'>
+    ) }
+  ) }
+);
+
 export type DeleteProjectMutationVariables = {
   projectId: Scalars['String']
 };
@@ -450,6 +469,51 @@ export function useCreateProjectMutation(baseOptions?: ApolloReactHooks.Mutation
 export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProjectMutation>;
 export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
 export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
+export const CreateTaskDocument = gql`
+    mutation CreateTask($name: String!, $description: String, $dueDate: DateTime!, $project: String!) {
+  createTask(input: {name: $name, description: $description, dueDate: $dueDate, project: $project}) {
+    _id
+    name
+    description
+    completed
+    createdAt
+    dueDate
+    project {
+      _id
+      name
+      description
+    }
+  }
+}
+    `;
+export type CreateTaskMutationFn = ApolloReactCommon.MutationFunction<CreateTaskMutation, CreateTaskMutationVariables>;
+
+/**
+ * __useCreateTaskMutation__
+ *
+ * To run a mutation, you first call `useCreateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTaskMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTaskMutation, { data, loading, error }] = useCreateTaskMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      dueDate: // value for 'dueDate'
+ *      project: // value for 'project'
+ *   },
+ * });
+ */
+export function useCreateTaskMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateTaskMutation, CreateTaskMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateTaskMutation, CreateTaskMutationVariables>(CreateTaskDocument, baseOptions);
+      }
+export type CreateTaskMutationHookResult = ReturnType<typeof useCreateTaskMutation>;
+export type CreateTaskMutationResult = ApolloReactCommon.MutationResult<CreateTaskMutation>;
+export type CreateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateTaskMutation, CreateTaskMutationVariables>;
 export const DeleteProjectDocument = gql`
     mutation deleteProject($projectId: String!) {
   deleteProject(projectId: $projectId) {
