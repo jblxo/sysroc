@@ -1,24 +1,22 @@
 import React from 'react';
 import { Paper } from '@material-ui/core';
+import { ITask, Task } from './Task';
+import styled from 'styled-components';
+
+const TaskListStyles = styled.div`
+  padding: 1rem 5rem;
+`;
 
 interface Props {
-  tasks: {
-    _id: string;
-    name: string;
-    description?: string;
-    createdAt: Date;
-    dueDate: Date;
-    completed: Boolean;
-  }[];
+  tasks: ITask[];
 }
 
 export const TasksList: React.FC<Props> = ({ tasks }) => (
-  <Paper elevation={3}>
-    {tasks.map(task => (
-      <div key={task._id}>
-        <p>{task.name}</p>
-        <p>{task.description}</p>
-      </div>
-    ))}
-  </Paper>
+  <TaskListStyles>
+    <Paper elevation={3}>
+      {tasks.map(task => (
+        <Task key={task._id} task={task} />
+      ))}
+    </Paper>
+  </TaskListStyles>
 );

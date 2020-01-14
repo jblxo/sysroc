@@ -23,6 +23,7 @@
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "jwt-decode": "^2.2.0",
+    "moment": "^2.24.0",
     "notistack": "^0.9.7",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
@@ -62,6 +63,7 @@
     "@graphql-codegen/typescript-react-apollo": "1.8.3",
     "@types/graphql": "^14.5.0",
     "@types/material-ui": "^0.21.7",
+    "@types/moment": "^2.13.0",
     "babel-loader": "^8.0.6"
   }
 }
