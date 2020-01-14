@@ -5,6 +5,7 @@ import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import { UpdateProjectModal } from '../components/UpdateProjectModal';
 import { TasksList } from '../components/TasksList';
+import { CreateTaskModal } from '../components/CreateTaskModal';
 
 const ProjectControls = styled.div`
   display: grid;
@@ -53,6 +54,7 @@ interface Props
 
 export const SingleProject: React.FC<Props> = props => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const { data: meData, loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
     variables: { _id: props.match.params.projectId }
@@ -65,6 +67,14 @@ export const SingleProject: React.FC<Props> = props => {
 
   const handleModalClose = () => {
     setModalOpen(false);
+  };
+
+  const handleCreateTaskOpen = () => {
+    setCreateTaskOpen(true);
+  };
+
+  const handleCreateTaskClose = () => {
+    setCreateTaskOpen(false);
   };
 
   if (loading || meLoading) return <div>Loading...</div>;
@@ -101,9 +111,7 @@ export const SingleProject: React.FC<Props> = props => {
             <Fab
               color="secondary"
               variant="extended"
-              onClick={() => {
-                // TODO
-              }}
+              onClick={handleCreateTaskOpen}
             >
               Add Task
             </Fab>
@@ -126,6 +134,10 @@ export const SingleProject: React.FC<Props> = props => {
           userId={meData?.me?.user?._id}
         />
       )}
+      <CreateTaskModal
+        open={createTaskOpen}
+        handleClose={handleCreateTaskClose}
+      />
     </>
   );
 };
