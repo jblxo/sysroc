@@ -35,6 +35,15 @@ const Project = styled.div`
   h5 {
     font-size: 1.2rem;
   }
+
+  .add-task-btn {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: stretch;
+    margin: 1rem 0;
+    padding-right: 5rem;
+  }
 `;
 
 interface Props
@@ -88,6 +97,17 @@ export const SingleProject: React.FC<Props> = props => {
         <Project>
           <Typography variant="h4">{data.project.name}</Typography>
           <Typography variant="h5">{data.project.description}</Typography>
+          <div className="add-task-btn">
+            <Fab
+              color="secondary"
+              variant="extended"
+              onClick={() => {
+                // TODO
+              }}
+            >
+              Add Task
+            </Fab>
+          </div>
           {data.project.tasks ? (
             <TasksList tasks={data.project.tasks} />
           ) : (
