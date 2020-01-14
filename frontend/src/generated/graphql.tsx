@@ -289,6 +289,10 @@ export type CreateTaskMutation = (
     & { project: (
       { __typename?: 'Project' }
       & Pick<Project, '_id' | 'name' | 'description'>
+      & { tasks: Array<(
+        { __typename?: 'Task' }
+        & Pick<Task, '_id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
+      )> }
     ) }
   ) }
 );
@@ -482,6 +486,14 @@ export const CreateTaskDocument = gql`
       _id
       name
       description
+      tasks {
+        _id
+        name
+        description
+        createdAt
+        dueDate
+        completed
+      }
     }
   }
 }

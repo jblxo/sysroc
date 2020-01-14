@@ -27,6 +27,17 @@ export class TasksService {
     project.tasks.push(newTask);
     await project.save();
 
-    return newTask.populate('project').execPopulate();
+    return newTask
+      .populate([
+        {
+          path: 'project',
+          model: 'Project',
+          populate: {
+            path: 'tasks',
+            model: 'Task',
+          },
+        },
+      ])
+      .execPopulate();
   }
 }

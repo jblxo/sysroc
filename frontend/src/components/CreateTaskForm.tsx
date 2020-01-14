@@ -36,8 +36,6 @@ interface Props {
 export const CreateTaskForm: React.FC<Props> = ({ onSubmit, error }) => {
   const classes = useStyles();
 
-  console.log(moment().toDate());
-
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
       <Formik

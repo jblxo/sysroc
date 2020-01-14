@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const GET_PROJECT = gql`
+export const GET_PROJECT = gql`
   query Project($_id: String) {
     project(filter: { _id: $_id }) {
       _id

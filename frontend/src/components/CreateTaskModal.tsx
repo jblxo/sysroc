@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { CreateTaskForm } from './CreateTaskForm';
 import { useCreateTaskMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
+import { GET_PROJECT } from './UpdateProjectModal';
 
 function getModalStyle() {
   const top = 50;
@@ -43,7 +44,23 @@ export const CreateTaskModal: React.FC<Props> = ({
   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
-  const [createTask, { error }] = useCreateTaskMutation();
+  const [createTask, { error }] = useCreateTaskMutation({
+    update(cache, result) {
+      try {
+        cache.writeQuery({
+          query: GET_PROJECT,
+          variables: { _id: project },
+          data: {
+            project: result.data?.createTask.project
+          }
+        });
+      } catch (error) {
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
+      }
+    }
+  });
 
   return (
     <Modal

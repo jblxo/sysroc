@@ -22,6 +22,14 @@ mutation CreateTask(
       _id
       name
       description
+      tasks {
+        _id
+        name
+        description
+        createdAt
+        dueDate
+        completed
+      }
     }
   }
 }
