@@ -92,6 +92,7 @@ type Query {
   me: UserAuthDto
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
+  task(filter: TasksFilter!): TaskDto!
 }
 
 type Role {

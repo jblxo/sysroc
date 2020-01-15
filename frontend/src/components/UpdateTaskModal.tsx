@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
+import { UpdateTaskForm } from './UpdateTaskForm';
 
 function getModalStyle() {
   const top = 50;

@@ -54,4 +54,8 @@ export class TasksService {
   ): Promise<TaskDto> {
     return this.taskModel.findOneAndUpdate(filter, updates).exec();
   }
+
+  getOne(filter: TasksFilter): Promise<TaskDto> {
+    return this.taskModel.findById(filter._id).exec();
+  }
 }
