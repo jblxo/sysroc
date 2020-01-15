@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -33,8 +34,11 @@ export type CreateTaskDto = {
 };
 
 export type CreateUserDto = {
+  name: Scalars['String'],
+  adEmail?: Maybe<Scalars['String']>,
   email: Scalars['String'],
-  password: Scalars['String'],
+  password?: Maybe<Scalars['String']>,
+  roleSlugs?: Maybe<Array<Scalars['String']>>,
 };
 
 
@@ -46,7 +50,7 @@ export type Group = {
 
 export type Mutation = {
    __typename?: 'Mutation',
-  create: UserDto,
+  createUser: UserDto,
   signup: UserAuthDto,
   signin: UserAuthDto,
   logout: Scalars['Boolean'],
@@ -60,7 +64,7 @@ export type Mutation = {
 };
 
 
-export type MutationCreateArgs = {
+export type MutationCreateUserArgs = {
   input: CreateUserDto
 };
 
@@ -155,6 +159,8 @@ export type Query = {
   user: UserDto,
   users: Array<UserDto>,
   me?: Maybe<UserAuthDto>,
+  meExtended?: Maybe<UserAuthDto>,
+  roles: Array<RoleDto>,
   projects: Array<ProjectDto>,
   project: ProjectDto,
   task: TaskDto,
@@ -162,7 +168,7 @@ export type Query = {
 
 
 export type QueryAuthUserArgs = {
-  auth: CreateUserDto
+  auth: UserAuthInputDto
 };
 
 
@@ -171,6 +177,11 @@ export type QueryUserArgs = {
   email?: Maybe<Scalars['String']>,
   adEmail?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>
+};
+
+
+export type QueryRolesArgs = {
+  filter: RolesFilter
 };
 
 
@@ -196,6 +207,25 @@ export type Role = {
   admin: Scalars['Boolean'],
   permissions?: Maybe<Array<Permission>>,
   users?: Maybe<Array<User>>,
+};
+
+export type RoleDto = {
+   __typename?: 'RoleDto',
+  _id: Scalars['ID'],
+  name: Scalars['String'],
+  slug: Scalars['String'],
+  admin: Scalars['Boolean'],
+  users?: Maybe<Array<User>>,
+  permissions?: Maybe<Array<Permission>>,
+};
+
+export type RolesFilter = {
+  _id?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>,
+  slug?: Maybe<Scalars['String']>,
+  admin?: Maybe<Scalars['Boolean']>,
+  permission?: Maybe<Scalars['String']>,
+  user?: Maybe<Scalars['String']>,
 };
 
 export type SignUpUserDto = {
@@ -327,6 +357,30 @@ export type CreateTaskMutation = (
   ) }
 );
 
+export type CreateUserMutationVariables = {
+  name: Scalars['String'],
+  adEmail?: Maybe<Scalars['String']>,
+  email: Scalars['String'],
+  password?: Maybe<Scalars['String']>,
+  roleSlugs?: Maybe<Array<Scalars['String']>>
+};
+
+
+export type CreateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { createUser: (
+    { __typename?: 'UserDto' }
+    & Pick<UserDto, '_id' | 'name' | 'adEmail' | 'email'>
+    & { groups: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name'>
+    )>>, roles: Maybe<Array<(
+      { __typename?: 'Role' }
+      & Pick<Role, 'name' | 'slug' | 'admin'>
+    )>> }
+  ) }
+);
+
 export type DeleteProjectMutationVariables = {
   projectId: Scalars['String']
 };
@@ -378,6 +432,27 @@ export type MeQuery = (
   )> }
 );
 
+export type MeExtendedQueryVariables = {};
+
+
+export type MeExtendedQuery = (
+  { __typename?: 'Query' }
+  & { me: Maybe<(
+    { __typename?: 'UserAuthDto' }
+    & { user: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, '_id' | 'name' | 'email' | 'adEmail'>
+      & { roles: Maybe<Array<(
+        { __typename?: 'Role' }
+        & Pick<Role, 'name' | 'slug' | 'admin'>
+      )>> }
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>> }
+  )> }
+);
+
 export type ProjectQueryVariables = {
   _id?: Maybe<Scalars['String']>
 };
@@ -409,6 +484,23 @@ export type ProjectsQuery = (
       { __typename?: 'User' }
       & Pick<User, 'name'>
     )> }
+  )> }
+);
+
+export type RolesQueryVariables = {
+  admin?: Maybe<Scalars['Boolean']>
+};
+
+
+export type RolesQuery = (
+  { __typename?: 'Query' }
+  & { roles: Array<(
+    { __typename?: 'RoleDto' }
+    & Pick<RoleDto, '_id' | 'name' | 'slug' | 'admin'>
+    & { permissions: Maybe<Array<(
+      { __typename?: 'Permission' }
+      & Pick<Permission, 'name' | 'slug'>
+    )>> }
   )> }
 );
 
@@ -506,6 +598,24 @@ export type UpdateTaskMutation = (
   ) }
 );
 
+export type UsersQueryVariables = {};
+
+
+export type UsersQuery = (
+  { __typename?: 'Query' }
+  & { users: Array<(
+    { __typename?: 'UserDto' }
+    & Pick<UserDto, '_id' | 'name' | 'email' | 'adEmail'>
+    & { groups: Maybe<Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'name'>
+    )>>, roles: Maybe<Array<(
+      { __typename?: 'Role' }
+      & Pick<Role, 'name' | 'slug' | 'admin'>
+    )>> }
+  )> }
+);
+
 
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!, $description: String) {
@@ -598,6 +708,53 @@ export function useCreateTaskMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type CreateTaskMutationHookResult = ReturnType<typeof useCreateTaskMutation>;
 export type CreateTaskMutationResult = ApolloReactCommon.MutationResult<CreateTaskMutation>;
 export type CreateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateTaskMutation, CreateTaskMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($name: String!, $adEmail: String, $email: String!, $password: String, $roleSlugs: [String!]) {
+  createUser(input: {name: $name, adEmail: $adEmail, email: $email, password: $password, roleSlugs: $roleSlugs}) {
+    _id
+    name
+    adEmail
+    email
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}
+    `;
+export type CreateUserMutationFn = ApolloReactCommon.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      adEmail: // value for 'adEmail'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      roleSlugs: // value for 'roleSlugs'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, baseOptions);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const DeleteProjectDocument = gql`
     mutation deleteProject($projectId: String!) {
   deleteProject(projectId: $projectId) {
@@ -712,7 +869,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -732,6 +889,52 @@ export function useMeLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptio
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = ApolloReactCommon.QueryResult<MeQuery, MeQueryVariables>;
+export const MeExtendedDocument = gql`
+    query MeExtended {
+  me {
+    user {
+      _id
+      name
+      email
+      adEmail
+      roles {
+        name
+        slug
+        admin
+      }
+    }
+    permissions {
+      slug
+      permitted
+    }
+  }
+}
+    `;
+
+/**
+ * __useMeExtendedQuery__
+ *
+ * To run a query within a React component, call `useMeExtendedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeExtendedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeExtendedQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeExtendedQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<MeExtendedQuery, MeExtendedQueryVariables>) {
+        return ApolloReactHooks.useQuery<MeExtendedQuery, MeExtendedQueryVariables>(MeExtendedDocument, baseOptions);
+      }
+export function useMeExtendedLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<MeExtendedQuery, MeExtendedQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<MeExtendedQuery, MeExtendedQueryVariables>(MeExtendedDocument, baseOptions);
+        }
+export type MeExtendedQueryHookResult = ReturnType<typeof useMeExtendedQuery>;
+export type MeExtendedLazyQueryHookResult = ReturnType<typeof useMeExtendedLazyQuery>;
+export type MeExtendedQueryResult = ApolloReactCommon.QueryResult<MeExtendedQuery, MeExtendedQueryVariables>;
 export const ProjectDocument = gql`
     query Project($_id: String) {
   project(filter: {_id: $_id}) {
@@ -754,7 +957,7 @@ export const ProjectDocument = gql`
  * __useProjectQuery__
  *
  * To run a query within a React component, call `useProjectQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -792,7 +995,7 @@ export const ProjectsDocument = gql`
  * __useProjectsQuery__
  *
  * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -813,6 +1016,46 @@ export function useProjectsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHoo
 export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
 export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
 export type ProjectsQueryResult = ApolloReactCommon.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
+export const RolesDocument = gql`
+    query Roles($admin: Boolean) {
+  roles(filter: {admin: $admin}) {
+    _id
+    name
+    slug
+    admin
+    permissions {
+      name
+      slug
+    }
+  }
+}
+    `;
+
+/**
+ * __useRolesQuery__
+ *
+ * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRolesQuery({
+ *   variables: {
+ *      admin: // value for 'admin'
+ *   },
+ * });
+ */
+export function useRolesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<RolesQuery, RolesQueryVariables>) {
+        return ApolloReactHooks.useQuery<RolesQuery, RolesQueryVariables>(RolesDocument, baseOptions);
+      }
+export function useRolesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<RolesQuery, RolesQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<RolesQuery, RolesQueryVariables>(RolesDocument, baseOptions);
+        }
+export type RolesQueryHookResult = ReturnType<typeof useRolesQuery>;
+export type RolesLazyQueryHookResult = ReturnType<typeof useRolesLazyQuery>;
+export type RolesQueryResult = ApolloReactCommon.QueryResult<RolesQuery, RolesQueryVariables>;
 export const SignInDocument = gql`
     mutation SignIn($email: String!, $password: String!) {
   signin(auth: {email: $email, password: $password}) {
@@ -918,7 +1161,7 @@ export const TaskDocument = gql`
  * __useTaskQuery__
  *
  * To run a query within a React component, call `useTaskQuery` and pass it any options that fit your needs.
- * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1018,3 +1261,46 @@ export function useUpdateTaskMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutation>;
 export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<UpdateTaskMutation>;
 export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
+export const UsersDocument = gql`
+    query Users {
+  users {
+    _id
+    name
+    email
+    adEmail
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}
+    `;
+
+/**
+ * __useUsersQuery__
+ *
+ * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useUsersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
+        return ApolloReactHooks.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+      }
+export function useUsersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+        }
+export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
+export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
+export type UsersQueryResult = ApolloReactCommon.QueryResult<UsersQuery, UsersQueryVariables>;
