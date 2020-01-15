@@ -16,14 +16,15 @@ const TaskListHeader = styled.div`
 interface Props {
   tasks: ITask[];
   date: string;
+  project: string;
 }
 
-export const TasksList: React.FC<Props> = ({ tasks, date }) => (
+export const TasksList: React.FC<Props> = ({ tasks, date, project }) => (
   <TaskListStyles>
     <Paper elevation={2}>
       <TaskListHeader>Task for month: {date}</TaskListHeader>
       {tasks.map(task => (
-        <Task key={task._id} task={task} />
+        <Task key={task._id} task={task} project={project} />
       ))}
     </Paper>
   </TaskListStyles>

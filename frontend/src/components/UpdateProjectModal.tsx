@@ -36,6 +36,14 @@ export const GET_PROJECT = gql`
       _id
       name
       description
+      tasks {
+        _id
+        name
+        description
+        createdAt
+        dueDate
+        completed
+      }
     }
   }
 `;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Typography, IconButton } from '@material-ui/core';
 import styled from 'styled-components';
 import moment from 'moment';
@@ -7,6 +7,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import grey from '@material-ui/core/colors/grey';
 import { useDeleteTaskMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
+import { GET_PROJECT } from './UpdateProjectModal';
 
 const TaskStyles = styled.div`
   padding: 1rem 1.4rem;
@@ -77,11 +78,45 @@ export interface ITask {
 
 interface Props {
   task: ITask;
+  project: string;
 }
 
-export const Task: React.FC<Props> = ({ task }) => {
+export const Task: React.FC<Props> = ({ task, project }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const [deleteTask, { error }] = useDeleteTaskMutation();
+  const [deleteTask, { error }] = useDeleteTaskMutation({
+    update(cache, result) {
+      try {
+        const cacheRes: any = cache.readQuery({
+          query: GET_PROJECT,
+          variables: { _id: project }
+        });
+
+        cache.writeQuery({
+          query: GET_PROJECT,
+          variables: { _id: project },
+          data: {
+            project: {
+              ...cacheRes.project,
+              tasks: cacheRes.project.tasks.filter(
+                (task: any) => task._id !== result.data?.deleteTask._id
+              )
+            }
+          }
+        });
+      } catch (error) {
+        console.log(error);
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (error) {
+      enqueueSnackbar('Error deleting task', { variant: 'error' });
+    }
+  }, [enqueueSnackbar, error]);
 
   return (
     <TaskStyles>

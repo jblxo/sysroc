@@ -139,7 +139,12 @@ export const SingleProject: React.FC<Props> = props => {
           {data.project.tasks ? (
             <TaskLists>
               {Object.keys(tasksByMonth).map(key => (
-                <TasksList key={key} tasks={tasksByMonth[key]} date={key} />
+                <TasksList
+                  key={key}
+                  tasks={tasksByMonth[key]}
+                  date={key}
+                  project={data.project._id}
+                />
               ))}
             </TaskLists>
           ) : (
