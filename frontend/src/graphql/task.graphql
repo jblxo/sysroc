@@ -1,0 +1,10 @@
+query Task($_id: String!) {
+  task(filter: { _id: $_id }) {
+    _id
+    name
+    description
+    dueDate
+    createdAt
+    completed
+  }
+}

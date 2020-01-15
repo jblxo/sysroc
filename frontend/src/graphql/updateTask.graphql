@@ -1,0 +1,18 @@
+mutation UpdateTask(
+  $_id: String!
+  $name: String!
+  $description: String
+  $dueDate: DateTime!
+) {
+  updateTask(
+    filter: { _id: $_id }
+    updates: { name: $name, description: $description, dueDate: $dueDate }
+  ) {
+    _id
+    name
+    description
+    dueDate
+    createdAt
+    completed
+  }
+}

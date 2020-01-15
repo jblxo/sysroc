@@ -3,5 +3,13 @@ query Project($_id: String) {
     _id
     name
     description
+    tasks {
+      _id
+      name
+      description
+      createdAt
+      dueDate
+      completed
+    }
   }
 }

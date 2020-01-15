@@ -1,10 +1,10 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import { UpdateProjectForm } from './UpdateProjectForm';
-import { useUpdateProjectMutation } from '../generated/graphql';
+import { CreateTaskForm } from './CreateTaskForm';
+import { useCreateTaskMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
-import gql from 'graphql-tag';
+import { GET_PROJECT } from './UpdateProjectModal';
 
 function getModalStyle() {
   const top = 50;
@@ -30,58 +30,33 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const GET_PROJECT = gql`
-  query Project($_id: String) {
-    project(filter: { _id: $_id }) {
-      _id
-      name
-      description
-      tasks {
-        _id
-        name
-        description
-        createdAt
-        dueDate
-        completed
-      }
-    }
-  }
-`;
-
 interface Props {
   open: boolean;
   handleClose: () => void;
-  projectId: string;
-  data: {
-    name: string;
-    description?: string;
-  };
-  userId?: string;
+  project: string;
 }
 
-export const UpdateProjectModal: React.FC<Props> = ({
+export const CreateTaskModal: React.FC<Props> = ({
   open,
   handleClose,
-  projectId,
-  data,
-  userId
+  project
 }) => {
-  const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
-  const [updateProject, { error }] = useUpdateProjectMutation({
+  const [createTask, { error }] = useCreateTaskMutation({
     update(cache, result) {
       try {
         cache.writeQuery({
           query: GET_PROJECT,
-          variables: { _id: projectId },
+          variables: { _id: project },
           data: {
-            project: result.data?.updateProject
+            project: result.data?.createTask.project
           }
         });
-      } catch (e) {
-        if (e instanceof Error) {
-          enqueueSnackbar(e.message, { variant: 'error' });
+      } catch (error) {
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
         }
       }
     }
@@ -95,17 +70,18 @@ export const UpdateProjectModal: React.FC<Props> = ({
       onClose={handleClose}
     >
       <div style={modalStyle} className={classes.paper}>
-        <h2 id="new-project-modal-title">New Project</h2>
-        <p id="new-project-modal-description">Create something great</p>
-        <UpdateProjectForm
-          data={data}
+        <h2 id="new-project-modal-title">New Task</h2>
+        <p id="new-project-modal-description">Get the work done.</p>
+        <CreateTaskForm
           error={error}
-          onSubmit={async ({ name, description }) => {
-            const res = await updateProject({
-              variables: { name, description, projectId }
+          onSubmit={async ({ name, description, dueDate }) => {
+            const res = await createTask({
+              variables: { name, dueDate, description, project }
             });
             if (res.data) {
-              enqueueSnackbar('Project updated!', { variant: 'success' });
+              enqueueSnackbar('Task successfully created!', {
+                variant: 'success'
+              });
               handleClose();
             }
           }}

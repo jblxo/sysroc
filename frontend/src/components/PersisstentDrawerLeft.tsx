@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(7, 21),
+    padding: theme.spacing(7, 10),
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -129,19 +129,22 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
-          { !loading && data && data.me && hasPermissions(data.me, 'projects.view') &&
-            <ListItem
-              button
-              onClick={() => {
-                history.push('/projects');
-              }}
-            >
-              <ListItemIcon>
-                <SchoolIcon />
-              </ListItemIcon>
-              <ListItemText primary="Projects" />
-            </ListItem>
-          }
+          {!loading &&
+            data &&
+            data.me &&
+            hasPermissions(data.me, 'projects.view') && (
+              <ListItem
+                button
+                onClick={() => {
+                  history.push('/projects');
+                }}
+              >
+                <ListItemIcon>
+                  <SchoolIcon />
+                </ListItemIcon>
+                <ListItemText primary="Projects" />
+              </ListItem>
+            )}
           { !loading && data && data.me && hasPermissions(data.me, 'users.students.manage', 'users.teachers.manage') &&
             <ListItem
               button

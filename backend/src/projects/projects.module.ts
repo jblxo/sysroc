@@ -5,6 +5,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { Project } from './models/projects.model';
 import { User } from '../users/models/users.model';
 import { UsersModule } from '../users/users.module';
+import { Task } from '../tasks/models/tasks.model';
 
 @Module({
   imports: [

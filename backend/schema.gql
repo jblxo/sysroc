@@ -14,6 +14,14 @@ input CreateProjectDto {
   description: String
 }
 
+input CreateTaskDto {
+  name: String!
+  description: String
+  dueDate: DateTime!
+  completed: Boolean
+  project: String!
+}
+
 input CreateUserDto {
   name: String!
   adEmail: String
@@ -21,6 +29,11 @@ input CreateUserDto {
   password: String
   roleSlugs: [String!]
 }
+
+"""
+The javascript `Date` as string. Type represents date and time as the ISO Date string.
+"""
+scalar DateTime
 
 type Group {
   name: String!
@@ -36,6 +49,9 @@ type Mutation {
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
+  createTask(input: CreateTaskDto!): TaskDto!
+  deleteTask(filter: TasksFilter!): TaskDto!
+  updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
 }
 
 type Permission {
@@ -51,9 +67,11 @@ type PermissionStateDto {
 }
 
 type Project {
+  _id: ID!
   name: String!
   description: String!
   user: User!
+  tasks: [Task!]!
 }
 
 type ProjectDto {
@@ -61,6 +79,7 @@ type ProjectDto {
   name: String!
   description: String!
   user: User
+  tasks: [TaskDto!]
 }
 
 input ProjectsFilter {
@@ -78,6 +97,7 @@ type Query {
   roles(filter: RolesFilter!): [RoleDto!]!
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
+  task(filter: TasksFilter!): TaskDto!
 }
 
 type Role {
@@ -113,9 +133,40 @@ input SignUpUserDto {
   password: String
 }
 
+type Task {
+  _id: ID!
+  name: String!
+  description: String!
+  dueDate: DateTime!
+  createdAt: DateTime!
+  completed: Boolean!
+  project: Project!
+}
+
+type TaskDto {
+  _id: ID!
+  name: String!
+  description: String!
+  dueDate: DateTime!
+  createdAt: DateTime!
+  completed: Boolean!
+  project: Project!
+}
+
+input TasksFilter {
+  _id: String
+  name: String
+}
+
 input UpdateProjectDto {
   name: String
   description: String
+}
+
+input UpdateTaskDto {
+  name: String
+  description: String
+  dueDate: DateTime
 }
 
 type User {

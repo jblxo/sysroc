@@ -98,6 +98,7 @@ export const Header: React.FC<Props> = props => {
         </Typography>
         {!loading && data && data.me ? (
           <div>
+            Hello, {data.me.user?.email}
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -110,19 +111,11 @@ export const Header: React.FC<Props> = props => {
             <Menu
               id="menu-appbar"
               anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right'
-              }}
               open={open}
               onClose={handleClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
               <MenuItem
                 onClick={async () => {
                   await logout();
