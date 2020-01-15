@@ -56,6 +56,7 @@ export type Mutation = {
   updateProject: ProjectDto,
   createTask: TaskDto,
   deleteTask: TaskDto,
+  updateTask: TaskDto,
 };
 
 
@@ -101,6 +102,12 @@ export type MutationCreateTaskArgs = {
 
 
 export type MutationDeleteTaskArgs = {
+  filter: TasksFilter
+};
+
+
+export type MutationUpdateTaskArgs = {
+  updates: UpdateTaskDto,
   filter: TasksFilter
 };
 
@@ -221,6 +228,12 @@ export type TasksFilter = {
 export type UpdateProjectDto = {
   name?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
+};
+
+export type UpdateTaskDto = {
+  name?: Maybe<Scalars['String']>,
+  description?: Maybe<Scalars['String']>,
+  dueDate?: Maybe<Scalars['DateTime']>,
 };
 
 export type User = {
@@ -455,6 +468,22 @@ export type UpdateProjectMutation = (
       { __typename?: 'User' }
       & Pick<User, '_id'>
     )> }
+  ) }
+);
+
+export type UpdateTaskMutationVariables = {
+  _id: Scalars['String'],
+  name: Scalars['String'],
+  description?: Maybe<Scalars['String']>,
+  dueDate: Scalars['DateTime']
+};
+
+
+export type UpdateTaskMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTask: (
+    { __typename?: 'TaskDto' }
+    & Pick<TaskDto, '_id' | 'name' | 'description' | 'dueDate'>
   ) }
 );
 
@@ -892,3 +921,41 @@ export function useUpdateProjectMutation(baseOptions?: ApolloReactHooks.Mutation
 export type UpdateProjectMutationHookResult = ReturnType<typeof useUpdateProjectMutation>;
 export type UpdateProjectMutationResult = ApolloReactCommon.MutationResult<UpdateProjectMutation>;
 export type UpdateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProjectMutation, UpdateProjectMutationVariables>;
+export const UpdateTaskDocument = gql`
+    mutation UpdateTask($_id: String!, $name: String!, $description: String, $dueDate: DateTime!) {
+  updateTask(filter: {_id: $_id}, updates: {name: $name, description: $description, dueDate: $dueDate}) {
+    _id
+    name
+    description
+    dueDate
+  }
+}
+    `;
+export type UpdateTaskMutationFn = ApolloReactCommon.MutationFunction<UpdateTaskMutation, UpdateTaskMutationVariables>;
+
+/**
+ * __useUpdateTaskMutation__
+ *
+ * To run a mutation, you first call `useUpdateTaskMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTaskMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTaskMutation, { data, loading, error }] = useUpdateTaskMutation({
+ *   variables: {
+ *      _id: // value for '_id'
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      dueDate: // value for 'dueDate'
+ *   },
+ * });
+ */
+export function useUpdateTaskMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateTaskMutation, UpdateTaskMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateTaskMutation, UpdateTaskMutationVariables>(UpdateTaskDocument, baseOptions);
+      }
+export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutation>;
+export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<UpdateTaskMutation>;
+export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
