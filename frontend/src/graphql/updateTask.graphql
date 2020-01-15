@@ -12,5 +12,7 @@ mutation UpdateTask(
     name
     description
     dueDate
+    createdAt
+    completed
   }
 }

@@ -185,6 +185,7 @@ export const SingleProject: React.FC<Props> = props => {
         open={upTaskModalOpen}
         handleClose={handleUpTaskModalClose}
         task={selectedTaskId ?? ''}
+        projectId={data?.project._id ?? ''}
       />
     </>
   );

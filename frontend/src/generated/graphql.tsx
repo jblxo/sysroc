@@ -502,7 +502,7 @@ export type UpdateTaskMutation = (
   { __typename?: 'Mutation' }
   & { updateTask: (
     { __typename?: 'TaskDto' }
-    & Pick<TaskDto, '_id' | 'name' | 'description' | 'dueDate'>
+    & Pick<TaskDto, '_id' | 'name' | 'description' | 'dueDate' | 'createdAt' | 'completed'>
   ) }
 );
 
@@ -985,6 +985,8 @@ export const UpdateTaskDocument = gql`
     name
     description
     dueDate
+    createdAt
+    completed
   }
 }
     `;

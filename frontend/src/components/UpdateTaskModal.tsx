@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { UpdateTaskForm } from './UpdateTaskForm';
 import { useTaskQuery, useUpdateTaskMutation } from '../generated/graphql';
 import { useSnackbar } from 'notistack';
+import { GET_PROJECT } from './UpdateProjectModal';
 
 function getModalStyle() {
   const top = 50;
@@ -33,18 +34,52 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   task: string;
+  projectId: string;
 }
 
 export const UpdateTaskModal: React.FC<Props> = ({
   open,
   handleClose,
-  task
+  task,
+  projectId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
   const { data, loading } = useTaskQuery({ variables: { _id: task } });
-  const [updateTask, { error }] = useUpdateTaskMutation();
+  const [updateTask, { error }] = useUpdateTaskMutation({
+    update(cache, result) {
+      try {
+        const { project }: any = cache.readQuery({
+          query: GET_PROJECT,
+          variables: { _id: projectId }
+        });
+
+        const index = project.tasks.findIndex(
+          (task: any) => task._id === result.data?.updateTask._id
+        );
+
+        console.log(updateTask);
+
+        project.tasks[index] = result.data?.updateTask;
+
+        console.log(project.tasks);
+
+        cache.writeQuery({
+          query: GET_PROJECT,
+          variables: { _id: projectId },
+          data: {
+            project: project
+          }
+        });
+      } catch (error) {
+        console.log(error);
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
+      }
+    }
+  });
 
   if (loading) return <div>Loading...</div>;
 
