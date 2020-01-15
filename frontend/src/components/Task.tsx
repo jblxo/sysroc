@@ -5,6 +5,8 @@ import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import grey from '@material-ui/core/colors/grey';
+import { useDeleteTaskMutation } from '../generated/graphql';
+import { useSnackbar } from 'notistack';
 
 const TaskStyles = styled.div`
   padding: 1rem 1.4rem;
@@ -77,33 +79,42 @@ interface Props {
   task: ITask;
 }
 
-export const Task: React.FC<Props> = ({ task }) => (
-  <TaskStyles>
-    <Typography className="task-title" variant="h6">
-      {task.name}
-    </Typography>
-    <div className="task-description">{task.description}</div>
-    <div className="task-completed">
-      {task.completed ? 'Completed' : 'To Do'}
-    </div>
-    <div className="tast-due-date">
-      {moment(task.dueDate).format('DD. MM. YYYY, dddd')}
-    </div>
-    <div className="task-actions">
-      <IconButton
-        onClick={() => {
-          // TODO
-        }}
-      >
-        <EditIcon />
-      </IconButton>
-      <IconButton
-        onClick={() => {
-          // TODO
-        }}
-      >
-        <DeleteIcon />
-      </IconButton>
-    </div>
-  </TaskStyles>
-);
+export const Task: React.FC<Props> = ({ task }) => {
+  const { enqueueSnackbar } = useSnackbar();
+  const [deleteTask, { error }] = useDeleteTaskMutation();
+
+  return (
+    <TaskStyles>
+      <Typography className="task-title" variant="h6">
+        {task.name}
+      </Typography>
+      <div className="task-description">{task.description}</div>
+      <div className="task-completed">
+        {task.completed ? 'Completed' : 'To Do'}
+      </div>
+      <div className="tast-due-date">
+        {moment(task.dueDate).format('DD. MM. YYYY, dddd')}
+      </div>
+      <div className="task-actions">
+        <IconButton
+          onClick={() => {
+            // TODO
+          }}
+        >
+          <EditIcon />
+        </IconButton>
+        <IconButton
+          onClick={async () => {
+            const res = await deleteTask({ variables: { _id: task._id } });
+
+            if (res.data) {
+              enqueueSnackbar('Task deleted.', { variant: 'success' });
+            }
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </div>
+    </TaskStyles>
+  );
+};
