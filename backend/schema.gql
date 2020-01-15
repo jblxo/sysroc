@@ -74,6 +74,7 @@ type Query {
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserAuthDto
+  meExtended: UserAuthDto
   roles(filter: RolesFilter!): [RoleDto!]!
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!

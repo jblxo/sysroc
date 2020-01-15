@@ -4,7 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import { MyField } from '../MyField';
 import { ApolloError } from 'apollo-client';
 import { Error } from '../Error';
-import { useRolesQuery } from '../../generated/graphql';
+import { useMeExtendedQuery, useRolesQuery } from '../../generated/graphql';
 
 const useStyles = makeStyles({
   form: {
@@ -44,6 +44,9 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
   const classes = useStyles();
   const [role, setRole] = React.useState('guest');
   const { data, loading } = useRolesQuery({ variables: { admin: false } });
+  const { data: dataMe, loading: loadingMe } = useMeExtendedQuery();
+  const myRoles = dataMe?.me?.user?.roles;
+  const isAdmin = myRoles?.some(userRole => userRole.admin);
 
   const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setRole(event.target.value as string);
@@ -74,7 +77,7 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
           <div>
             <Field
               name="email"
-              type="text"
+              type="email"
               placeholder="Email"
               label="Email"
               component={MyField}
@@ -96,7 +99,7 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
               >
                 {data &&
                   data.roles &&
-                  data.roles.map(role => (
+                  data.roles.filter(role => !myRoles?.some(userRole => userRole.slug === role.slug) || isAdmin).map(role => (
                     <MenuItem value={role.slug}>{role.name}</MenuItem>
                 ))}
               </Select>
@@ -120,7 +123,7 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
           <div>
             <Field
               name="password"
-              type="text"
+              type="password"
               placeholder="Active Directory Password"
               label="Active Directory Password"
               component={MyField}

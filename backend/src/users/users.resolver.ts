@@ -18,6 +18,12 @@ import { ConfigService } from '../config/config.service';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { redisConstants } from '../redis/constants';
+import { User } from './models/users.model';
+import { mongoose } from '@typegoose/typegoose';
+import { HasPermissions } from './decorators/has-permissions.decorator';
+import { PERMISSIONS } from '../permissions/permissions';
+import { RoleDto } from '../roles/dto/role.dto';
+import { RolesService } from '../roles/roles.service';
 
 @Resolver()
 export class UsersResolver {
@@ -26,6 +32,7 @@ export class UsersResolver {
 
   constructor(
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
     private readonly authService: AuthService,
     private readonly redisService: RedisService,
     private readonly httpService: HttpService,
@@ -58,8 +65,49 @@ export class UsersResolver {
     };
   }
 
+  @Query(() => UserAuthDto, { nullable: true })
+  @UseGuards(GqlAuthGuard)
+  async meExtended(@CurrentUser() user: User & mongoose.Document) {
+    const me = await this.me(user);
+    user = await user.populate('roles').populate('groups').execPopulate();
+
+    return {
+      user,
+      permissions: me.permissions,
+    };
+  }
+
   @Mutation(() => UserDto)
-  async createUser(@Args('input') input: CreateUserDto) {
+  @UseGuards(GqlAuthGuard)
+  @HasPermissions(PERMISSIONS.MANAGE_STUDENT_USERS, PERMISSIONS.MANAGE_TEACHER_USERS)
+  async createUser(
+    @CurrentUser() user: User & mongoose.Document,
+    @Args('input') input: CreateUserDto,
+  ) {
+    // New user cannot be created with the same role as of the creator (unless the creator is an administrator)
+    const hasRole = user.roles.some((role: RoleDto) => input.roleSlugs.includes(role.slug));
+    const isAdmin = user.roles.some((role: RoleDto) => role.admin);
+    // The selected role cannot be for administrators
+    let isForAdmins = false;
+    for (const slug of input.roleSlugs) {
+      if (!slug) {
+        continue;
+      }
+
+      try {
+        const role = await this.rolesService.findOneBySlug(slug);
+        if (role.admin) {
+          isForAdmins = true;
+        }
+      } catch {
+        // Nothing has to be done here as the role has not been found
+      }
+    }
+
+    if ((hasRole && !isAdmin) || isForAdmins) {
+      throw new UnauthorizedException('You cannot create a user account with the role.');
+    }
+
     return await this.usersService.create(input);
   }
 
@@ -187,8 +235,8 @@ export class UsersResolver {
       );
     }
 
-    const response = await this.usersService.getADUser(auth).toPromise();
-    if (!response) {
+    const response = await this.usersService.getADUser(auth);
+    if (!response.exists) {
       throw new UnauthorizedException('Wrong password or email!');
     }
 
@@ -204,9 +252,9 @@ export class UsersResolver {
     const registerUserDto: RegisterUserDto = {
       email: auth.email,
       adEmail: auth.email,
-      name: response.data.user.cn,
+      name: response.user.cn,
       password,
-      dn: response.data.user.dn,
+      dn: response.user.dn,
     };
 
     await this.redisClient.append(
@@ -220,7 +268,7 @@ export class UsersResolver {
       permissions: null,
       userTemp: {
         email: auth.email,
-        name: response.data.user.cn,
+        name: response.user.cn,
       },
       registerToken,
     };

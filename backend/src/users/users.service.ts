@@ -1,4 +1,4 @@
-import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpService, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -12,8 +12,6 @@ import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
 import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
 import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/models/roles.model';
 import { PermissionStateDto } from './dto/permission-state.dto';
@@ -63,15 +61,21 @@ export class UsersService {
     return user;
   }
 
-  getADUser(
+  async getADUser(
     authInputDto: UserAuthInputDto,
-  ): Observable<AxiosResponse<ADResponse>> {
+  ): Promise<ADResponse> {
     const { email: username, password } = authInputDto;
 
-    return this.httpService.post(`${this.ADEndpoint}/auth/login`, {
-      username,
-      password,
-    });
+    let response: ADResponse = null;
+    await this.httpService
+      .post(`${this.ADEndpoint}/auth/login`, {
+        username,
+        password,
+      })
+      .toPromise()
+      .then(res => (response = res.data));
+
+    return response;
   }
 
   async register(registerUserDto: RegisterUserDto): Promise<User & mongoose.Document> {
@@ -94,19 +98,28 @@ export class UsersService {
       createUser.groups.push(group._id);
     });
 
-    const guestRole = await this.rolesService.findOneBySlug('guest');
-    createUser.roles.push(guestRole._id);
+    let guestRole = null;
+    if (!registerUserDto.roleSlugs || registerUserDto.roleSlugs.length === 0) {
+      guestRole = await this.rolesService.findOneBySlug('guest');
+      createUser.roles.push(guestRole._id);
+    }
 
     const createdUser = new this.userModel(createUser);
-    const newUser = await createdUser.save();
+    const newUser = await createdUser.save().catch(() => {
+      throw new ConflictException('This email has already been registered.');
+    });
 
     for (const group of createdGroups) {
       group.users.push(newUser._id);
       await group.save();
     }
 
-    guestRole.users.push(newUser._id);
-    await guestRole.save();
+    if (guestRole) {
+      guestRole.users.push(newUser._id);
+      await guestRole.save();
+    } else {
+      await this.addRoles(newUser, registerUserDto.roleSlugs);
+    }
 
     return await newUser
       .populate('groups')
@@ -118,11 +131,10 @@ export class UsersService {
     createUserDto: CreateUserDto,
   ): Promise<User & mongoose.Document> {
     if (createUserDto.adEmail && createUserDto.password) {
-      let response: ADResponse = null;
-      await this.getADUser({
+      const response = await this.getADUser({
         email: createUserDto.adEmail,
         password: createUserDto.password,
-      }).subscribe(res => (response = res.data));
+      });
 
       if (!response) {
         throw new NotFoundException('Incorrect Active Directory email address or password.');
@@ -136,6 +148,7 @@ export class UsersService {
         adEmail: createUserDto.adEmail,
         password: adPassword,
         dn: response.user.dn,
+        roleSlugs: createUserDto.roleSlugs,
       });
     }
 
@@ -154,17 +167,7 @@ export class UsersService {
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
-    for (const roleSlug of createUserDto.roleSlugs) {
-      if (!roleSlug) {
-        continue;
-      }
-
-      const role = await this.rolesService.findOneBySlug(roleSlug);
-      role.users.push(newUser._id);
-      newUser.roles.push(role._id);
-      await role.save();
-    }
-    await newUser.save();
+    await this.addRoles(newUser, createUserDto.roleSlugs);
 
     return await newUser
       .populate('groups')
@@ -191,9 +194,7 @@ export class UsersService {
     }
 
     for (const role of roles) {
-      if (
-        await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)
-      ) {
+      if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
         return true;
       }
     }
@@ -234,5 +235,25 @@ export class UsersService {
       )
       .exec();
     return !!this.userModel.deleteOne({ _id: userId }).exec();
+  }
+
+  /**
+   * Assign new roles to the user.
+   *
+   * @param user
+   * @param roleSlugs
+   */
+  async addRoles(user: User & mongoose.Document, roleSlugs: string[]): Promise<void> {
+    for (const roleSlug of roleSlugs) {
+      if (!roleSlug) {
+        continue;
+      }
+
+      const role = await this.rolesService.findOneBySlug(roleSlug);
+      role.users.push(user._id);
+      user.roles.push(role._id);
+      await role.save();
+    }
+    await user.save();
   }
 }
