@@ -32,9 +32,6 @@ export const UsersList: React.FC<Props> = props => {
             <Item>
               <div>Roles</div>
             </Item>
-            <Item>
-              <div>Action</div>
-            </Item>
           </div>
           {data &&
           data.users &&
@@ -54,9 +51,6 @@ export const UsersList: React.FC<Props> = props => {
               </Item>
               <Item>
                 <div>{user.roles && user.roles.map(role => role.name).join(', ')}</div>
-              </Item>
-              <Item className="actions">
-
               </Item>
             </div>
           ))}
