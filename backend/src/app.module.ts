@@ -11,6 +11,7 @@ import { redisConstants } from './redis/constants';
 import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { RolesModule } from './roles/roles.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { RolesModule } from './roles/roles.module';
     ActiveDirectoryModule,
     UsersModule,
     ProjectsModule,
+    TasksModule,
   ],
 })
 export class AppModule {

@@ -1,0 +1,35 @@
+mutation CreateTask(
+  $name: String!
+  $description: String
+  $dueDate: DateTime!
+  $project: String!
+) {
+  createTask(
+    input: {
+      name: $name
+      description: $description
+      dueDate: $dueDate
+      project: $project
+    }
+  ) {
+    _id
+    name
+    description
+    completed
+    createdAt
+    dueDate
+    project {
+      _id
+      name
+      description
+      tasks {
+        _id
+        name
+        description
+        createdAt
+        dueDate
+        completed
+      }
+    }
+  }
+}
