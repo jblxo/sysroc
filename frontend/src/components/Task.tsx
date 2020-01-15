@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Fab, IconButton } from '@material-ui/core';
+import { Typography, IconButton } from '@material-ui/core';
 import styled from 'styled-components';
 import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
@@ -10,7 +10,7 @@ const TaskStyles = styled.div`
   padding: 1rem 1.4rem;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr minmax(10rem, 1fr) 1fr;
+  grid-template-columns: 1fr minmax(3.5rem, 1fr) 1fr;
   grid-template-rows: 2.3rem 2rem 1fr;
 
   &:hover {
