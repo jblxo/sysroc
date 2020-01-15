@@ -157,6 +157,7 @@ export type Query = {
   me?: Maybe<UserAuthDto>,
   projects: Array<ProjectDto>,
   project: ProjectDto,
+  task: TaskDto,
 };
 
 
@@ -180,6 +181,11 @@ export type QueryProjectsArgs = {
 
 export type QueryProjectArgs = {
   filter: ProjectsFilter
+};
+
+
+export type QueryTaskArgs = {
+  filter: TasksFilter
 };
 
 export type Role = {
@@ -449,6 +455,19 @@ export type SignUpMutation = (
       { __typename?: 'PermissionStateDto' }
       & Pick<PermissionStateDto, 'slug' | 'permitted'>
     )>> }
+  ) }
+);
+
+export type TaskQueryVariables = {
+  _id: Scalars['String']
+};
+
+
+export type TaskQuery = (
+  { __typename?: 'Query' }
+  & { task: (
+    { __typename?: 'TaskDto' }
+    & Pick<TaskDto, '_id' | 'name' | 'description'>
   ) }
 );
 
@@ -882,6 +901,41 @@ export function useSignUpMutation(baseOptions?: ApolloReactHooks.MutationHookOpt
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult = ApolloReactCommon.MutationResult<SignUpMutation>;
 export type SignUpMutationOptions = ApolloReactCommon.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export const TaskDocument = gql`
+    query Task($_id: String!) {
+  task(filter: {_id: $_id}) {
+    _id
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useTaskQuery__
+ *
+ * To run a query within a React component, call `useTaskQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTaskQuery({
+ *   variables: {
+ *      _id: // value for '_id'
+ *   },
+ * });
+ */
+export function useTaskQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<TaskQuery, TaskQueryVariables>) {
+        return ApolloReactHooks.useQuery<TaskQuery, TaskQueryVariables>(TaskDocument, baseOptions);
+      }
+export function useTaskLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<TaskQuery, TaskQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<TaskQuery, TaskQueryVariables>(TaskDocument, baseOptions);
+        }
+export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
+export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
+export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
 export const UpdateProjectDocument = gql`
     mutation UpdateProject($name: String!, $description: String, $projectId: String!) {
   updateProject(updates: {name: $name, description: $description}, filter: {_id: $projectId}) {
