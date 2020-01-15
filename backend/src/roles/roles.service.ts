@@ -19,8 +19,6 @@ export class RolesService {
   async findOne(
     rolesFilter: RolesFilter,
   ): Promise<Role & mongoose.Document | undefined> {
-    console.log(rolesFilter);
-
     const role = await this.roleModel
       .findOne(rolesFilter)
       .populate('permissions')
@@ -112,20 +110,15 @@ export class RolesService {
       return false;
     }
 
-    if (typeof role.permissions[0] === 'string') {
+    if (!role.permissions[0].hasOwnProperty('slug')) {
       role = await this.roleModel
-        .findOne()
+        .findOne({ slug: role.slug })
         .populate('permissions')
         .exec();
     }
 
     for (const permissionSlug of permissionSlugs) {
-      if (
-        role.permissions.filter(
-          (rolePermission: Permission) =>
-            rolePermission.slug === permissionSlug,
-        ).length !== 0
-      ) {
+      if (role.permissions.some((rolePermission: Permission) => rolePermission.slug === permissionSlug)) {
         return true;
       }
     }
