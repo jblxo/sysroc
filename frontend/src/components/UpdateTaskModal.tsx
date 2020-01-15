@@ -2,6 +2,8 @@ import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { UpdateTaskForm } from './UpdateTaskForm';
+import { useTaskQuery, useUpdateTaskMutation } from '../generated/graphql';
+import { useSnackbar } from 'notistack';
 
 function getModalStyle() {
   const top = 50;
@@ -33,9 +35,18 @@ interface Props {
   task: string;
 }
 
-export const UpdateTaskModal: React.FC<Props> = ({ open, handleClose }) => {
+export const UpdateTaskModal: React.FC<Props> = ({
+  open,
+  handleClose,
+  task
+}) => {
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
+  const { data, loading } = useTaskQuery({ variables: { _id: task } });
+  const [updateTask, { error }] = useUpdateTaskMutation();
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <Modal
@@ -46,6 +57,22 @@ export const UpdateTaskModal: React.FC<Props> = ({ open, handleClose }) => {
     >
       <div style={modalStyle} className={classes.paper}>
         <h2 id="new-project-modal-title">Update Task</h2>
+        {data?.task && (
+          <UpdateTaskForm
+            error={error}
+            task={data.task}
+            onSubmit={async ({ name, description, dueDate }) => {
+              const res = await updateTask({
+                variables: { name, description, dueDate, _id: task }
+              });
+
+              if (res.data) {
+                enqueueSnackbar('Task updated!', { variant: 'success' });
+                handleClose();
+              }
+            }}
+          />
+        )}
       </div>
     </Modal>
   );

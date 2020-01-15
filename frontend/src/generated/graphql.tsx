@@ -467,7 +467,7 @@ export type TaskQuery = (
   { __typename?: 'Query' }
   & { task: (
     { __typename?: 'TaskDto' }
-    & Pick<TaskDto, '_id' | 'name' | 'description'>
+    & Pick<TaskDto, '_id' | 'name' | 'description' | 'dueDate' | 'createdAt' | 'completed'>
   ) }
 );
 
@@ -907,6 +907,9 @@ export const TaskDocument = gql`
     _id
     name
     description
+    dueDate
+    createdAt
+    completed
   }
 }
     `;

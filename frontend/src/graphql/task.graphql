@@ -3,5 +3,8 @@ query Task($_id: String!) {
     _id
     name
     description
+    dueDate
+    createdAt
+    completed
   }
 }
