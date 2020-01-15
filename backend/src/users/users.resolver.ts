@@ -98,6 +98,7 @@ export class UsersResolver {
         const role = await this.rolesService.findOneBySlug(slug);
         if (role.admin) {
           isForAdmins = true;
+          break;
         }
       } catch {
         // Nothing has to be done here as the role has not been found
