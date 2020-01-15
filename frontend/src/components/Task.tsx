@@ -111,7 +111,6 @@ export const Task: React.FC<Props> = ({
           }
         });
       } catch (error) {
-        console.log(error);
         if (error instanceof Error) {
           enqueueSnackbar(error.message, { variant: 'error' });
         }

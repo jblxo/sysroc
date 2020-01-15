@@ -59,11 +59,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
           (task: any) => task._id === result.data?.updateTask._id
         );
 
-        console.log(updateTask);
-
         project.tasks[index] = result.data?.updateTask;
-
-        console.log(project.tasks);
 
         cache.writeQuery({
           query: GET_PROJECT,
@@ -73,7 +69,6 @@ export const UpdateTaskModal: React.FC<Props> = ({
           }
         });
       } catch (error) {
-        console.log(error);
         if (error instanceof Error) {
           enqueueSnackbar(error.message, { variant: 'error' });
         }

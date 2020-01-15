@@ -80,7 +80,6 @@ export const UpdateProjectModal: React.FC<Props> = ({
           }
         });
       } catch (e) {
-        console.log(e);
         if (e instanceof Error) {
           enqueueSnackbar(e.message, { variant: 'error' });
         }

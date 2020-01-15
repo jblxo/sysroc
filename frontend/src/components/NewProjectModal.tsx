@@ -74,7 +74,6 @@ export const NewProjectModal: React.FC<Props> = ({
         });
       } catch (error) {
         if (error instanceof Error) {
-          console.log(error.message);
           enqueueSnackbar(error.message, { variant: 'error' });
         }
       }
