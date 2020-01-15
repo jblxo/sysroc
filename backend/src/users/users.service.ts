@@ -143,7 +143,7 @@ export class UsersService {
       const adPassword = await this.hashPassword(createUserDto.password);
 
       return await this.register({
-        name: response.user.cn,
+        name: createUserDto.name,
         email: createUserDto.email,
         adEmail: createUserDto.adEmail,
         password: adPassword,
