@@ -17,14 +17,28 @@ interface Props {
   tasks: ITask[];
   date: string;
   project: string;
+  handleUpdateModalOpen: () => void;
+  selectTask: (id: string) => void;
 }
 
-export const TasksList: React.FC<Props> = ({ tasks, date, project }) => (
+export const TasksList: React.FC<Props> = ({
+  tasks,
+  date,
+  project,
+  handleUpdateModalOpen,
+  selectTask
+}) => (
   <TaskListStyles>
     <Paper elevation={2}>
       <TaskListHeader>Task for month: {date}</TaskListHeader>
       {tasks.map(task => (
-        <Task key={task._id} task={task} project={project} />
+        <Task
+          key={task._id}
+          task={task}
+          project={project}
+          handleUpdateModalOpen={handleUpdateModalOpen}
+          selectTask={selectTask}
+        />
       ))}
     </Paper>
   </TaskListStyles>

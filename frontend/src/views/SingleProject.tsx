@@ -8,6 +8,7 @@ import { TasksList } from '../components/TasksList';
 import { CreateTaskModal } from '../components/CreateTaskModal';
 import moment from 'moment';
 import { ITask } from '../components/Task';
+import { UpdateTaskModal } from '../components/UpdateTaskModal';
 
 const ProjectControls = styled.div`
   display: grid;
@@ -64,7 +65,9 @@ interface Props
 
 export const SingleProject: React.FC<Props> = props => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [upTaskModalOpen, setUpTaskModalOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>('');
   const { data: meData, loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
     variables: { _id: props.match.params.projectId }
@@ -85,6 +88,14 @@ export const SingleProject: React.FC<Props> = props => {
 
   const handleCreateTaskClose = () => {
     setCreateTaskOpen(false);
+  };
+
+  const handleUpTaskModalOpen = () => {
+    setUpTaskModalOpen(true);
+  };
+
+  const handleUpTaskModalClose = () => {
+    setUpTaskModalOpen(false);
   };
 
   const tasksByMonth: { [key: string]: ITask[] } = {};
@@ -144,6 +155,8 @@ export const SingleProject: React.FC<Props> = props => {
                   tasks={tasksByMonth[key]}
                   date={key}
                   project={data.project._id}
+                  handleUpdateModalOpen={handleUpTaskModalOpen}
+                  selectTask={setSelectedTaskId}
                 />
               ))}
             </TaskLists>
@@ -167,6 +180,11 @@ export const SingleProject: React.FC<Props> = props => {
         open={createTaskOpen}
         handleClose={handleCreateTaskClose}
         project={data?.project._id ?? ''}
+      />
+      <UpdateTaskModal
+        open={upTaskModalOpen}
+        handleClose={handleUpTaskModalClose}
+        task={selectedTaskId ?? ''}
       />
     </>
   );

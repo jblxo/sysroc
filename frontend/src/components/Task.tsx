@@ -79,9 +79,16 @@ export interface ITask {
 interface Props {
   task: ITask;
   project: string;
+  handleUpdateModalOpen: () => void;
+  selectTask: (id: string) => void;
 }
 
-export const Task: React.FC<Props> = ({ task, project }) => {
+export const Task: React.FC<Props> = ({
+  task,
+  project,
+  handleUpdateModalOpen,
+  selectTask
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const [deleteTask, { error }] = useDeleteTaskMutation({
     update(cache, result) {
@@ -133,7 +140,8 @@ export const Task: React.FC<Props> = ({ task, project }) => {
       <div className="task-actions">
         <IconButton
           onClick={() => {
-            // TODO
+            selectTask(task._id);
+            handleUpdateModalOpen();
           }}
         >
           <EditIcon />
