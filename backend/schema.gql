@@ -48,6 +48,7 @@ type Mutation {
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!
+  updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
 }
 
 type Permission {
@@ -136,6 +137,12 @@ input TasksFilter {
 input UpdateProjectDto {
   name: String
   description: String
+}
+
+input UpdateTaskDto {
+  name: String
+  description: String
+  dueDate: DateTime
 }
 
 type User {

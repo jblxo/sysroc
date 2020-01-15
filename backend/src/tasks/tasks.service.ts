@@ -6,6 +6,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskDto } from './dto/task.dto';
 import { Project } from '../projects/models/projects.model';
 import { TasksFilter } from './filters/tasks.filter';
+import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
@@ -43,7 +44,14 @@ export class TasksService {
       .execPopulate();
   }
 
-  async deleteOne(filter: TasksFilter): Promise<TaskDto> {
+  deleteOne(filter: TasksFilter): Promise<TaskDto> {
     return this.taskModel.findByIdAndDelete(filter._id).exec();
+  }
+
+  async updateOne(
+    filter: TasksFilter,
+    updates: UpdateTaskDto,
+  ): Promise<TaskDto> {
+    return this.taskModel.findOneAndUpdate(filter, updates).exec();
   }
 }
