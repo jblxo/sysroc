@@ -7,19 +7,16 @@ import { PersistentDrawerLeft } from '../components/PersisstentDrawerLeft';
 import { Projects } from '../views/Projects';
 import { SingleProject } from '../views/SingleProject';
 import { ProtectedRoute } from '../components/ProtectedRoute';
-import { useMeQuery } from '../generated/graphql';
+import { useMeQuery, UserAuthDto } from '../generated/graphql';
 import { NotAllowed } from '../views/NotAllowed';
 import { Users } from '../views/Users';
+import { hasPermissions } from '../auth/hasPermissions';
 
 export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
 
-  const hasPermissions = (permissions: any[], neededPermissions: any[]) => {
-    for (const requiredPerm of neededPermissions) {
-      const found = permissions.find((perm: any) => perm.slug === requiredPerm);
-      if (!found || !found.permitted) return false;
-    }
-    return true;
+  const verifyPermissions = (user: UserAuthDto | any, neededPermissions: any[]) => {
+    return hasPermissions(user, ...neededPermissions);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -35,7 +32,7 @@ export const Routes: React.FC = () => {
             <Route exact path="/notallowed" component={NotAllowed} />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+              isAllowed={verifyPermissions(data?.me, [
                 'projects.create',
                 'projects.view',
                 'projects.manage'
@@ -48,7 +45,7 @@ export const Routes: React.FC = () => {
             />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+              isAllowed={verifyPermissions(data?.me, [
                 'projects.create',
                 'projects.view',
                 'projects.manage'
@@ -61,7 +58,7 @@ export const Routes: React.FC = () => {
             />
             <ProtectedRoute
               isAuthenticated={!!data?.me}
-              isAllowed={hasPermissions(data?.me?.permissions ?? [], [
+              isAllowed={verifyPermissions(data?.me, [
                 'users.students.manage',
                 'users.teachers.manage'
               ])}
