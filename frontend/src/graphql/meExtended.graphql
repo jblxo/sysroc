@@ -1,0 +1,19 @@
+query MeExtended {
+  me {
+    user {
+      _id
+      name
+      email
+      adEmail
+      roles {
+        name
+        slug
+        admin
+      }
+    }
+    permissions {
+      slug
+      permitted
+    }
+  }
+}

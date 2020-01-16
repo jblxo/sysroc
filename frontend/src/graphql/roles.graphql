@@ -1,0 +1,12 @@
+query Roles($admin: Boolean) {
+  roles(filter: { admin: $admin }) {
+    _id
+    name
+    slug
+    admin
+    permissions {
+      name
+      slug
+    }
+  }
+}

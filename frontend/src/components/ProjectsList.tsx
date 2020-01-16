@@ -1,69 +1,13 @@
 import React, { useState } from 'react';
-import {
-  useProjectsQuery,
-  useDeleteProjectMutation
-} from '../generated/graphql';
-import styled from 'styled-components';
+import { useDeleteProjectMutation, useProjectsQuery } from '../generated/graphql';
 import Paper from '@material-ui/core/Paper';
-import blue from '@material-ui/core/colors/blue';
-import grey from '@material-ui/core/colors/grey';
 import { Fab } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { DeleteProjectAlert } from './DeleteProjectAlert';
 import { GET_PROJECTS } from './NewProjectModal';
 import { useHistory } from 'react-router';
-
-const List = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
-
-  .flex {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-evenly;
-    align-items: stretch;
-    align-content: space-between;
-    height: 5rem;
-    padding: 5px 2rem;
-    transition: all 0.3s ease;
-
-    &:nth-child(odd) {
-      background-color: ${grey[100]};
-    }
-
-    &:hover:not(:first-child) {
-      background-color: ${blue[300]};
-    }
-
-    &:first-child {
-      font-weight: 300;
-      color: ${grey[700]};
-    }
-  }
-`;
-
-const Item = styled.div`
-  flex: 1 1 0;
-  display: flex;
-  margin: auto;
-
-  div {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
-
-  &.actions {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-evenly;
-    align-items: stretch;
-    align-content: space-between;
-  }
-`;
+import { Item } from './layout/Item';
+import { List } from './layout/List';
 
 interface Props {
   userId?: string;

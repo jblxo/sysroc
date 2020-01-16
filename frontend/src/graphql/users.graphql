@@ -1,0 +1,16 @@
+query Users {
+  users {
+    _id
+    name
+    email
+    adEmail
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}

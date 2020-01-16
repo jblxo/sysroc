@@ -23,8 +23,11 @@ input CreateTaskDto {
 }
 
 input CreateUserDto {
+  name: String!
+  adEmail: String
   email: String!
-  password: String!
+  password: String
+  roleSlugs: [String!]
 }
 
 """
@@ -38,7 +41,7 @@ type Group {
 }
 
 type Mutation {
-  create(input: CreateUserDto!): UserDto!
+  createUser(input: CreateUserDto!): UserDto!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
@@ -86,10 +89,12 @@ input ProjectsFilter {
 }
 
 type Query {
-  authUser(auth: CreateUserDto!): ADUser!
+  authUser(auth: UserAuthInputDto!): ADUser!
   user(_id: String, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserAuthDto
+  meExtended: UserAuthDto
+  roles(filter: RolesFilter!): [RoleDto!]!
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
   task(filter: TasksFilter!): TaskDto!
@@ -102,6 +107,24 @@ type Role {
   admin: Boolean!
   permissions: [Permission!]
   users: [User!]
+}
+
+type RoleDto {
+  _id: ID!
+  name: String!
+  slug: String!
+  admin: Boolean!
+  users: [User!]
+  permissions: [Permission!]
+}
+
+input RolesFilter {
+  _id: String
+  name: String
+  slug: String
+  admin: Boolean
+  permission: String
+  user: String
 }
 
 input SignUpUserDto {

@@ -1,9 +1,9 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { ADUser } from './models/ad-user.model';
 import { ADResponse } from './models/ad-response.model';
 import { map } from 'rxjs/operators';
+import { UserAuthInputDto } from '../users/dto/user-auth.dto';
 
 @Injectable()
 export class ActiveDirectoryService {
@@ -16,7 +16,7 @@ export class ActiveDirectoryService {
     this.ADEndpoint = config.get('AD_ENDPOINT');
   }
 
-  async authUser(auth: CreateUserDto): Promise<ADUser> {
+  async authUser(auth: UserAuthInputDto): Promise<ADUser> {
     const { email: username, password } = auth;
 
     const ADResponse: ADResponse = await this.httpService

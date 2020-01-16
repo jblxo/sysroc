@@ -1,4 +1,4 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { ConflictException, HttpService, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
@@ -12,13 +12,11 @@ import { Group } from '../groups/models/groups.model';
 import { GroupsService } from '../groups/groups.service';
 import { UserAuthInputDto } from './dto/user-auth.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
 import { RolesService } from '../roles/roles.service';
 import { Role } from '../roles/models/roles.model';
 import { PermissionStateDto } from './dto/permission-state.dto';
 import { PERMISSIONS } from '../permissions/permissions';
-import { CreateUserRawDto } from './dto/create-user-raw.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UsersService {
@@ -38,7 +36,11 @@ export class UsersService {
   }
 
   async findAll(): Promise<UserDto[]> {
-    return await this.userModel.find().exec();
+    return await this.userModel
+      .find()
+      .populate('groups')
+      .populate('roles')
+      .exec();
   }
 
   async findOne(filter: UsersFilter): Promise<UserDto | undefined> {
@@ -59,33 +61,24 @@ export class UsersService {
     return user;
   }
 
-  getADUser(
+  async getADUser(
     authInputDto: UserAuthInputDto,
-  ): Observable<AxiosResponse<ADResponse>> {
+  ): Promise<ADResponse> {
     const { email: username, password } = authInputDto;
 
-    return this.httpService.post(`${this.ADEndpoint}/auth/login`, {
-      username,
-      password,
-    });
-  }
-
-  async create(createUserDto: CreateUserDto): Promise<User> {
     let response: ADResponse = null;
-    await this.getADUser(createUserDto).subscribe(res => (response = res.data));
+    await this.httpService
+      .post(`${this.ADEndpoint}/auth/login`, {
+        username,
+        password,
+      })
+      .toPromise()
+      .then(res => (response = res.data));
 
-    const password = await this.hashPassword(createUserDto.password);
-
-    return this.register({
-      name: response.user.cn,
-      email: createUserDto.email,
-      adEmail: createUserDto.email,
-      password,
-      dn: response.user.dn,
-    });
+    return response;
   }
 
-  async register(registerUserDto: RegisterUserDto): Promise<User> {
+  async register(registerUserDto: RegisterUserDto): Promise<User & mongoose.Document> {
     const groups: Group[] = registerUserDto.dn
       .split(',')
       .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
@@ -105,19 +98,28 @@ export class UsersService {
       createUser.groups.push(group._id);
     });
 
-    const guestRole = await this.rolesService.findOneBySlug('guest');
-    createUser.roles.push(guestRole._id);
+    let guestRole = null;
+    if (!registerUserDto.roleSlugs || registerUserDto.roleSlugs.length === 0) {
+      guestRole = await this.rolesService.findOneBySlug('guest');
+      createUser.roles.push(guestRole._id);
+    }
 
     const createdUser = new this.userModel(createUser);
-    const newUser = await createdUser.save();
+    const newUser = await createdUser.save().catch(() => {
+      throw new ConflictException('This email has already been registered.');
+    });
 
     for (const group of createdGroups) {
       group.users.push(newUser._id);
       await group.save();
     }
 
-    guestRole.users.push(newUser._id);
-    await guestRole.save();
+    if (guestRole) {
+      guestRole.users.push(newUser._id);
+      await guestRole.save();
+    } else {
+      await this.addRoles(newUser, registerUserDto.roleSlugs);
+    }
 
     return await newUser
       .populate('groups')
@@ -125,29 +127,47 @@ export class UsersService {
       .execPopulate();
   }
 
-  async createRaw(
-    createUserRawDto: CreateUserRawDto,
+  async create(
+    createUserDto: CreateUserDto,
   ): Promise<User & mongoose.Document> {
-    const password = await this.hashPassword(createUserRawDto.password);
+    if (createUserDto.adEmail && createUserDto.password) {
+      const response = await this.getADUser({
+        email: createUserDto.adEmail,
+        password: createUserDto.password,
+      });
+
+      if (!response) {
+        throw new NotFoundException('Incorrect Active Directory email address or password.');
+      }
+
+      const adPassword = await this.hashPassword(createUserDto.password);
+
+      return await this.register({
+        name: createUserDto.name,
+        email: createUserDto.email,
+        adEmail: createUserDto.adEmail,
+        password: adPassword,
+        dn: response.user.dn,
+        roleSlugs: createUserDto.roleSlugs,
+      });
+    }
+
+    // Unencrypted password that can be sent to the user via a mail, for example
+    const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
+    const password = await this.hashPassword(passwordRaw);
 
     const createUser = {
-      email: createUserRawDto.email,
-      adEmail: createUserRawDto.email,
+      email: createUserDto.email,
+      adEmail: createUserDto.adEmail ? createUserDto.adEmail : createUserDto.email,
       password,
-      name: createUserRawDto.name,
+      name: createUserDto.name,
       roles: [],
     };
 
     const createdUser = new this.userModel(createUser);
     const newUser = await createdUser.save();
 
-    for (const roleSlug of createUserRawDto.roleSlugs) {
-      const role = await this.rolesService.findOneBySlug(roleSlug);
-      role.users.push(newUser._id);
-      newUser.roles.push(role._id);
-      await role.save();
-    }
-    await newUser.save();
+    await this.addRoles(newUser, createUserDto.roleSlugs);
 
     return await newUser
       .populate('groups')
@@ -174,9 +194,7 @@ export class UsersService {
     }
 
     for (const role of roles) {
-      if (
-        await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)
-      ) {
+      if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
         return true;
       }
     }
@@ -217,5 +235,25 @@ export class UsersService {
       )
       .exec();
     return !!this.userModel.deleteOne({ _id: userId }).exec();
+  }
+
+  /**
+   * Assign new roles to the user.
+   *
+   * @param user
+   * @param roleSlugs
+   */
+  async addRoles(user: User & mongoose.Document, roleSlugs: string[]): Promise<void> {
+    for (const roleSlug of roleSlugs) {
+      if (!roleSlug) {
+        continue;
+      }
+
+      const role = await this.rolesService.findOneBySlug(roleSlug);
+      role.users.push(user._id);
+      user.roles.push(role._id);
+      await role.save();
+    }
+    await user.save();
   }
 }

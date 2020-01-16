@@ -6,6 +6,7 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
 import { Permission } from '../permissions/models/permissions.model';
 import { RolesFilter } from './filters/role.filter';
+import { RoleDto } from './dto/role.dto';
 
 @Injectable()
 export class RolesService {
@@ -34,6 +35,14 @@ export class RolesService {
     slug: string,
   ): Promise<Role & mongoose.Document | undefined> {
     return await this.findOne({ slug });
+  }
+
+  async findAll(filter: RolesFilter): Promise<RoleDto[]> {
+    return await this.roleModel
+      .find(filter)
+      .populate('users')
+      .populate('permissions')
+      .exec();
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
@@ -101,20 +110,15 @@ export class RolesService {
       return false;
     }
 
-    if (typeof role.permissions[0] === 'string') {
+    if (!role.permissions[0].hasOwnProperty('slug')) {
       role = await this.roleModel
-        .findOne()
+        .findOne({ slug: role.slug })
         .populate('permissions')
         .exec();
     }
 
     for (const permissionSlug of permissionSlugs) {
-      if (
-        role.permissions.filter(
-          (rolePermission: Permission) =>
-            rolePermission.slug === permissionSlug,
-        ).length !== 0
-      ) {
+      if (role.permissions.some((rolePermission: Permission) => rolePermission.slug === permissionSlug)) {
         return true;
       }
     }

@@ -6,7 +6,7 @@ export class RegisterUserDto {
   readonly name: string;
 
   @Field({ nullable: true })
-  readonly email: string;
+  readonly email?: string;
 
   @Field()
   readonly adEmail: string;
@@ -16,4 +16,7 @@ export class RegisterUserDto {
 
   @Field()
   readonly dn: string;
+
+  @Field(type => [String], { nullable: true })
+  readonly roleSlugs?: string[];
 }
