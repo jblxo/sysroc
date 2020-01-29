@@ -1,12 +1,13 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Project } from '../../projects/entities/projects.entity';
 
 @Entity()
 @ObjectType()
 export class Task {
   @PrimaryGeneratedColumn()
   @Field(type => ID)
-  readonly id: string;
+  readonly id: number;
 
   @Column({nullable: false})
   @Field()
@@ -27,6 +28,10 @@ export class Task {
   @Column({nullable: false, default: false})
   @Field(type => Boolean)
   completed: boolean;
+
+  @ManyToOne(type => Project, project => project.tasks)
+  @Field(type => Project)
+  project: Project;
 
   @BeforeInsert()
   updateDateCreation() {

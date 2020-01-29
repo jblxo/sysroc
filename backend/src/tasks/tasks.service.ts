@@ -2,7 +2,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Task } from './entities/tasks.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskDto } from './dto/task.dto';
-import { Project } from '../projects/entities/projects.entities';
+import { Project } from '../projects/entities/projects.entity';
 import { TasksFilter } from './filters/tasks.filter';
 import { UpdateTaskDto } from './dto/update-task.dto';
 

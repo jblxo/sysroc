@@ -73,6 +73,14 @@ type PermissionStateDto {
   permitted: Boolean!
 }
 
+type Project {
+  id: ID!
+  name: String!
+  description: String!
+  user: User!
+  tasks: [Task!]!
+}
+
 type ProjectDto {
   id: ID!
   name: String!
@@ -138,6 +146,7 @@ type Task {
   dueDate: DateTime!
   createdAt: DateTime!
   completed: Boolean!
+  project: Project!
 }
 
 type TaskDto {

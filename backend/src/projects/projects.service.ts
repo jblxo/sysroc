@@ -1,14 +1,19 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Project } from './entities/projects.entities';
+import { Project } from './entities/projects.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { User } from '../users/entities/users.entity';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProjectsService {
+  constructor(@InjectRepository(Project) private readonly projectRepository: Repository<Project>) {
+  }
+
   async create(
     createProjectDto: CreateProjectDto,
     user: UserDto,
@@ -18,8 +23,7 @@ export class ProjectsService {
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectRepository.find({...filter, relations: ['user']});
   }
 
   async deleteOne(projectId: string): Promise<ProjectDto> {
