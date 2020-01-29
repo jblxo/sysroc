@@ -2,7 +2,7 @@ mutation SignUp($name: String, $email: String, $password: String) {
   signup(input: { name: $name, email: $email, password: $password }) {
     accessToken
     user {
-      _id
+      id
       email
     }
     permissions {

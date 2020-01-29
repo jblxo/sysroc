@@ -1,28 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
-import { Role } from './models/roles.model';
-import { mongoose, ReturnModelType } from '@typegoose/typegoose';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Role } from './entities/roles.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
-import { Permission } from '../permissions/models/permissions.model';
+import { Permission } from '../permissions/entities/permissions.entity';
 import { RolesFilter } from './filters/role.filter';
 import { RoleDto } from './dto/role.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class RolesService {
   constructor(
-    @InjectModel(Role)
-    private readonly roleModel: ReturnModelType<typeof Role>,
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     private readonly permissionsService: PermissionsService,
   ) {}
 
   async findOne(
     rolesFilter: RolesFilter,
-  ): Promise<Role & mongoose.Document | undefined> {
-    const role = await this.roleModel
-      .findOne(rolesFilter)
-      .populate('permissions')
-      .exec();
+  ): Promise<Role> {
+    const role = await this.roleRepository.findOne({relations: ['permissions', 'users'], where: rolesFilter});
 
     if (!role) {
       throw new Error(`Role not found!`);
@@ -33,38 +29,33 @@ export class RolesService {
 
   async findOneBySlug(
     slug: string,
-  ): Promise<Role & mongoose.Document | undefined> {
+  ): Promise<Role> {
     return await this.findOne({ slug });
   }
 
   async findAll(filter: RolesFilter): Promise<RoleDto[]> {
-    return await this.roleModel
-      .find(filter)
-      .populate('users')
-      .populate('permissions')
-      .exec();
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {
-    const createdRole = new this.roleModel({
-      name: createRoleDto.name,
-      slug: createRoleDto.slug,
-      admin: createRoleDto.admin,
-      permissions: [],
-    });
-    const newRole = await createdRole.save();
+    const role = new Role();
+    role.name = createRoleDto.name;
+    role.slug = createRoleDto.slug;
+    role.admin = createRoleDto.admin;
+    const newRole = await this.roleRepository.save(role);
 
     return await this.updatePermissions(newRole, createRoleDto.permissionSlugs);
   }
 
   async createOrUpdate(createRoleDto: CreateRoleDto): Promise<Role> {
     const filter = { slug: createRoleDto.slug };
-    const foundRole = await this.roleModel.findOne(filter);
+    const foundRole = await this.roleRepository.findOne(filter);
     if (!foundRole) {
       return await this.create(createRoleDto);
     }
 
-    await foundRole.updateOne({
+    await this.roleRepository.update(foundRole.id, {
       name: createRoleDto.name,
       admin: createRoleDto.admin,
     });
@@ -76,7 +67,7 @@ export class RolesService {
   }
 
   async updatePermissions(
-    role: Role & mongoose.Document,
+    role: Role,
     permissions: string[],
   ): Promise<Role> {
     const permissionSlugs = permissions.map(permission => ({
@@ -86,17 +77,22 @@ export class RolesService {
       permissionSlugs,
     );
 
-    role = await role.populate('permissions').execPopulate();
+    role = await this.roleRepository
+      .createQueryBuilder('role')
+      .whereInIds(role.id)
+      .leftJoinAndSelect('role.permissions', 'permissions')
+      .getOne();
+
     for (const permission of createdPermissions) {
       if (!(await this.hasPermissions(role, permission.slug))) {
-        permission.roles.push(role._id);
-        role.permissions.push(permission._id);
-        await permission.save();
+        role.permissions.push(permission);
       }
     }
-    await role.save();
+
+    await this.roleRepository.save(role);
 
     return role;
+
   }
 
   async hasPermissions(
@@ -111,10 +107,11 @@ export class RolesService {
     }
 
     if (!role.permissions[0].hasOwnProperty('slug')) {
-      role = await this.roleModel
-        .findOne({ slug: role.slug })
-        .populate('permissions')
-        .exec();
+      role = await this.roleRepository
+        .createQueryBuilder('role')
+        .where({slug: role.slug})
+        .leftJoinAndSelect('role.permissions', 'permissions')
+        .getOne();
     }
 
     for (const permissionSlug of permissionSlugs) {
@@ -123,5 +120,6 @@ export class RolesService {
       }
     }
     return false;
+
   }
 }

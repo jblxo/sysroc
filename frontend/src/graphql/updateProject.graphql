@@ -7,11 +7,11 @@ mutation UpdateProject(
     updates: { name: $name, description: $description }
     filter: { _id: $projectId }
   ) {
-    _id
+    id
     name
     description
     user {
-      _id
+      id
     }
   }
 }

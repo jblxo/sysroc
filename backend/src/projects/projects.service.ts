@@ -1,63 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { Project } from './models/projects.model';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Project } from './entities/projects.entities';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { User } from '../users/models/users.model';
+import { User } from '../users/entities/users.entity';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectsService {
-  constructor(
-    @InjectModel(Project)
-    private readonly projectModel: ReturnModelType<typeof Project>,
-    @InjectModel(User)
-    private readonly userModel: ReturnModelType<typeof User>,
-  ) {}
-
   async create(
     createProjectDto: CreateProjectDto,
     user: UserDto,
   ): Promise<ProjectDto> {
-    const project = await this.projectModel.create({
-      ...createProjectDto,
-      user: user._id,
-    });
-
-    const userEntity = await this.userModel.findById(user._id).exec();
-    userEntity.projects.push(project);
-    await userEntity.save();
-
-    const populatedProject = project.populate('user').execPopulate();
-    return populatedProject;
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
-    return this.projectModel
-      .find(filter)
-      .populate('user')
-      .exec();
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
-  deleteOne(projectId: string): Promise<ProjectDto> {
-    return this.projectModel.findByIdAndDelete(projectId).exec();
+  async deleteOne(projectId: string): Promise<ProjectDto> {
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
-  getOne(projectId: string): Promise<ProjectDto> {
-    return this.projectModel
-      .findById(projectId)
-      .populate('user')
-      .populate('tasks')
-      .exec();
+  async getOne(projectId: string): Promise<ProjectDto> {
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
-  updateOne(
+  async updateOne(
     filter: ProjectsFilter,
     updates: UpdateProjectDto,
   ): Promise<ProjectDto> {
-    return this.projectModel.findOneAndUpdate(filter, updates).exec();
+    // TODO: implement
+    throw new NotImplementedException();
   }
 }

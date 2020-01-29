@@ -1,6 +1,6 @@
 mutation CreateProject($name: String!, $description: String) {
   createProject(input: { name: $name, description: $description }) {
-    _id
+    id
     name
     description
     user {

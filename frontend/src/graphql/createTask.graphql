@@ -12,18 +12,18 @@ mutation CreateTask(
       project: $project
     }
   ) {
-    _id
+    id
     name
     description
     completed
     createdAt
     dueDate
     project {
-      _id
+      id
       name
       description
       tasks {
-        _id
+        id
         name
         description
         createdAt

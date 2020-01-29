@@ -1,15 +1,7 @@
-import { Field, InputType, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import { UserDto } from './user.dto';
 import { UserTempDto } from './user-temp.dto';
 import { PermissionStateDto } from './permission-state.dto';
-
-@InputType()
-export class UserAuthInputDto {
-  @Field()
-  readonly email: string;
-  @Field()
-  readonly password: string;
-}
 
 @ObjectType()
 export class UserAuthDto {

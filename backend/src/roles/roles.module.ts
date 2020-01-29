@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
 import { RolesResolver } from './roles.resolver';
 import { RolesService } from './roles.service';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { Role } from './models/roles.model';
+import { Role } from './entities/roles.entity';
 import { PERMISSIONS } from '../permissions/permissions';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [
-    TypegooseModule.forFeature([{ typegooseClass: Role, schemaOptions: {} }]),
-    PermissionsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Role]), PermissionsModule],
   providers: [RolesResolver, RolesService],
   exports: [RolesService],
 })

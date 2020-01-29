@@ -3,7 +3,7 @@ import { ConfigService } from '../config/config.service';
 import { ADUser } from './models/ad-user.model';
 import { ADResponse } from './models/ad-response.model';
 import { map } from 'rxjs/operators';
-import { UserAuthInputDto } from '../users/dto/user-auth.dto';
+import { UserAuthInputDto } from '../users/dto/user-auth-input.dto';
 
 @Injectable()
 export class ActiveDirectoryService {

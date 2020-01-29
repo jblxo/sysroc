@@ -36,7 +36,7 @@ export const UsersList: React.FC<Props> = props => {
           {data &&
           data.users &&
           data.users.map(user => (
-            <div key={user._id} className="flex">
+            <div key={user.id} className="flex">
               <Item>
                 <div>{user.name}</div>
               </Item>

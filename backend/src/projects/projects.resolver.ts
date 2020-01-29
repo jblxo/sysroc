@@ -4,10 +4,10 @@ import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserDto } from '../users/dto/user.dto';
-import { UseGuards } from '@nestjs/common';
+import { NotImplementedException, UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
-import { User } from '../users/models/users.model';
+import { User } from '../users/entities/users.entity';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
 import { UsersService } from '../users/users.service';
@@ -51,18 +51,8 @@ export class ProjectsResolver {
     @CurrentUser() user: UserDto,
     @Args('projectId') projectId: string,
   ) {
-    const project = await this.projectsService.getOne(projectId);
-    const author = project.user as User;
-    const canManageProjects = await this.usersService.hasPermissions(
-      author,
-      PERMISSIONS.PROJECTS_MANAGE,
-    );
-
-    if (author._id.toString() !== user._id.toString() && !canManageProjects) {
-      throw new Error(`You can't delete projects which you don't own!`);
-    }
-
-    return this.projectsService.deleteOne(projectId);
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   @Query(() => ProjectDto)
@@ -71,14 +61,8 @@ export class ProjectsResolver {
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
   ) {
-    const project = await this.projectsService.getOne(filter._id && filter._id);
-    const autor = project.user && (project.user as UserDto);
-    if (autor._id.toString() !== user._id.toString()) {
-      throw new Error(
-        `You can not view projects that you don't have access to!`,
-      );
-    }
-    return project;
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   @Mutation(() => ProjectDto)
@@ -88,15 +72,7 @@ export class ProjectsResolver {
     @Args('filter') filter: ProjectsFilter,
     @Args('updates') updates: UpdateProjectDto,
   ) {
-    const project = await this.projectsService.getOne(filter._id && filter._id);
-    const autor = project.user && (project.user as UserDto);
-    if (autor._id.toString() !== user._id.toString()) {
-      throw new Error(
-        `You can not view projects that you don't have access to!`,
-      );
-    }
-
-    await this.projectsService.updateOne(filter, updates);
-    return this.projectsService.getOne(filter._id);
+    // TODO: implement
+    throw new NotImplementedException();
   }
 }

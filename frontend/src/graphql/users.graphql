@@ -1,6 +1,6 @@
 query Users {
   users {
-    _id
+    id
     name
     email
     adEmail

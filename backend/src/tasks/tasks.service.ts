@@ -1,62 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
-import { Task } from './models/tasks.model';
-import { ReturnModelType } from '@typegoose/typegoose';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Task } from './entities/tasks.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TaskDto } from './dto/task.dto';
-import { Project } from '../projects/models/projects.model';
+import { Project } from '../projects/entities/projects.entities';
 import { TasksFilter } from './filters/tasks.filter';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  constructor(
-    @InjectModel(Task)
-    private readonly taskModel: ReturnModelType<typeof Task>,
-    @InjectModel(Project)
-    private readonly projectModel: ReturnModelType<typeof Project>,
-  ) {}
-
   async createOne(createTaskDto: CreateTaskDto): Promise<TaskDto> {
-    const newTask = await this.taskModel.create({
-      ...createTaskDto,
-    });
-
-    const project = await this.projectModel
-      .findById(createTaskDto.project)
-      .exec();
-
-    project.tasks.push(newTask);
-    await project.save();
-
-    // TODO: add sorting
-    return newTask
-      .populate([
-        {
-          path: 'project',
-          model: 'Project',
-          populate: {
-            path: 'tasks',
-            model: 'Task',
-          },
-        },
-      ])
-      .execPopulate();
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
-  deleteOne(filter: TasksFilter): Promise<TaskDto> {
-    return this.taskModel.findByIdAndDelete(filter._id).exec();
+  async deleteOne(filter: TasksFilter): Promise<TaskDto> {
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   async updateOne(
     filter: TasksFilter,
     updates: UpdateTaskDto,
   ): Promise<TaskDto> {
-    await this.taskModel.findOneAndUpdate(filter, updates).exec();
-    return this.taskModel.findById(filter._id).exec();
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
-  getOne(filter: TasksFilter): Promise<TaskDto> {
-    return this.taskModel.findById(filter._id).exec();
+  async getOne(filter: TasksFilter): Promise<TaskDto> {
+    // TODO: implement
+    throw new NotImplementedException();
   }
 }

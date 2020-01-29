@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
-  task: string;
+  task: number;
   projectId: string;
 }
 
@@ -46,7 +46,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
-  const { data, loading } = useTaskQuery({ variables: { _id: task } });
+  const { data, loading } = useTaskQuery({ variables: { id: task } });
   const [updateTask, { error }] = useUpdateTaskMutation({
     update(cache, result) {
       try {
@@ -56,7 +56,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
         });
 
         const index = project.tasks.findIndex(
-          (task: any) => task._id === result.data?.updateTask._id
+          (task: any) => task._id === result.data?.updateTask.id
         );
 
         project.tasks[index] = result.data?.updateTask;
@@ -93,7 +93,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
             task={data.task}
             onSubmit={async ({ name, description, dueDate }) => {
               const res = await updateTask({
-                variables: { name, description, dueDate, _id: task }
+                variables: { name, description, dueDate, id: task }
               });
 
               if (res.data) {

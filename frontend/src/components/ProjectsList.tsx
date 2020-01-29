@@ -27,7 +27,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
         data: {
           projects: projects.filter((project: { _id: string }) => {
             if (result.data) {
-              return project._id !== result.data.deleteProject._id;
+              return project._id !== result.data.deleteProject.id;
             }
             return false;
           })
@@ -89,7 +89,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
           {data &&
             data.projects &&
             data.projects.map(project => (
-              <div key={project._id} className="flex">
+              <div key={project.id} className="flex">
                 <Item>
                   <div>{project.name}</div>
                 </Item>
@@ -110,7 +110,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                     color="primary"
                     variant="extended"
                     onClick={() => {
-                      history.push(`/projects/${project._id}`);
+                      history.push(`/projects/${project.id}`);
                     }}
                   >
                     View
@@ -119,7 +119,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                     color="secondary"
                     variant="extended"
                     onClick={() => {
-                      setProjectId(project._id);
+                      setProjectId(project.id);
                       handleAlertOpen();
                     }}
                   >

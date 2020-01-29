@@ -1,11 +1,10 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Project } from '../../projects/models/projects.model';
-import { Ref } from '@typegoose/typegoose';
+import { ProjectDto } from '../../projects/dto/project.dto';
 
 @ObjectType()
 export class TaskDto {
-  @Field(type => ID)
-  readonly _id: string;
+  @Field()
+  readonly id: number;
 
   @Field()
   readonly name: string;
@@ -22,6 +21,6 @@ export class TaskDto {
   @Field(type => Boolean)
   readonly completed: boolean;
 
-  @Field(type => Project, { nullable: false })
-  readonly project: Ref<Project>;
+  @Field(type => ProjectDto)
+  readonly project: ProjectDto;
 }

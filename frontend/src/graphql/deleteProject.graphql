@@ -1,6 +1,6 @@
 mutation deleteProject($projectId: String!) {
   deleteProject(projectId: $projectId) {
-    _id
+    id
     name
   }
 }

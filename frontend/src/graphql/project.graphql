@@ -1,10 +1,10 @@
 query Project($_id: String) {
   project(filter: { _id: $_id }) {
-    _id
+    id
     name
     description
     tasks {
-      _id
+      id
       name
       description
       createdAt

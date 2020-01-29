@@ -1,14 +1,14 @@
 mutation UpdateTask(
-  $_id: String!
+  $id: Float!
   $name: String!
   $description: String
   $dueDate: DateTime!
 ) {
   updateTask(
-    filter: { _id: $_id }
+    filter: { id: $id }
     updates: { name: $name, description: $description, dueDate: $dueDate }
   ) {
-    _id
+    id
     name
     description
     dueDate
