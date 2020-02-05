@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Role } from './entities/roles.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { PermissionsService } from '../permissions/permissions.service';
@@ -15,10 +15,9 @@ export class RolesService {
     private readonly permissionsService: PermissionsService,
   ) {}
 
-  async findOne(
-    rolesFilter: RolesFilter,
-  ): Promise<Role> {
-    const role = await this.roleRepository.findOne({relations: ['permissions', 'users'], where: rolesFilter});
+  async findOne(rolesFilter: RolesFilter): Promise<Role> {
+    const role = await this.roleRepository
+      .findOne({ relations: ['permissions', 'users'], where: rolesFilter });
 
     if (!role) {
       throw new Error(`Role not found!`);
@@ -33,9 +32,10 @@ export class RolesService {
     return await this.findOne({ slug });
   }
 
-  async findAll(filter: RolesFilter): Promise<RoleDto[]> {
-    // TODO: implement
-    throw new NotImplementedException();
+  async findAll(rolesFilter: RolesFilter): Promise<RoleDto[]> {
+    // As the filter is a null prototype and TypeORM has issues with such objects, we need to recreate the filter instance
+    const filter = JSON.parse(JSON.stringify(rolesFilter));
+    return await this.roleRepository.find({ relations: ['permissions'], where: filter });
   }
 
   async create(createRoleDto: CreateRoleDto): Promise<Role> {

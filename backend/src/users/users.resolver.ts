@@ -4,12 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersFilter } from './filters/users.filter';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
-import {
-  ConflictException,
-  HttpService, NotImplementedException,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { ConflictException, HttpService, UnauthorizedException, UseGuards, } from '@nestjs/common';
 import { UserAuthDto } from './dto/user-auth.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
@@ -28,6 +23,8 @@ import { HasPermissions } from './decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
 import { RolesService } from '../roles/roles.service';
 import { UserAuthInputDto } from './dto/user-auth-input.dto';
+import { ADResponse } from '../active-directory/models/ad-response.model';
+import { RoleDto } from '../roles/dto/role.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -72,8 +69,7 @@ export class UsersResolver {
   @Query(() => UserAuthDto, { nullable: true })
   @UseGuards(GqlAuthGuard)
   async meExtended(@CurrentUser() user: User) {
-    // TODO: implements
-    throw new NotImplementedException();
+    return await this.me(user);
   }
 
   @Mutation(() => UserDto)
@@ -83,8 +79,32 @@ export class UsersResolver {
     @CurrentUser() user: User,
     @Args('input') input: CreateUserDto,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    // New user cannot be created with the same role as of the creator (unless the creator is an administrator)
+    const hasRole = user.roles.some((role: RoleDto) => input.roleSlugs.includes(role.slug));
+    const isAdmin = user.roles.some((role: RoleDto) => role.admin);
+    // The selected role cannot be for administrators
+    let isForAdmins = false;
+    for (const slug of input.roleSlugs) {
+      if (!slug) {
+        continue;
+      }
+
+      try {
+        const role = await this.rolesService.findOneBySlug(slug);
+        if (role.admin) {
+          isForAdmins = true;
+          break;
+        }
+      } catch {
+        // Nothing has to be done here as the role has not been found
+      }
+    }
+
+    if ((hasRole && !isAdmin) || isForAdmins) {
+      throw new UnauthorizedException('You cannot create a user account with the role.');
+    }
+
+    return await this.usersService.create(input);
   }
 
   @Mutation(() => UserAuthDto)
@@ -163,9 +183,13 @@ export class UsersResolver {
     @Args('auth') auth: UserAuthInputDto,
     @Context() { res }: MyContext,
   ): Promise<UserAuthDto> {
-    const user = await this.usersService
-      .findOne({ email: auth.email });
-
+    let user: UserDto = null;
+    try {
+      user = await this.usersService
+        .findOne({ email: auth.email });
+    } catch {
+      // Nothing has to be done here
+    }
     if (user) {
       const valid = await bcrypt.compare(auth.password, user.password);
       if (!valid) {
@@ -179,8 +203,6 @@ export class UsersResolver {
         user.email,
         user.id,
       );
-
-      console.log(refreshToken);
 
       res.cookie('token', refreshToken, {
         httpOnly: true,
@@ -196,16 +218,26 @@ export class UsersResolver {
       };
     }
 
-    const userWithADEmail = await this.usersService
-      .findOne({ adEmail: auth.email });
+    let userWithADEmail: UserDto = null;
+    try {
+      userWithADEmail = await this.usersService
+        .findOne({ adEmail: auth.email });
+    } catch {
+      // Nothing has to be done here
+    }
     if (userWithADEmail) {
       throw new ConflictException(
         'This email has already been registered. Have you forgotten your customized email?',
       );
     }
 
-    const response = await this.usersService.getADUser(auth);
-    if (!response.exists) {
+    let response: ADResponse = null;
+    try {
+      response = await this.usersService.getADUser(auth);
+    } catch {
+      // Nothing has to be done here
+    }
+    if (!response || !response.exists) {
       throw new UnauthorizedException('Wrong password or email!');
     }
 
@@ -254,9 +286,24 @@ export class UsersResolver {
     return true;
   }
 
-  // TODO: Add Guard
   @Mutation(() => Boolean)
-  deleteUser(@Args('userId') userId: string): Promise<boolean> {
-    return this.usersService.delete(userId);
+  @UseGuards(GqlAuthGuard)
+  @HasPermissions(PERMISSIONS.MANAGE_TEACHER_USERS)
+  async deleteUser(
+    @CurrentUser() user: User,
+    @Args('userId') userId: number,
+  ): Promise<boolean> {
+    try {
+      const userToDelete = await this.usersService.findOne({ id: userId });
+
+      // User with an administrator role cannot be deleted unless the current user is an administrator, too
+      if (userToDelete.roles.some(role => role.admin) && !user.roles.some(role => role.admin)) {
+        return false;
+      }
+    } catch {
+      return false;
+    }
+
+    return await this.usersService.delete(userId);
   }
 }

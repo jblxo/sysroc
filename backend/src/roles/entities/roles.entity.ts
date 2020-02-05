@@ -10,7 +10,7 @@ export class Role {
   @Field(type => ID)
   readonly id: number;
 
-  @Column({nullable: false})
+  @Column({ nullable: false })
   @Field()
   name: string;
 
@@ -22,7 +22,7 @@ export class Role {
   @Field()
   admin: boolean;
 
-  @ManyToMany(type => Permission, permission => permission.roles, {cascade: true})
+  @ManyToMany(type => Permission, permission => permission.roles, { cascade: true })
   @JoinTable()
   @Field(type => [Permission])
   permissions: Permission[];

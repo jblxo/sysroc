@@ -36,7 +36,7 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Group {
-  id: Float!
+  id: ID!
   name: String!
   users: [User!]!
 }
@@ -46,7 +46,7 @@ type Mutation {
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   logout: Boolean!
-  deleteUser(userId: String!): Boolean!
+  deleteUser(userId: Float!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
