@@ -39,7 +39,7 @@ interface Props {
 export const GET_PROJECTS = gql`
   query Projects($userId: String) {
     projects(filter: { user: $userId }) {
-      _id
+      id
       name
       description
       user {

@@ -48,8 +48,7 @@ export class ProjectsResolver {
     @CurrentUser() user: UserDto,
     @Args('projectId') projectId: string,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.deleteOne(projectId);
   }
 
   @Query(() => ProjectDto)

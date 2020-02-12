@@ -136,6 +136,15 @@ export type PermissionStateDto = {
   permitted: Scalars['Boolean'],
 };
 
+export type Project = {
+   __typename?: 'Project',
+  id: Scalars['ID'],
+  name: Scalars['String'],
+  description: Scalars['String'],
+  user: User,
+  tasks: Array<Task>,
+};
+
 export type ProjectDto = {
    __typename?: 'ProjectDto',
   id: Scalars['ID'],
@@ -171,7 +180,7 @@ export type QueryAuthUserArgs = {
 
 
 export type QueryUserArgs = {
-  _id?: Maybe<Scalars['String']>,
+  id?: Maybe<Scalars['Float']>,
   email?: Maybe<Scalars['String']>,
   adEmail?: Maybe<Scalars['String']>,
   name?: Maybe<Scalars['String']>
@@ -239,6 +248,7 @@ export type Task = {
   dueDate: Scalars['DateTime'],
   createdAt: Scalars['DateTime'],
   completed: Scalars['Boolean'],
+  project: Project,
 };
 
 export type TaskDto = {

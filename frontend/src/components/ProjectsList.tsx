@@ -25,9 +25,9 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
         query: GET_PROJECTS,
         variables: { userId },
         data: {
-          projects: projects.filter((project: { _id: string }) => {
+          projects: projects.filter((project: { id: string }) => {
             if (result.data) {
-              return project._id !== result.data.deleteProject.id;
+              return project.id !== result.data.deleteProject.id;
             }
             return false;
           })

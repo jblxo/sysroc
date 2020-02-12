@@ -1,4 +1,4 @@
-import {Injectable, NotImplementedException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, NotImplementedException} from '@nestjs/common';
 import {Project} from './entities/projects.entity';
 import {CreateProjectDto} from './dto/create-project.dto';
 import {UserDto} from '../users/dto/user.dto';
@@ -30,8 +30,17 @@ export class ProjectsService {
   }
 
   async deleteOne(projectId: string): Promise<ProjectDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const project = await this.projectRepository.findOne({id: projectId});
+    if (!project) {
+      throw new NotFoundException(`Project couldn't be found.`);
+    }
+
+    const res = await this.projectRepository.delete({id: projectId});
+    if(res.affected < 1) {
+      throw new InternalServerErrorException(`There has been an error during deleting the project.`);
+    }
+
+    return project;
   }
 
   async getOne(projectId: string): Promise<ProjectDto> {
