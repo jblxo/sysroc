@@ -57,8 +57,7 @@ export class ProjectsResolver {
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.getOne(filter.id);
   }
 
   @Mutation(() => ProjectDto)

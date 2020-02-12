@@ -1,11 +1,11 @@
 mutation UpdateProject(
   $name: String!
   $description: String
-  $projectId: String!
+  $projectId: Float!
 ) {
   updateProject(
     updates: { name: $name, description: $description }
-    filter: { _id: $projectId }
+    filter: { id: $projectId }
   ) {
     id
     name

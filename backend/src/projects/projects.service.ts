@@ -43,9 +43,8 @@ export class ProjectsService {
     return project;
   }
 
-  async getOne(projectId: string): Promise<ProjectDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+  async getOne(projectId: number): Promise<ProjectDto> {
+    return this.projectRepository.findOne(projectId, {relations: ['tasks']});
   }
 
   async updateOne(

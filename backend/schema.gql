@@ -90,7 +90,7 @@ type ProjectDto {
 }
 
 input ProjectsFilter {
-  _id: String
+  id: Float
   name: String
   user: String
 }
@@ -183,6 +183,7 @@ type User {
   adEmail: String!
   roles: [Role!]!
   groups: [Group!]!
+  projects: [Project!]!
 }
 
 type UserAuthDto {

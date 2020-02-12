@@ -169,7 +169,7 @@ input CreateUserDto {
 }
 
 input ProjectsFilter {
-    _id: String
+    id: Float
     name: String
     user: String
 }

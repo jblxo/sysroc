@@ -70,7 +70,7 @@ export const SingleProject: React.FC<Props> = props => {
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const { data: meData, loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
-    variables: { _id: props.match.params.projectId }
+    variables: { id: parseInt(props.match.params.projectId) }
   });
   const history = useHistory();
 
@@ -171,7 +171,7 @@ export const SingleProject: React.FC<Props> = props => {
         <UpdateProjectModal
           open={modalOpen}
           handleClose={handleModalClose}
-          projectId={props.match.params.projectId}
+          projectId={parseInt(props.match.params.projectId)}
           data={data?.project}
           userId={meData?.me?.user?.id}
         />

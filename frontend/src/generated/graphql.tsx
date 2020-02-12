@@ -155,7 +155,7 @@ export type ProjectDto = {
 };
 
 export type ProjectsFilter = {
-  _id?: Maybe<Scalars['String']>,
+  id?: Maybe<Scalars['Float']>,
   name?: Maybe<Scalars['String']>,
   user?: Maybe<Scalars['String']>,
 };
@@ -459,7 +459,7 @@ export type MeExtendedQuery = (
 );
 
 export type ProjectQueryVariables = {
-  _id?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['Float']>
 };
 
 
@@ -571,7 +571,7 @@ export type TaskQuery = (
 export type UpdateProjectMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -941,8 +941,8 @@ export type MeExtendedQueryHookResult = ReturnType<typeof useMeExtendedQuery>;
 export type MeExtendedLazyQueryHookResult = ReturnType<typeof useMeExtendedLazyQuery>;
 export type MeExtendedQueryResult = ApolloReactCommon.QueryResult<MeExtendedQuery, MeExtendedQueryVariables>;
 export const ProjectDocument = gql`
-    query Project($_id: String) {
-  project(filter: {_id: $_id}) {
+    query Project($id: Float) {
+  project(filter: {id: $id}) {
     id
     name
     description
@@ -970,7 +970,7 @@ export const ProjectDocument = gql`
  * @example
  * const { data, loading, error } = useProjectQuery({
  *   variables: {
- *      _id: // value for '_id'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -1188,8 +1188,8 @@ export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
 export const UpdateProjectDocument = gql`
-    mutation UpdateProject($name: String!, $description: String, $projectId: String!) {
-  updateProject(updates: {name: $name, description: $description}, filter: {_id: $projectId}) {
+    mutation UpdateProject($name: String!, $description: String, $projectId: Float!) {
+  updateProject(updates: {name: $name, description: $description}, filter: {id: $projectId}) {
     id
     name
     description

@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from 'type-graphql';
-import { Column, Entity, JoinColumn, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { User } from '../../users/entities/users.entity';
 import { Task } from '../../tasks/entities/tasks.entity';
 
@@ -18,8 +18,7 @@ export class Project {
   @Field()
   description: string;
 
-  @OneToOne(type => User)
-  @JoinColumn()
+  @ManyToOne(type => User, user => user.projects)
   @Field(type => User)
   user: User;
 
