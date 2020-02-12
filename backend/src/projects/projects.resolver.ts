@@ -7,17 +7,14 @@ import { UserDto } from '../users/dto/user.dto';
 import { NotImplementedException, UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
-import { User } from '../users/entities/users.entity';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
-import { UsersService } from '../users/users.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Resolver('Projects')
 export class ProjectsResolver {
   constructor(
-    private readonly projectsService: ProjectsService,
-    private readonly usersService: UsersService,
+    private readonly projectsService: ProjectsService
   ) {}
 
   @Mutation(() => ProjectDto)
