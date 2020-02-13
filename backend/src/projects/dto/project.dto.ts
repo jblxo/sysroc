@@ -5,7 +5,7 @@ import { TaskDto } from '../../tasks/dto/task.dto';
 @ObjectType()
 export class ProjectDto {
   @Field(type => ID)
-  readonly id: string;
+  readonly id: number;
   @Field()
   readonly name: string;
   @Field()

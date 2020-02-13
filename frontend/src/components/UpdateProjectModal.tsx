@@ -56,7 +56,6 @@ interface Props {
     name: string;
     description?: string;
   };
-  userId?: string;
 }
 
 export const UpdateProjectModal: React.FC<Props> = ({
@@ -64,7 +63,6 @@ export const UpdateProjectModal: React.FC<Props> = ({
   handleClose,
   projectId,
   data,
-  userId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();

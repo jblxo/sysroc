@@ -21,7 +21,7 @@ type Mutation {
     createProject(input: CreateProjectDto!): ProjectDto!
     createTask(input: CreateTaskDto!): TaskDto!
     createUser(input: CreateUserDto!): UserDto!
-    deleteProject(projectId: String!): ProjectDto!
+    deleteProject(projectId: Float!): ProjectDto!
     deleteTask(filter: TasksFilter!): TaskDto!
     deleteUser(userId: String!): Boolean!
     logout: Boolean!
@@ -121,6 +121,7 @@ type User {
     id: ID!
     name: String!
     password: String!
+    projects: [Project!]!
     roles: [Role!]!
 }
 

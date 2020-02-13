@@ -29,7 +29,7 @@ export class ProjectsService {
     return this.projectRepository.find({...filter, relations: ['user']});
   }
 
-  async deleteOne(projectId: string): Promise<ProjectDto> {
+  async deleteOne(projectId: number): Promise<ProjectDto> {
     const project = await this.projectRepository.findOne({id: projectId});
     if (!project) {
       throw new NotFoundException(`Project couldn't be found.`);
@@ -51,7 +51,19 @@ export class ProjectsService {
     filter: ProjectsFilter,
     updates: UpdateProjectDto,
   ): Promise<ProjectDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const project = await this.projectRepository.findOne(filter.id, {relations: ['user']});
+
+    if(!project) {
+      throw new NotFoundException(`Could not find project!`);
+    }
+
+    const updateProject: Project = {...project, ...updates};
+    const res = await this.projectRepository.update(filter.id, updateProject);
+
+    if(!res || res.affected < 1) {
+      throw new InternalServerErrorException(`Could not update the project`);
+    }
+
+    return await this.projectRepository.findOne(filter.id, {relations: ['user']});
   }
 }

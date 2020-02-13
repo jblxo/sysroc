@@ -173,7 +173,6 @@ export const SingleProject: React.FC<Props> = props => {
           handleClose={handleModalClose}
           projectId={parseInt(props.match.params.projectId)}
           data={data?.project}
-          userId={meData?.me?.user?.id}
         />
       )}
       <CreateTaskModal

@@ -8,7 +8,7 @@ import { Task } from '../../tasks/entities/tasks.entity';
 export class Project {
   @PrimaryGeneratedColumn()
   @Field(type => ID)
-  readonly id: string;
+  readonly id: number;
 
   @Column({nullable: false})
   @Field()

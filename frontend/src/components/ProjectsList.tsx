@@ -37,7 +37,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
   });
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<number | null>(null);
   const history = useHistory();
 
   const handleAlertOpen = () => {
@@ -52,7 +52,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
     enqueueSnackbar(error.message, { variant: 'error' });
   }
 
-  const handleDeleteProject = async (id: string) => {
+  const handleDeleteProject = async (id: number) => {
     await deleteProject({
       variables: { projectId: id }
     });
@@ -119,7 +119,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                     color="secondary"
                     variant="extended"
                     onClick={() => {
-                      setProjectId(project.id);
+                      setProjectId(parseInt(project.id));
                       handleAlertOpen();
                     }}
                   >

@@ -90,7 +90,7 @@ export type MutationCreateProjectArgs = {
 
 
 export type MutationDeleteProjectArgs = {
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -287,6 +287,7 @@ export type User = {
   adEmail: Scalars['String'],
   roles: Array<Role>,
   groups: Array<Group>,
+  projects: Array<Project>,
 };
 
 export type UserAuthDto = {
@@ -387,7 +388,7 @@ export type CreateUserMutation = (
 );
 
 export type DeleteProjectMutationVariables = {
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -761,7 +762,7 @@ export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutati
 export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const DeleteProjectDocument = gql`
-    mutation deleteProject($projectId: String!) {
+    mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
     id
     name

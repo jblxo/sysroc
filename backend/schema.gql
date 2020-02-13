@@ -48,7 +48,7 @@ type Mutation {
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
-  deleteProject(projectId: String!): ProjectDto!
+  deleteProject(projectId: Float!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!

@@ -46,14 +46,14 @@ export class ProjectsResolver {
   @HasPermissions(PERMISSIONS.PROJECTS_CREATE)
   async deleteProject(
     @CurrentUser() user: UserDto,
-    @Args('projectId') projectId: string,
+    @Args('projectId') projectId: number,
   ) {
     return this.projectsService.deleteOne(projectId);
   }
 
   @Query(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async project(
+  project(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
   ) {
@@ -62,12 +62,11 @@ export class ProjectsResolver {
 
   @Mutation(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async updateProject(
+  updateProject(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
     @Args('updates') updates: UpdateProjectDto,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.updateOne(filter, updates);
   }
 }
