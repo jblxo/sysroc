@@ -154,7 +154,7 @@ export const SingleProject: React.FC<Props> = props => {
                   key={key}
                   tasks={tasksByMonth[key]}
                   date={key}
-                  project={data.project.id}
+                  project={parseInt(data.project.id)}
                   handleUpdateModalOpen={handleUpTaskModalOpen}
                   selectTask={setSelectedTaskId}
                 />

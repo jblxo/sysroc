@@ -78,7 +78,7 @@ export interface ITask {
 
 interface Props {
   task: ITask;
-  project: string;
+  project: number;
   handleUpdateModalOpen: () => void;
   selectTask: (id: number) => void;
 }
@@ -95,17 +95,17 @@ export const Task: React.FC<Props> = ({
       try {
         const cacheRes: any = cache.readQuery({
           query: GET_PROJECT,
-          variables: { _id: project }
+          variables: { id: project }
         });
 
         cache.writeQuery({
           query: GET_PROJECT,
-          variables: { _id: project },
+          variables: { id: project },
           data: {
             project: {
               ...cacheRes.project,
               tasks: cacheRes.project.tasks.filter(
-                (task: any) => task._id !== result.data?.deleteTask.id
+                (task: any) => task.id !== result.data?.deleteTask.id
               )
             }
           }

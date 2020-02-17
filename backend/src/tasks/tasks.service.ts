@@ -1,4 +1,4 @@
-import {Injectable, NotImplementedException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, NotImplementedException} from '@nestjs/common';
 import {Task} from './entities/tasks.entity';
 import {CreateTaskDto} from './dto/create-task.dto';
 import {TaskDto} from './dto/task.dto';
@@ -24,8 +24,17 @@ export class TasksService {
   }
 
   async deleteOne(filter: TasksFilter): Promise<TaskDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const task = await this.taskRepository.findOne(filter);
+    if(!task) {
+      throw new NotFoundException(`Could not find task with given ID!`);
+    }
+
+    const res = await this.taskRepository.delete(filter.id);
+    if(res.affected < 1) {
+      throw new InternalServerErrorException(`Could not delete task!`);
+    }
+
+    return task;
   }
 
   async updateOne(
