@@ -68,7 +68,7 @@ export const SingleProject: React.FC<Props> = props => {
   const [upTaskModalOpen, setUpTaskModalOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  const { data: meData, loading: meLoading } = useMeQuery();
+  const { loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
     variables: { id: parseInt(props.match.params.projectId) }
   });

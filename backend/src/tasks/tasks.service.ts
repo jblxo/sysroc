@@ -17,8 +17,9 @@ export class TasksService {
 
   async createOne(createTaskDto: CreateTaskDto): Promise<TaskDto> {
     const newTask = this.taskRepository.create({...createTaskDto, project: null});
-    newTask.project = await this.projectRepository.findOne(createTaskDto.project);
+    newTask.project = await this.projectRepository.findOne(createTaskDto.project, {relations: ['tasks']});
     await this.taskRepository.save(newTask);
+    newTask.project = await this.projectRepository.findOne(createTaskDto.project, {relations: ['tasks']});
     return newTask;
   }
 
@@ -36,7 +37,6 @@ export class TasksService {
   }
 
   async getOne(filter: TasksFilter): Promise<TaskDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.taskRepository.findOne(filter);
   }
 }
