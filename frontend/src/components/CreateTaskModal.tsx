@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
-  project: string;
+  project: number;
 }
 
 export const CreateTaskModal: React.FC<Props> = ({

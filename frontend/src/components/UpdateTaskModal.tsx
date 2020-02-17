@@ -34,7 +34,7 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   task: number;
-  projectId: string;
+  projectId: number;
 }
 
 export const UpdateTaskModal: React.FC<Props> = ({

@@ -29,7 +29,7 @@ export type CreateTaskDto = {
   description?: Maybe<Scalars['String']>,
   dueDate: Scalars['DateTime'],
   completed?: Maybe<Scalars['Boolean']>,
-  project: Scalars['String'],
+  project: Scalars['Float'],
 };
 
 export type CreateUserDto = {
@@ -343,7 +343,7 @@ export type CreateTaskMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
   dueDate: Scalars['DateTime'],
-  project: Scalars['String']
+  project: Scalars['Float']
 };
 
 
@@ -662,7 +662,7 @@ export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProject
 export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
 export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
 export const CreateTaskDocument = gql`
-    mutation CreateTask($name: String!, $description: String, $dueDate: DateTime!, $project: String!) {
+    mutation CreateTask($name: String!, $description: String, $dueDate: DateTime!, $project: Float!) {
   createTask(input: {name: $name, description: $description, dueDate: $dueDate, project: $project}) {
     id
     name

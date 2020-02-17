@@ -2,7 +2,7 @@ mutation CreateTask(
   $name: String!
   $description: String
   $dueDate: DateTime!
-  $project: String!
+  $project: Float!
 ) {
   createTask(
     input: {

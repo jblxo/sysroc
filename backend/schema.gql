@@ -19,7 +19,7 @@ input CreateTaskDto {
   description: String
   dueDate: DateTime!
   completed: Boolean
-  project: String!
+  project: Float!
 }
 
 input CreateUserDto {

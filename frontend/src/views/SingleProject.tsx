@@ -178,13 +178,13 @@ export const SingleProject: React.FC<Props> = props => {
       <CreateTaskModal
         open={createTaskOpen}
         handleClose={handleCreateTaskClose}
-        project={data?.project.id ?? ''}
+        project={parseInt(data?.project.id ?? '0')}
       />
       <UpdateTaskModal
         open={upTaskModalOpen}
         handleClose={handleUpTaskModalClose}
         task={selectedTaskId ?? 0}
-        projectId={data?.project.id ?? ''}
+        projectId={parseInt(data?.project.id ?? '0')}
       />
     </>
   );

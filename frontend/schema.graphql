@@ -158,7 +158,7 @@ input CreateTaskDto {
     description: String
     dueDate: DateTime!
     name: String!
-    project: String!
+    project: Float!
 }
 
 input CreateUserDto {
