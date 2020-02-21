@@ -1,0 +1,16 @@
+mutation UpdateUser($name: String!, $email: String!, $roleSlugs: [String!], $userId: Float!) {
+  updateUser(input: { name: $name, email: $email, roleSlugs: $roleSlugs }, filter: { id: $userId }) {
+    id
+    name
+    adEmail
+    email
+    groups {
+      name
+    }
+    roles {
+      name
+      slug
+      admin
+    }
+  }
+}

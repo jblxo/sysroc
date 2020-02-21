@@ -1,6 +1,6 @@
-import { ArgsType, Field } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 
-@ArgsType()
+@InputType()
 export class UsersFilter {
   @Field({ nullable: true })
   id?: number;

@@ -45,6 +45,7 @@ type Mutation {
   createUser(input: CreateUserDto!): UserDto!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
+  updateUser(input: UpdateUserDto!, filter: UsersFilter!): UserDto!
   logout: Boolean!
   deleteUser(userId: Float!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
@@ -97,7 +98,7 @@ input ProjectsFilter {
 
 type Query {
   authUser(auth: UserAuthInputDto!): ADUser!
-  user(id: Float, email: String, adEmail: String, name: String): UserDto!
+  user(filter: UsersFilter!): UserDto!
   users: [UserDto!]!
   me: UserAuthDto
   meExtended: UserAuthDto
@@ -175,6 +176,12 @@ input UpdateTaskDto {
   dueDate: DateTime
 }
 
+input UpdateUserDto {
+  name: String!
+  email: String!
+  roleSlugs: [String!]
+}
+
 type User {
   id: ID!
   name: String!
@@ -206,6 +213,13 @@ type UserDto {
   password: String!
   groups: [Group!]!
   roles: [RoleDto!]!
+}
+
+input UsersFilter {
+  id: Float
+  email: String
+  adEmail: String
+  name: String
 }
 
 type UserTempDto {

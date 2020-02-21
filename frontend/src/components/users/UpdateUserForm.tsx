@@ -28,19 +28,23 @@ const useStyles = makeStyles({
 interface Values {
   name: string;
   email: string;
-  adEmail?: string;
-  password?: string;
   roles?: string[];
 }
 
 interface Props {
   onSubmit: (values: Values) => void;
+  userData: {
+    name: string;
+    email: string;
+    roles?: string[];
+  };
   error: ApolloError | any;
 }
 
-export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
+export const UpdateUserForm: React.FC<Props> = ({ onSubmit, userData, error }) => {
   const classes = useStyles({});
-  const [roles, setRoles] = React.useState(['guest']);
+  const [roles, setRoles] = React.useState(userData.roles ? userData.roles : ['guest']);
+  console.log(userData);
   const { data, loading } = useRolesQuery({ variables: { admin: false } });
   const { data: dataMe } = useMeExtendedQuery();
   const canManageTeachers = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.teachers.manage'));
@@ -58,7 +62,7 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
 
   return (
     <Formik
-      initialValues={{ name: '', email: '', adEmail: '', password: '' }}
+      initialValues={{ name: userData.name, email: userData.email }}
       onSubmit={values => {
         onSubmit({ ...values, roles });
       }}
@@ -105,37 +109,13 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
               label={role.name}
             />
           ))}
-          <Typography className={classes.formTitle} variant="h5">
-            Active Directory Credentials
-          </Typography>
-          <p className={classes.formNote}>
-            Fill details below to connect the user account with Active Directory.
-          </p>
-          <div>
-            <Field
-              name="adEmail"
-              type="text"
-              placeholder="Active Directory Email"
-              label="Active Directory Email"
-              component={MyField}
-            />
-          </div>
-          <div>
-            <Field
-              name="password"
-              type="password"
-              placeholder="Active Directory Password"
-              label="Active Directory Password"
-              component={MyField}
-            />
-          </div>
           <Button
             className={classes.button}
             type="submit"
             variant="contained"
             color="primary"
           >
-            Create
+            Update
           </Button>
         </Form>
       )}

@@ -92,7 +92,6 @@ export class RolesService {
     await this.roleRepository.save(role);
 
     return role;
-
   }
 
   async hasPermissions(
@@ -120,6 +119,29 @@ export class RolesService {
       }
     }
     return false;
+  }
 
+  /**
+   * Check whether there is an admin role in the list of role slugs.
+   *
+   * @param slugs
+   */
+  async containsAdminRole(slugs: string[]): Promise<boolean> {
+    for (const slug of slugs) {
+      // Since the input can be given from the user, there may be empty values which should be skipped
+      if (!slug) {
+        continue;
+      }
+
+      try {
+        if ((await this.findOneBySlug(slug)).admin) {
+          return true;
+        }
+      } catch {
+        // Nothing has to be done here as the role has not been found
+      }
+    }
+
+    return false;
   }
 }

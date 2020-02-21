@@ -17,6 +17,7 @@ import { UserAuthInputDto } from './dto/user-auth-input.dto';
 import { Role } from '../roles/entities/roles.entity';
 import { GroupsService } from '../groups/groups.service';
 import { CreateGroupDto } from '../groups/dto/create-group.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -41,6 +42,9 @@ export class UsersService {
   }
 
   async findOne(filter: UsersFilter): Promise<UserDto> {
+    // Fix issues with null prototype objects which do not work as filters
+    filter = JSON.parse(JSON.stringify(filter));
+
     const user = await this.userRepository
       .findOne(filter, { relations: ['roles', 'groups'] });
 
@@ -178,6 +182,30 @@ export class UsersService {
       .getOne();
   }
 
+  async update(
+    user: UserDto,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDto> {
+    await this.userRepository.update(user.id, {
+      name: updateUserDto.name,
+      email: updateUserDto.email,
+    });
+
+    const updatedUser = await this.userRepository.findOne({ id: user.id }, { relations: ['roles'] });
+
+    // Remove all roles
+    updatedUser.roles.length = 0;
+
+    await this.addRoles(updatedUser, updateUserDto.roleSlugs);
+
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(updatedUser.id)
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.groups', 'groups')
+      .getOne();
+  }
+
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 10);
   }
@@ -232,6 +260,8 @@ export class UsersService {
 
   /**
    * Assign new roles to the user.
+   *
+   * The user entity is saved afterwards.
    *
    * @param user
    * @param roleSlugs
