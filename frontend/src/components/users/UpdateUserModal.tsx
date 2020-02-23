@@ -39,6 +39,7 @@ interface Props {
     name: string;
     email: string;
     roles?: string[];
+    groups?: number[];
   };
 }
 
@@ -95,9 +96,9 @@ export const UpdateUserModal: React.FC<Props> = ({
         <UpdateUserForm
           error={error}
           userData={data}
-          onSubmit={async ({ name, email, roles }) => {
+          onSubmit={async ({ name, email, roles, groups }) => {
             const res = await updateUser({
-              variables: { name, email, roleSlugs: roles, userId }
+              variables: { name, email, roleSlugs: roles, groups, userId }
             });
             if (res.data) {
               enqueueSnackbar('User updated!', { variant: 'success' });

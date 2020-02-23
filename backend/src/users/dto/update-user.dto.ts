@@ -10,4 +10,7 @@ export class UpdateUserDto {
 
   @Field(type => [String], { nullable: true })
   readonly roleSlugs?: string[];
+
+  @Field(type => [Number], { nullable: true })
+  readonly groups?: number[];
 }

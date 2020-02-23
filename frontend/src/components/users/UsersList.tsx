@@ -9,7 +9,7 @@ import { hasPermissions } from '../../auth/hasPermissions';
 
 interface Props {}
 
-export const UsersList: React.FC<Props> = props => {
+export const UsersList: React.FC<Props> = () => {
   const { data: dataMe, loading: loadingMe } = useMeExtendedQuery();
   const { data, loading } = useUsersQuery();
   const [userModalOpen, setUserModalOpen] = useState(false);
@@ -83,6 +83,7 @@ export const UsersList: React.FC<Props> = props => {
                         name: user.name,
                         email: user.email,
                         roles: user.roles.map(role => role.slug),
+                        groups: user.groups.map(group => parseInt(group.id)),
                       });
                       handleOpenUserModal();
                     }}

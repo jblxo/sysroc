@@ -5,6 +5,7 @@ query Users {
     email
     adEmail
     groups {
+      id
       name
     }
     roles {

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Button, Checkbox, FormControlLabel, makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import { MyField } from '../MyField';
 import { ApolloError } from 'apollo-client';
 import { Error } from '../Error';
-import { useMeExtendedQuery, useRolesQuery } from '../../generated/graphql';
-import { hasPermissions } from '../../auth/hasPermissions';
+import { UserRoles } from './UserRoles';
+import { UserGroups } from './UserGroups';
 
 const useStyles = makeStyles({
   form: {
@@ -29,42 +29,33 @@ interface Values {
   name: string;
   email: string;
   roles?: string[];
+  groups?: number[];
 }
 
 interface Props {
   onSubmit: (values: Values) => void;
-  userData: {
-    name: string;
-    email: string;
-    roles?: string[];
-  };
+  userData: Values;
   error: ApolloError | any;
 }
 
 export const UpdateUserForm: React.FC<Props> = ({ onSubmit, userData, error }) => {
   const classes = useStyles({});
-  const [roles, setRoles] = React.useState(userData.roles ? userData.roles : ['guest']);
-  console.log(userData);
-  const { data, loading } = useRolesQuery({ variables: { admin: false } });
-  const { data: dataMe } = useMeExtendedQuery();
-  const canManageTeachers = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.teachers.manage'));
-  const canManageStudents = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.students.manage'));
+  let roles: string[] | undefined = userData.roles;
+  let groups: number[] | undefined = userData.groups;
 
-  const handleRoleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.checked) {
-      setRoles(roles.filter(role => role !== name));
-    } else {
-      setRoles([ ...roles, name ]);
-    }
+  const handleRoleChange = (roleSlugs: string[]) => {
+    roles = roleSlugs;
   };
 
-  if (loading) return <span>Loading...</span>;
+  const handleGroupChange = (groupIds: number[]) => {
+    groups = groupIds;
+  };
 
   return (
     <Formik
       initialValues={{ name: userData.name, email: userData.email }}
       onSubmit={values => {
-        onSubmit({ ...values, roles });
+        onSubmit({ ...values, roles, groups });
       }}
     >
       {() => (
@@ -93,22 +84,18 @@ export const UpdateUserForm: React.FC<Props> = ({ onSubmit, userData, error }) =
           <Typography className={classes.formTitle} variant="h6">
             Roles
           </Typography>
-          { data &&
-            data.roles &&
-            data.roles.filter(role => (role.slug !== 'teacher' || canManageTeachers) && (role.slug !== 'student' || canManageStudents)).map(role => (
-            <FormControlLabel
-              key={role.id}
-              control={
-                <Checkbox
-                  checked={roles.includes(role.slug)}
-                  onChange={handleRoleChange(role.slug)}
-                  value={role.slug}
-                  color="primary"
-                />
-              }
-              label={role.name}
-            />
-          ))}
+          <UserRoles
+            admin={false}
+            userRoles={userData.roles}
+            onRolesStateChange={handleRoleChange}
+          />
+          <Typography className={classes.formTitle} variant="h6">
+            Groups
+          </Typography>
+          <UserGroups
+            userGroups={userData.groups}
+            onGroupsStateChange={handleGroupChange}
+          />
           <Button
             className={classes.button}
             type="submit"

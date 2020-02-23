@@ -169,6 +169,7 @@ export type ProjectsFilter = {
 
 export type Query = {
    __typename?: 'Query',
+  groups: Array<Group>,
   authUser: AdUser,
   user: UserDto,
   users: Array<UserDto>,
@@ -286,6 +287,7 @@ export type UpdateUserDto = {
   name: Scalars['String'],
   email: Scalars['String'],
   roleSlugs?: Maybe<Array<Scalars['String']>>,
+  groups?: Maybe<Array<Scalars['Float']>>,
 };
 
 export type User = {
@@ -395,7 +397,7 @@ export type CreateUserMutation = (
     & Pick<UserDto, 'id' | 'name' | 'adEmail' | 'email'>
     & { groups: Array<(
       { __typename?: 'Group' }
-      & Pick<Group, 'name'>
+      & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'name' | 'slug' | 'admin'>
@@ -427,6 +429,17 @@ export type DeleteTaskMutation = (
     { __typename?: 'TaskDto' }
     & Pick<TaskDto, 'id' | 'name'>
   ) }
+);
+
+export type GroupsQueryVariables = {};
+
+
+export type GroupsQuery = (
+  { __typename?: 'Query' }
+  & { groups: Array<(
+    { __typename?: 'Group' }
+    & Pick<Group, 'id' | 'name'>
+  )> }
 );
 
 export type LogoutMutationVariables = {};
@@ -624,6 +637,7 @@ export type UpdateUserMutationVariables = {
   name: Scalars['String'],
   email: Scalars['String'],
   roleSlugs?: Maybe<Array<Scalars['String']>>,
+  groups?: Maybe<Array<Scalars['Float']>>,
   userId: Scalars['Float']
 };
 
@@ -635,7 +649,7 @@ export type UpdateUserMutation = (
     & Pick<UserDto, 'id' | 'name' | 'adEmail' | 'email'>
     & { groups: Array<(
       { __typename?: 'Group' }
-      & Pick<Group, 'name'>
+      & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'name' | 'slug' | 'admin'>
@@ -653,7 +667,7 @@ export type UsersQuery = (
     & Pick<UserDto, 'id' | 'name' | 'email' | 'adEmail'>
     & { groups: Array<(
       { __typename?: 'Group' }
-      & Pick<Group, 'name'>
+      & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'name' | 'slug' | 'admin'>
@@ -761,6 +775,7 @@ export const CreateUserDocument = gql`
     adEmail
     email
     groups {
+      id
       name
     }
     roles {
@@ -866,6 +881,39 @@ export function useDeleteTaskMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type DeleteTaskMutationHookResult = ReturnType<typeof useDeleteTaskMutation>;
 export type DeleteTaskMutationResult = ApolloReactCommon.MutationResult<DeleteTaskMutation>;
 export type DeleteTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteTaskMutation, DeleteTaskMutationVariables>;
+export const GroupsDocument = gql`
+    query Groups {
+  groups {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useGroupsQuery__
+ *
+ * To run a query within a React component, call `useGroupsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGroupsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGroupsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
+        return ApolloReactHooks.useQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, baseOptions);
+      }
+export function useGroupsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GroupsQuery, GroupsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<GroupsQuery, GroupsQueryVariables>(GroupsDocument, baseOptions);
+        }
+export type GroupsQueryHookResult = ReturnType<typeof useGroupsQuery>;
+export type GroupsLazyQueryHookResult = ReturnType<typeof useGroupsLazyQuery>;
+export type GroupsQueryResult = ApolloReactCommon.QueryResult<GroupsQuery, GroupsQueryVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
@@ -1307,13 +1355,14 @@ export type UpdateTaskMutationHookResult = ReturnType<typeof useUpdateTaskMutati
 export type UpdateTaskMutationResult = ApolloReactCommon.MutationResult<UpdateTaskMutation>;
 export type UpdateTaskMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateTaskMutation, UpdateTaskMutationVariables>;
 export const UpdateUserDocument = gql`
-    mutation UpdateUser($name: String!, $email: String!, $roleSlugs: [String!], $userId: Float!) {
-  updateUser(input: {name: $name, email: $email, roleSlugs: $roleSlugs}, filter: {id: $userId}) {
+    mutation UpdateUser($name: String!, $email: String!, $roleSlugs: [String!], $groups: [Float!], $userId: Float!) {
+  updateUser(input: {name: $name, email: $email, roleSlugs: $roleSlugs, groups: $groups}, filter: {id: $userId}) {
     id
     name
     adEmail
     email
     groups {
+      id
       name
     }
     roles {
@@ -1342,6 +1391,7 @@ export type UpdateUserMutationFn = ApolloReactCommon.MutationFunction<UpdateUser
  *      name: // value for 'name'
  *      email: // value for 'email'
  *      roleSlugs: // value for 'roleSlugs'
+ *      groups: // value for 'groups'
  *      userId: // value for 'userId'
  *   },
  * });
@@ -1360,6 +1410,7 @@ export const UsersDocument = gql`
     email
     adEmail
     groups {
+      id
       name
     }
     roles {

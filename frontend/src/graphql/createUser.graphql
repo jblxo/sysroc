@@ -1,10 +1,25 @@
-mutation CreateUser($name: String!, $adEmail: String, $email: String!, $password: String, $roleSlugs: [String!]) {
-  createUser(input: { name: $name, adEmail: $adEmail, email: $email, password: $password, roleSlugs: $roleSlugs }) {
+mutation CreateUser(
+  $name: String!
+  $adEmail: String
+  $email: String!
+  $password: String
+  $roleSlugs: [String!]
+) {
+  createUser(
+    input: {
+      name: $name
+      adEmail: $adEmail
+      email: $email
+      password: $password
+      roleSlugs: $roleSlugs
+    }
+  ) {
     id
     name
     adEmail
     email
     groups {
+      id
       name
     }
     roles {

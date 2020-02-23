@@ -111,10 +111,11 @@ export class UsersService {
 
     if (guestRole) {
       newUser.roles.push(guestRole);
-      await this.userRepository.save(newUser);
     } else {
       await this.addRoles(newUser, registerUserDto.roleSlugs);
     }
+
+    await this.userRepository.save(newUser);
 
     return await this.userRepository
       .createQueryBuilder('user')
@@ -173,6 +174,7 @@ export class UsersService {
     }
 
     await this.addRoles(createdUser, createUserDto.roleSlugs);
+    await this.userRepository.save(createdUser);
 
     return await this.userRepository
       .createQueryBuilder('user')
@@ -191,12 +193,16 @@ export class UsersService {
       email: updateUserDto.email,
     });
 
-    const updatedUser = await this.userRepository.findOne({ id: user.id }, { relations: ['roles'] });
+    const updatedUser = await this.userRepository.findOne({ id: user.id }, { relations: ['roles', 'groups'] });
 
     // Remove all roles
     updatedUser.roles.length = 0;
+    // Remove all groups
+    updatedUser.groups.length = 0;
 
     await this.addRoles(updatedUser, updateUserDto.roleSlugs);
+    await this.addGroups(updatedUser, updateUserDto.groups);
+    await this.userRepository.save(updatedUser);
 
     return await this.userRepository
       .createQueryBuilder('user')
@@ -261,7 +267,7 @@ export class UsersService {
   /**
    * Assign new roles to the user.
    *
-   * The user entity is saved afterwards.
+   * The user entity is **NOT** saved afterwards.
    *
    * @param user
    * @param roleSlugs
@@ -275,6 +281,20 @@ export class UsersService {
       const role = await this.rolesService.findOneBySlug(roleSlug);
       user.roles.push(role);
     }
-    await this.userRepository.save(user);
+  }
+
+  /**
+   * Assign new groups to the user.
+   *
+   * The user entity is **NOT** saved afterwards.
+   *
+   * @param user
+   * @param groups
+   */
+  async addGroups(user: User, groups: number[]): Promise<void> {
+    for (const groupId of groups) {
+      const group = await this.groupsService.findOne({ id: groupId });
+      user.groups.push(group);
+    }
   }
 }

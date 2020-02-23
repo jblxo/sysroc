@@ -97,6 +97,7 @@ input ProjectsFilter {
 }
 
 type Query {
+  groups: [Group!]!
   authUser(auth: UserAuthInputDto!): ADUser!
   user(filter: UsersFilter!): UserDto!
   users: [UserDto!]!
@@ -180,6 +181,7 @@ input UpdateUserDto {
   name: String!
   email: String!
   roleSlugs: [String!]
+  groups: [Float!]
 }
 
 type User {

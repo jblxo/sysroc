@@ -1,11 +1,10 @@
 import React from 'react';
-import { Button, Checkbox, FormControlLabel, makeStyles, Typography } from '@material-ui/core';
+import { Button, makeStyles, Typography } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
 import { MyField } from '../MyField';
 import { ApolloError } from 'apollo-client';
 import { Error } from '../Error';
-import { useMeExtendedQuery, useRolesQuery } from '../../generated/graphql';
-import { hasPermissions } from '../../auth/hasPermissions';
+import { UserRoles } from './UserRoles';
 
 const useStyles = makeStyles({
   form: {
@@ -40,21 +39,11 @@ interface Props {
 
 export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
   const classes = useStyles({});
-  const [roles, setRoles] = React.useState(['guest']);
-  const { data, loading } = useRolesQuery({ variables: { admin: false } });
-  const { data: dataMe } = useMeExtendedQuery();
-  const canManageTeachers = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.teachers.manage'));
-  const canManageStudents = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.students.manage'));
+  let roles: string[] = ['guest'];
 
-  const handleRoleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.checked) {
-      setRoles(roles.filter(role => role !== name));
-    } else {
-      setRoles([ ...roles, name ]);
-    }
+  const handleRoleChange = (roleSlugs: string[]) => {
+    roles = roleSlugs;
   };
-
-  if (loading) return <span>Loading...</span>;
 
   return (
     <Formik
@@ -89,22 +78,11 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
           <Typography className={classes.formTitle} variant="h6">
             Roles
           </Typography>
-          { data &&
-            data.roles &&
-            data.roles.filter(role => (role.slug !== 'teacher' || canManageTeachers) && (role.slug !== 'student' || canManageStudents)).map(role => (
-            <FormControlLabel
-              key={role.id}
-              control={
-                <Checkbox
-                  checked={roles.includes(role.slug)}
-                  onChange={handleRoleChange(role.slug)}
-                  value={role.slug}
-                  color="primary"
-                />
-              }
-              label={role.name}
-            />
-          ))}
+          <UserRoles
+            admin={false}
+            userRoles={roles}
+            onRolesStateChange={handleRoleChange}
+          />
           <Typography className={classes.formTitle} variant="h5">
             Active Directory Credentials
           </Typography>
