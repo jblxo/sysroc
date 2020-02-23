@@ -26,6 +26,7 @@ import { UserAuthInputDto } from './dto/user-auth-input.dto';
 import { ADResponse } from '../active-directory/models/ad-response.model';
 import { RoleDto } from '../roles/dto/role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AllUsersFilter } from './filters/all-users.filter';
 
 @Resolver()
 export class UsersResolver {
@@ -51,9 +52,8 @@ export class UsersResolver {
   }
 
   @Query(() => [UserDto])
-  @UseGuards(GqlAuthGuard)
-  async users() {
-    return await this.usersService.findAll();
+  async users(@Args('filter') filter: AllUsersFilter) {
+    return await this.usersService.findAll(filter);
   }
 
   @Query(() => UserAuthDto, { nullable: true })

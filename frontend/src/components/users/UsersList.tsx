@@ -6,17 +6,23 @@ import { useMeExtendedQuery, useUsersQuery } from '../../generated/graphql';
 import { Fab } from '@material-ui/core';
 import { UpdateUserModal } from './UpdateUserModal';
 import { hasPermissions } from '../../auth/hasPermissions';
+import { UserFilters, UsersFilter } from './UsersFilter';
 
 interface Props {}
 
 export const UsersList: React.FC<Props> = () => {
-  const { data: dataMe, loading: loadingMe } = useMeExtendedQuery();
-  const { data, loading } = useUsersQuery();
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userData, setUserData] = useState<any>(null);
-  const canManageTeachers = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.teachers.manage'));
-  const canManageStudents = (dataMe && dataMe.me && hasPermissions(dataMe.me, 'users.students.manage'));
+  const [filters, setFilters] = useState<UserFilters>({ name: '', email: '', adEmail: '' });
+
+  const { data: me, loading: meLoading } = useMeExtendedQuery();
+  const { data, loading } = useUsersQuery({
+    variables: filters,
+  });
+
+  const canManageTeachers = (me && me.me && hasPermissions(me.me, 'users.teachers.manage'));
+  const canManageStudents = (me && me.me && hasPermissions(me.me, 'users.students.manage'));
 
   const handleCloseUserModal = () => {
     setUserModalOpen(false);
@@ -26,10 +32,17 @@ export const UsersList: React.FC<Props> = () => {
     setUserModalOpen(true);
   };
 
-  if (loading || loadingMe) return <span>Loading...</span>;
+  if (loading || meLoading) return <span>Loading...</span>;
 
   return (
     <div>
+      <UsersFilter
+        defaultValues={filters}
+        onSubmit={(filter: UserFilters) => {
+          console.log(filter);
+          setFilters(filter);
+        }}
+      />
       <h2>Users List</h2>
       <Paper>
         <List>

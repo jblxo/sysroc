@@ -65,8 +65,8 @@ export const UpdateUserForm: React.FC<Props> = ({ onSubmit, userData, error }) =
             <Field
               name="name"
               type="text"
-              placeholder="User Name"
-              label="User Name"
+              placeholder="Username"
+              label="Username"
               component={MyField}
               required
             />

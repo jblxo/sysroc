@@ -9,6 +9,14 @@ type ADUser {
   cn: String!
 }
 
+input AllUsersFilter {
+  email: String
+  adEmail: String
+  name: String
+  roles: [Float!]
+  groups: [Float!]
+}
+
 input CreateProjectDto {
   name: String!
   description: String
@@ -100,7 +108,7 @@ type Query {
   groups: [Group!]!
   authUser(auth: UserAuthInputDto!): ADUser!
   user(filter: UsersFilter!): UserDto!
-  users: [UserDto!]!
+  users(filter: AllUsersFilter!): [UserDto!]!
   me: UserAuthDto
   meExtended: UserAuthDto
   roles(filter: RolesFilter!): [RoleDto!]!

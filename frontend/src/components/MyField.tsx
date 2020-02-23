@@ -6,6 +6,7 @@ interface Props extends FieldProps {
   type: string;
   placeholder: string;
   label: string;
+  className: string;
   required?: boolean;
   multiline?: boolean;
   rows?: number;
@@ -16,6 +17,7 @@ export const MyField: React.FC<Props> = ({
   type,
   placeholder,
   label,
+  className,
   field,
   required,
   multiline,
@@ -27,6 +29,7 @@ export const MyField: React.FC<Props> = ({
       type={type}
       placeholder={placeholder}
       label={label}
+      className={className}
       required={required || false}
       multiline={multiline || false}
       rows={rows}

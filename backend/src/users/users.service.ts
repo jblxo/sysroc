@@ -18,6 +18,7 @@ import { Role } from '../roles/entities/roles.entity';
 import { GroupsService } from '../groups/groups.service';
 import { CreateGroupDto } from '../groups/dto/create-group.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AllUsersFilter } from './filters/all-users.filter';
 
 @Injectable()
 export class UsersService {
@@ -33,12 +34,33 @@ export class UsersService {
     this.ADEndpoint = config.get('AD_ENDPOINT');
   }
 
-  async findAll(): Promise<UserDto[]> {
-    return await this.userRepository
+  async findAll(filter: AllUsersFilter): Promise<UserDto[]> {
+    const query = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'roles')
-      .leftJoinAndSelect('user.groups', 'groups')
-      .getMany();
+      .leftJoinAndSelect('user.groups', 'groups');
+
+    const whereLike = (key: string) => {
+      if (filter[key]) {
+        return query.where(`LOWER(user.${key}) LIKE :${key}`, { [key]: `%${filter[key].toLowerCase()}%` });
+      }
+      return query;
+    };
+
+    whereLike('name');
+    whereLike('email');
+    whereLike('adEmail');
+
+    let users = await query.getMany();
+
+    if (filter.roles && filter.roles.length > 0) {
+      users = users.filter(user => user.roles.some(role => filter.roles.includes(role.id)));
+    }
+    if (filter.groups && filter.groups.length > 0) {
+      users = users.filter(user => user.groups.some(group => filter.groups.includes(group.id)));
+    }
+
+    return users;
   }
 
   async findOne(filter: UsersFilter): Promise<UserDto> {
