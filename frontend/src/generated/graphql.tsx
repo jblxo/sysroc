@@ -414,7 +414,7 @@ export type CreateUserMutation = (
       & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
-      & Pick<RoleDto, 'name' | 'slug' | 'admin'>
+      & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
     )> }
   ) }
 );
@@ -493,7 +493,7 @@ export type MeExtendedQuery = (
       & Pick<UserDto, 'id' | 'name' | 'email' | 'adEmail'>
       & { roles: Array<(
         { __typename?: 'RoleDto' }
-        & Pick<RoleDto, 'name' | 'slug' | 'admin'>
+        & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
       )> }
     )>, permissions: Maybe<Array<(
       { __typename?: 'PermissionStateDto' }
@@ -666,7 +666,7 @@ export type UpdateUserMutation = (
       & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
-      & Pick<RoleDto, 'name' | 'slug' | 'admin'>
+      & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
     )> }
   ) }
 );
@@ -690,7 +690,7 @@ export type UsersQuery = (
       & Pick<Group, 'id' | 'name'>
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
-      & Pick<RoleDto, 'name' | 'slug' | 'admin'>
+      & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
     )> }
   )> }
 );
@@ -799,6 +799,7 @@ export const CreateUserDocument = gql`
       name
     }
     roles {
+      id
       name
       slug
       admin
@@ -1011,6 +1012,7 @@ export const MeExtendedDocument = gql`
       email
       adEmail
       roles {
+        id
         name
         slug
         admin
@@ -1386,6 +1388,7 @@ export const UpdateUserDocument = gql`
       name
     }
     roles {
+      id
       name
       slug
       admin
@@ -1434,6 +1437,7 @@ export const UsersDocument = gql`
       name
     }
     roles {
+      id
       name
       slug
       admin

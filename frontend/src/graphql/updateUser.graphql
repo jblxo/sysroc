@@ -18,6 +18,7 @@ mutation UpdateUser(
       name
     }
     roles {
+      id
       name
       slug
       admin

@@ -23,6 +23,7 @@ query Users(
       name
     }
     roles {
+      id
       name
       slug
       admin

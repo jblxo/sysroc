@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { NewUserForm } from './NewUserForm';
 import { useCreateUserMutation, UsersDocument } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
+import { getUserFilters, setDefaultUserFilters } from '../../filters/users';
 
 function getModalStyle() {
   const top = 50;
@@ -44,16 +45,22 @@ export const NewUserModal: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+
   const [modalStyle] = React.useState(getModalStyle);
+
   const [createUser, { error }] = useCreateUserMutation({
     update(cache, result) {
       try {
+        setDefaultUserFilters();
+
         const { users }: any = cache.readQuery({
           query: GET_USERS,
+          variables: getUserFilters(),
         });
 
         cache.writeQuery({
           query: GET_USERS,
+          variables: getUserFilters(),
           data: {
             users: users.concat([result.data?.createUser])
           }

@@ -7,22 +7,26 @@ import { Fab } from '@material-ui/core';
 import { UpdateUserModal } from './UpdateUserModal';
 import { hasPermissions } from '../../auth/hasPermissions';
 import { UserFilters, UsersFilter } from './UsersFilter';
+import { getUserFilters, registerUserFiltersResetListener, setUserFilters } from '../../filters/users';
 
 interface Props {}
 
 export const UsersList: React.FC<Props> = () => {
+  const [loaded, setLoaded] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userData, setUserData] = useState<any>(null);
-  const [filters, setFilters] = useState<UserFilters>({ name: '', email: '', adEmail: '' });
+  const [filters, setFilters] = useState<UserFilters>(getUserFilters());
+  const [revision, setRevision] = useState(0);
 
   const { data: me, loading: meLoading } = useMeExtendedQuery();
   const { data, loading } = useUsersQuery({
     variables: filters,
+    displayName: `users-${revision.toString()}`,
   });
 
-  const canManageTeachers = (me && me.me && hasPermissions(me.me, 'users.teachers.manage'));
-  const canManageStudents = (me && me.me && hasPermissions(me.me, 'users.students.manage'));
+  const canManageTeachers = me && me.me && hasPermissions(me.me, 'users.teachers.manage');
+  const canManageStudents = me && me.me && hasPermissions(me.me, 'users.students.manage');
 
   const handleCloseUserModal = () => {
     setUserModalOpen(false);
@@ -34,12 +38,20 @@ export const UsersList: React.FC<Props> = () => {
 
   if (loading || meLoading) return <span>Loading...</span>;
 
+  if (!loaded) {
+    registerUserFiltersResetListener((data: UserFilters) => {
+      setFilters(data);
+      setRevision(revision + 1);
+    });
+    setLoaded(true);
+  }
+
   return (
     <div>
       <UsersFilter
         defaultValues={filters}
         onSubmit={(filter: UserFilters) => {
-          console.log(filter);
+          setUserFilters(filter);
           setFilters(filter);
         }}
       />

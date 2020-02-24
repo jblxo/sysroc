@@ -4,6 +4,7 @@ import Modal from '@material-ui/core/Modal';
 import { UsersDocument, useUpdateUserMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
 import { UpdateUserForm } from './UpdateUserForm';
+import { getUserFilters, setDefaultUserFilters } from '../../filters/users';
 
 function getModalStyle() {
   const top = 50;
@@ -54,7 +55,36 @@ export const UpdateUserModal: React.FC<Props> = ({
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
-  const [updateUser, { error }] = useUpdateUserMutation();
+  const [updateUser, { error }] = useUpdateUserMutation({
+    update(cache, result) {
+      try {
+        setDefaultUserFilters();
+
+        const { users }: any = cache.readQuery({
+          query: GET_USERS,
+          variables: getUserFilters(),
+        });
+
+        const index = users.findIndex(
+          (user: any) => user.id === result.data?.updateUser.id
+        );
+
+        users[index] = result.data?.updateUser;
+
+        cache.writeQuery({
+          query: GET_USERS,
+          variables: getUserFilters(),
+          data: {
+            users,
+          }
+        });
+      } catch (error) {
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
+      }
+    }
+  });
 
   return (
     <Modal

@@ -23,6 +23,7 @@ mutation CreateUser(
       name
     }
     roles {
+      id
       name
       slug
       admin
