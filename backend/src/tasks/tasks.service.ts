@@ -54,7 +54,7 @@ export class TasksService {
       throw new InternalServerErrorException(`Could not update task with given ID!`);
     }
 
-    return this.taskRepository.findOne(filter);
+    return this.taskRepository.findOne(filter.id);
   }
 
   async getOne(filter: TasksFilter): Promise<TaskDto> {

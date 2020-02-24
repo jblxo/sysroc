@@ -55,6 +55,8 @@ export const UpdateTaskModal: React.FC<Props> = ({
           variables: { id: projectId }
         });
 
+        console.log(result.data?.updateTask);
+
         const index = project.tasks.findIndex(
           (task: any) => task.id === result.data?.updateTask.id
         );
@@ -92,6 +94,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
             error={error}
             task={data.task}
             onSubmit={async ({ name, description, dueDate }) => {
+              console.log('Task ID', task);
               const res = await updateTask({
                 variables: { name, description, dueDate, id: task }
               });
