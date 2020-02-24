@@ -4,7 +4,7 @@ import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserDto } from '../users/dto/user.dto';
-import { NotImplementedException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';

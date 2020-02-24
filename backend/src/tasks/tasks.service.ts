@@ -41,11 +41,23 @@ export class TasksService {
     filter: TasksFilter,
     updates: UpdateTaskDto,
   ): Promise<TaskDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const task = await this.taskRepository.findOne(filter.id);
+
+    if(!task) {
+      throw new NotFoundException(`Could not find task with given ID!`);
+    }
+
+    const updateTask = {...task, ...updates};
+    const res = await this.taskRepository.update(filter.id, updateTask);
+
+    if(!res || res.affected < 1) {
+      throw new InternalServerErrorException(`Could not update task with given ID!`);
+    }
+
+    return this.taskRepository.findOne(filter);
   }
 
   async getOne(filter: TasksFilter): Promise<TaskDto> {
-    return this.taskRepository.findOne(filter);
+    return this.taskRepository.findOne({id: filter.id});
   }
 }
