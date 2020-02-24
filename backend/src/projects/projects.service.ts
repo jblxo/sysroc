@@ -44,7 +44,17 @@ export class ProjectsService {
   }
 
   async getOne(projectId: number): Promise<ProjectDto> {
-    return this.projectRepository.findOne(projectId, {relations: ['tasks']});
+    return this.projectRepository
+        .createQueryBuilder('project')
+        .where('project.id = :id', {id: projectId})
+        .leftJoinAndSelect(
+            'project.tasks',
+            'tasks'
+        )
+        .orderBy({
+          'tasks.createdAt': 'ASC'
+        })
+        .getOne();
   }
 
   async updateOne(
