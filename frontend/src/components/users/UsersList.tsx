@@ -53,13 +53,19 @@ export const UsersList: React.FC<Props> = () => {
 
       await apolloClient.reset();
 
+      const updatedUsers = users.filter((user: { id: string }) => user.id !== result.data?.deleteUser.id);
+
       cache.writeQuery({
         query: GET_USERS,
         variables: getUserFilters(),
         data: {
-          users: users.filter((user: { id: string }) => user.id !== result.data?.deleteUser.id)
+          users: updatedUsers,
         }
       });
+
+      if (data) {
+        data.users = updatedUsers;
+      }
 
       triggerUserFiltersChange();
     }
@@ -88,6 +94,7 @@ export const UsersList: React.FC<Props> = () => {
 
   const handleSubmitDeleteUserDialog = async (userId: number) => {
     await deleteUser({ variables: { id: userId } });
+    enqueueSnackbar('User deleted!', { variant: 'success' });
   };
 
   if (loading || meLoading) return <span>Loading...</span>;
