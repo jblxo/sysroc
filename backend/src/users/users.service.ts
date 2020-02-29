@@ -1,4 +1,4 @@
-import { HttpService, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpService, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
@@ -281,9 +281,14 @@ export class UsersService {
     return permissions;
   }
 
-  async delete(userId: number): Promise<boolean> {
-    const deleted = await this.userRepository.delete({ id: userId });
-    return deleted.affected > 0;
+  async delete(user: UserDto): Promise<UserDto> {
+    const result = await this.userRepository.delete({ id: user.id });
+
+    if (result.affected < 1) {
+      throw new InternalServerErrorException('There has been an error while deleting the user.');
+    }
+
+    return user;
   }
 
   /**

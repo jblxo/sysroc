@@ -4,7 +4,8 @@ import Modal from '@material-ui/core/Modal';
 import { UsersDocument, useUpdateUserMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
 import { UpdateUserForm } from './UpdateUserForm';
-import { getUserFilters, setDefaultUserFilters } from '../../filters/users';
+import { getUserFilters, setDefaultUserFilters, triggerUserFiltersChange } from '../../filters/users';
+import { useApolloClient } from '@apollo/react-hooks';
 
 function getModalStyle() {
   const top = 50;
@@ -44,7 +45,7 @@ interface Props {
   };
 }
 
-export const GET_USERS = UsersDocument;
+const GET_USERS = UsersDocument;
 
 export const UpdateUserModal: React.FC<Props> = ({
   open,
@@ -54,9 +55,12 @@ export const UpdateUserModal: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
+  const { cache: apolloClient } = useApolloClient();
+
   const [modalStyle] = React.useState(getModalStyle);
+
   const [updateUser, { error }] = useUpdateUserMutation({
-    update(cache, result) {
+    async update(cache, result) {
       try {
         setDefaultUserFilters();
 
@@ -64,6 +68,8 @@ export const UpdateUserModal: React.FC<Props> = ({
           query: GET_USERS,
           variables: getUserFilters(),
         });
+
+        await apolloClient.reset();
 
         const index = users.findIndex(
           (user: any) => user.id === result.data?.updateUser.id
@@ -78,6 +84,8 @@ export const UpdateUserModal: React.FC<Props> = ({
             users,
           }
         });
+
+        triggerUserFiltersChange();
       } catch (error) {
         if (error instanceof Error) {
           enqueueSnackbar(error.message, { variant: 'error' });

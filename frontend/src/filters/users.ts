@@ -17,9 +17,9 @@ const getDefaultUserFilters = (): UserFilters => {
 let filters: UserFilters = getDefaultUserFilters();
 
 /**
- * Listeners for the reset action.
+ * Listeners for the user filters change.
  */
-let resetListeners: { (data: UserFilters): void }[] = [];
+let listeners: { (data: UserFilters): void }[] = [];
 
 /**
  * Set current filters that are applied in the administration of users.
@@ -42,17 +42,22 @@ export const getUserFilters = (): UserFilters => {
  */
 export const setDefaultUserFilters = (): void => {
   setUserFilters(getDefaultUserFilters());
-
-  for (const listener of resetListeners) {
-    listener(getUserFilters());
-  }
 };
 
 /**
- * Register a listener for the reset of user filters.
+ * Register a listener for the change of user filters.
  *
  * @param callback
  */
-export const registerUserFiltersResetListener = (callback: { (data: UserFilters): void }): void => {
-  resetListeners.push(callback);
+export const registerUserFiltersListener = (callback: { (data: UserFilters): void }): void => {
+  listeners.push(callback);
+};
+
+/**
+ * Trigger the change of user filters for listeners.
+ */
+export const triggerUserFiltersChange = (): void => {
+  for (const listener of listeners) {
+    listener(getUserFilters());
+  }
 };

@@ -55,7 +55,7 @@ type Mutation {
   signin(auth: UserAuthInputDto!): UserAuthDto!
   updateUser(input: UpdateUserDto!, filter: UsersFilter!): UserDto!
   logout: Boolean!
-  deleteUser(userId: Float!): Boolean!
+  deleteUser(userId: Float!): UserDto!
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: String!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!

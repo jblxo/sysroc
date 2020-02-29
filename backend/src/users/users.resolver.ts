@@ -52,6 +52,7 @@ export class UsersResolver {
   }
 
   @Query(() => [UserDto])
+  @UseGuards(GqlAuthGuard)
   async users(@Args('filter') filter: AllUsersFilter) {
     return await this.usersService.findAll(filter);
   }
@@ -83,7 +84,7 @@ export class UsersResolver {
     // The selected role cannot be for administrators
     const requestsAdminRole = await this.rolesService.containsAdminRole(input.roleSlugs);
 
-    const canManageTeachers = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_STUDENT_USERS);
+    const canManageTeachers = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_TEACHER_USERS);
     const canManageStudents = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_STUDENT_USERS);
 
     // The user cannot set the teacher role if they do not have the permission for it
@@ -289,7 +290,7 @@ export class UsersResolver {
       userDto.roles.map((userRole: RoleDto) => userRole.slug),
     );
 
-    const canManageTeachers = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_STUDENT_USERS);
+    const canManageTeachers = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_TEACHER_USERS);
     const canManageStudents = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_STUDENT_USERS);
 
     // The user cannot set the teacher role if they do not have the permission for it
@@ -323,24 +324,42 @@ export class UsersResolver {
     return true;
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => UserDto)
   @UseGuards(GqlAuthGuard)
-  @HasPermissions(PERMISSIONS.MANAGE_TEACHER_USERS)
+  @HasPermissions(PERMISSIONS.DELETE_USERS)
   async deleteUser(
     @CurrentUser() user: User,
     @Args('userId') userId: number,
-  ): Promise<boolean> {
-    try {
-      const userToDelete = await this.usersService.findOne({ id: userId });
-
-      // User with an administrator role cannot be deleted unless the current user is an administrator, too
-      if (userToDelete.roles.some(role => role.admin) && !user.roles.some(role => role.admin)) {
-        return false;
-      }
-    } catch {
-      return false;
+  ): Promise<UserDto> {
+    // The current user cannot delete itself
+    if (user.id === userId) {
+      throw new UnauthorizedException('You cannot delete yourself!');
     }
 
-    return await this.usersService.delete(userId);
+    let userToDelete: UserDto = null;
+    try {
+      userToDelete = await this.usersService.findOne({ id: userId });
+    } catch {
+      throw new NotFoundException('The user could not be found.');
+    }
+
+    // User with an administrator role cannot be deleted unless the current user is an administrator, too
+    if (userToDelete.roles.some(role => role.admin) && !user.roles.some(role => role.admin)) {
+      throw new UnauthorizedException('You cannot delete administrator accounts!');
+    }
+
+    const canManageTeachers = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_TEACHER_USERS);
+    const canManageStudents = await this.usersService.hasPermissions(user, PERMISSIONS.MANAGE_STUDENT_USERS);
+
+    // The user cannot be a teacher if the current user cannot manage teacher accounts
+    if (userToDelete.roles.map(role => role.slug).includes('teacher') && !canManageTeachers) {
+      throw new UnauthorizedException('You cannot delete teacher accounts!');
+    }
+    // The user cannot be a student if the current user cannot manage student accounts
+    if (userToDelete.roles.map(role => role.slug).includes('student') && !canManageStudents) {
+      throw new UnauthorizedException('You cannot delete student accounts!');
+    }
+
+    return await this.usersService.delete(userToDelete);
   }
 }
