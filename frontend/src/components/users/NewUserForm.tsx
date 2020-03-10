@@ -41,10 +41,10 @@ interface Props {
 }
 
 export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const [role, setRole] = React.useState('guest');
   const { data, loading } = useRolesQuery({ variables: { admin: false } });
-  const { data: dataMe, loading: loadingMe } = useMeExtendedQuery();
+  const { data: dataMe } = useMeExtendedQuery();
   const myRoles = dataMe?.me?.user?.roles;
   const isAdmin = myRoles?.some(userRole => userRole.admin);
 

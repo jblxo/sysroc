@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
 import { PermissionsResolver } from './permissions.resolver';
 import { PermissionsService } from './permissions.service';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { Permission } from './models/permissions.model';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Permission } from './entities/permissions.entity';
 
 @Module({
-  imports: [
-    TypegooseModule.forFeature([{ typegooseClass: Permission, schemaOptions: {} }]),
-  ],
+  imports: [TypeOrmModule.forFeature([Permission])],
   providers: [PermissionsResolver, PermissionsService],
   exports: [PermissionsService],
 })

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { TypegooseModule } from 'nestjs-typegoose';
 import { GroupsModule } from './groups/groups.module';
 import { ConfigModule } from './config/config.module';
 import { ActiveDirectoryModule } from './active-directory/active-directory.module';
@@ -10,8 +9,8 @@ import { Redis } from 'ioredis';
 import { redisConstants } from './redis/constants';
 import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
-import { RolesModule } from './roles/roles.module';
 import { TasksModule } from './tasks/tasks.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -26,12 +25,6 @@ import { TasksModule } from './tasks/tasks.module';
       },
       installSubscriptionHandlers: true,
       context: ({ req, res }) => ({ req, res }),
-    }),
-    TypegooseModule.forRoot('mongodb://localhost/mongodb', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
     }),
     RedisModule.register([
       {
@@ -48,6 +41,7 @@ import { TasksModule } from './tasks/tasks.module';
     UsersModule,
     ProjectsModule,
     TasksModule,
+    DatabaseModule,
   ],
 })
 export class AppModule {

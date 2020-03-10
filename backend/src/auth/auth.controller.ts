@@ -26,7 +26,7 @@ export class AuthController {
       return res.send({ ok: false, accessToken: '' });
     }
 
-    const user = await this.usersService.findOne({ _id: payload.sub });
+    const user = await this.usersService.findOne({ id: payload.sub });
 
     if (!user) {
       return res.send({ ok: false, accessToken: '' });
@@ -34,10 +34,10 @@ export class AuthController {
 
     const refresh = await this.authService.createRefreshToken(
       user.email,
-      user._id,
+      user.id,
     );
 
-    const access = await this.authService.createToken(user.email, user._id);
+    const access = await this.authService.createToken(user.email, user.id);
 
     res.cookie('token', refresh, {
       httpOnly: true,

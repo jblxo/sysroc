@@ -25,9 +25,9 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
         query: GET_PROJECTS,
         variables: { userId },
         data: {
-          projects: projects.filter((project: { _id: string }) => {
+          projects: projects.filter((project: { id: string }) => {
             if (result.data) {
-              return project._id !== result.data.deleteProject._id;
+              return project.id !== result.data.deleteProject.id;
             }
             return false;
           })
@@ -37,7 +37,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
   });
   const { enqueueSnackbar } = useSnackbar();
   const [open, setOpen] = useState(false);
-  const [projectId, setProjectId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<number | null>(null);
   const history = useHistory();
 
   const handleAlertOpen = () => {
@@ -52,7 +52,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
     enqueueSnackbar(error.message, { variant: 'error' });
   }
 
-  const handleDeleteProject = async (id: string) => {
+  const handleDeleteProject = async (id: number) => {
     await deleteProject({
       variables: { projectId: id }
     });
@@ -89,7 +89,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
           {data &&
             data.projects &&
             data.projects.map(project => (
-              <div key={project._id} className="flex">
+              <div key={project.id} className="flex">
                 <Item>
                   <div>{project.name}</div>
                 </Item>
@@ -110,7 +110,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                     color="primary"
                     variant="extended"
                     onClick={() => {
-                      history.push(`/projects/${project._id}`);
+                      history.push(`/projects/${project.id}`);
                     }}
                   >
                     View
@@ -119,7 +119,7 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                     color="secondary"
                     variant="extended"
                     onClick={() => {
-                      setProjectId(project._id);
+                      setProjectId(parseInt(project.id));
                       handleAlertOpen();
                     }}
                   >

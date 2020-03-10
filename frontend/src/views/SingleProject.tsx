@@ -67,10 +67,10 @@ export const SingleProject: React.FC<Props> = props => {
   const [modalOpen, setModalOpen] = useState(false);
   const [upTaskModalOpen, setUpTaskModalOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>('');
-  const { data: meData, loading: meLoading } = useMeQuery();
+  const [selectedTaskId, setSelectedTaskId] = useState<number>(0);
+  const { loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
-    variables: { _id: props.match.params.projectId }
+    variables: { id: parseInt(props.match.params.projectId) }
   });
   const history = useHistory();
 
@@ -154,7 +154,7 @@ export const SingleProject: React.FC<Props> = props => {
                   key={key}
                   tasks={tasksByMonth[key]}
                   date={key}
-                  project={data.project._id}
+                  project={parseInt(data.project.id)}
                   handleUpdateModalOpen={handleUpTaskModalOpen}
                   selectTask={setSelectedTaskId}
                 />
@@ -171,21 +171,20 @@ export const SingleProject: React.FC<Props> = props => {
         <UpdateProjectModal
           open={modalOpen}
           handleClose={handleModalClose}
-          projectId={props.match.params.projectId}
+          projectId={parseInt(props.match.params.projectId)}
           data={data?.project}
-          userId={meData?.me?.user?._id}
         />
       )}
       <CreateTaskModal
         open={createTaskOpen}
         handleClose={handleCreateTaskClose}
-        project={data?.project._id ?? ''}
+        project={parseInt(data?.project.id ?? '0')}
       />
       <UpdateTaskModal
         open={upTaskModalOpen}
         handleClose={handleUpTaskModalClose}
-        task={selectedTaskId ?? ''}
-        projectId={data?.project._id ?? ''}
+        task={selectedTaskId ?? 0}
+        projectId={parseInt(data?.project.id ?? '0')}
       />
     </>
   );

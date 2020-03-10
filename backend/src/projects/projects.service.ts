@@ -1,63 +1,79 @@
-import { Injectable } from '@nestjs/common';
-import { Project } from './models/projects.model';
-import { ReturnModelType } from '@typegoose/typegoose';
-import { InjectModel } from 'nestjs-typegoose';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UserDto } from '../users/dto/user.dto';
-import { User } from '../users/models/users.model';
-import { ProjectsFilter } from './filters/project.filter';
-import { ProjectDto } from './dto/project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import {Injectable, InternalServerErrorException, NotFoundException, NotImplementedException} from '@nestjs/common';
+import {Project} from './entities/projects.entity';
+import {CreateProjectDto} from './dto/create-project.dto';
+import {UserDto} from '../users/dto/user.dto';
+import {ProjectsFilter} from './filters/project.filter';
+import {ProjectDto} from './dto/project.dto';
+import {UpdateProjectDto} from './dto/update-project.dto';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {User} from '../users/entities/users.entity';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    @InjectModel(Project)
-    private readonly projectModel: ReturnModelType<typeof Project>,
-    @InjectModel(User)
-    private readonly userModel: ReturnModelType<typeof User>,
+      @InjectRepository(Project) private readonly projectRepository: Repository<Project>,
+      @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
   async create(
     createProjectDto: CreateProjectDto,
     user: UserDto,
   ): Promise<ProjectDto> {
-    const project = await this.projectModel.create({
-      ...createProjectDto,
-      user: user._id,
-    });
-
-    const userEntity = await this.userModel.findById(user._id).exec();
-    userEntity.projects.push(project);
-    await userEntity.save();
-
-    const populatedProject = project.populate('user').execPopulate();
-    return populatedProject;
+    const project = this.projectRepository.create(createProjectDto);
+    project.user = await this.userRepository.findOne({id: user.id});
+    return this.projectRepository.save(project);
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
-    return this.projectModel
-      .find(filter)
-      .populate('user')
-      .exec();
+    return this.projectRepository.find({...filter, relations: ['user']});
   }
 
-  deleteOne(projectId: string): Promise<ProjectDto> {
-    return this.projectModel.findByIdAndDelete(projectId).exec();
+  async deleteOne(projectId: number): Promise<ProjectDto> {
+    const project = await this.projectRepository.findOne({id: projectId});
+    if (!project) {
+      throw new NotFoundException(`Project couldn't be found.`);
+    }
+
+    const res = await this.projectRepository.delete({id: projectId});
+    if(res.affected < 1) {
+      throw new InternalServerErrorException(`There has been an error during deleting the project.`);
+    }
+
+    return project;
   }
 
-  getOne(projectId: string): Promise<ProjectDto> {
-    return this.projectModel
-      .findById(projectId)
-      .populate('user')
-      .populate('tasks')
-      .exec();
+  async getOne(projectId: number): Promise<ProjectDto> {
+    return this.projectRepository
+        .createQueryBuilder('project')
+        .where('project.id = :id', {id: projectId})
+        .leftJoinAndSelect(
+            'project.tasks',
+            'tasks'
+        )
+        .orderBy({
+          'tasks.createdAt': 'ASC'
+        })
+        .getOne();
   }
 
-  updateOne(
+  async updateOne(
     filter: ProjectsFilter,
     updates: UpdateProjectDto,
   ): Promise<ProjectDto> {
-    return this.projectModel.findOneAndUpdate(filter, updates).exec();
+    const project = await this.projectRepository.findOne(filter.id, {relations: ['user']});
+
+    if(!project) {
+      throw new NotFoundException(`Could not find project!`);
+    }
+
+    const updateProject: Project = {...project, ...updates};
+    const res = await this.projectRepository.update(filter.id, updateProject);
+
+    if(!res || res.affected < 1) {
+      throw new InternalServerErrorException(`Could not update the project`);
+    }
+
+    return await this.projectRepository.findOne(filter.id, {relations: ['user']});
   }
 }

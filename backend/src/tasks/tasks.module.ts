@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { Task } from './models/tasks.model';
 import { ProjectsModule } from '../projects/projects.module';
-import { Project } from '../projects/models/projects.model';
 import { TasksResolver } from './tasks.resolver';
 import { TasksService } from './tasks.service';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {Task} from './entities/tasks.entity';
+import {Project} from '../projects/entities/projects.entity';
 
 @Module({
   imports: [
-    TypegooseModule.forFeature([
-      { typegooseClass: Task, schemaOptions: {} },
-      { typegooseClass: Project, schemaOptions: {} },
-    ]),
-    ProjectsModule,
+      TypeOrmModule.forFeature([Task, Project]),
+      ProjectsModule,
   ],
   providers: [TasksResolver, TasksService],
 })

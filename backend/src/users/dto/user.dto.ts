@@ -1,12 +1,11 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { Group } from '../../groups/models/groups.model';
-import { Ref } from '@typegoose/typegoose';
-import { Role } from '../../roles/models/roles.model';
+import { Group } from '../../groups/entities/groups.entity';
+import { RoleDto } from '../../roles/dto/role.dto';
 
 @ObjectType()
 export class UserDto {
   @Field(type => ID)
-  readonly _id: string;
+  readonly id: number;
   @Field()
   readonly name: string;
   @Field()
@@ -15,8 +14,8 @@ export class UserDto {
   readonly adEmail: string;
   @Field()
   readonly password?: string;
-  @Field(type => [Group], { nullable: true })
-  readonly groups?: Ref<Group>[];
-  @Field(type => [Role], { nullable: true })
-  readonly roles?: Ref<Role>[];
+  @Field(type => [Group])
+  readonly groups: Group[];
+  @Field(type => [RoleDto])
+  readonly roles: RoleDto[];
 }

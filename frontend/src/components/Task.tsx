@@ -68,7 +68,7 @@ const TaskStyles = styled.div`
 `;
 
 export interface ITask {
-  _id: string;
+  id: number;
   name: string;
   description?: string;
   createdAt: Date;
@@ -78,9 +78,9 @@ export interface ITask {
 
 interface Props {
   task: ITask;
-  project: string;
+  project: number;
   handleUpdateModalOpen: () => void;
-  selectTask: (id: string) => void;
+  selectTask: (id: number) => void;
 }
 
 export const Task: React.FC<Props> = ({
@@ -95,17 +95,17 @@ export const Task: React.FC<Props> = ({
       try {
         const cacheRes: any = cache.readQuery({
           query: GET_PROJECT,
-          variables: { _id: project }
+          variables: { id: project }
         });
 
         cache.writeQuery({
           query: GET_PROJECT,
-          variables: { _id: project },
+          variables: { id: project },
           data: {
             project: {
               ...cacheRes.project,
               tasks: cacheRes.project.tasks.filter(
-                (task: any) => task._id !== result.data?.deleteTask._id
+                (task: any) => task.id !== result.data?.deleteTask.id
               )
             }
           }
@@ -139,7 +139,7 @@ export const Task: React.FC<Props> = ({
       <div className="task-actions">
         <IconButton
           onClick={() => {
-            selectTask(task._id);
+            selectTask(task.id);
             handleUpdateModalOpen();
           }}
         >
@@ -147,7 +147,7 @@ export const Task: React.FC<Props> = ({
         </IconButton>
         <IconButton
           onClick={async () => {
-            const res = await deleteTask({ variables: { _id: task._id } });
+            const res = await deleteTask({ variables: { id: task.id } });
 
             if (res.data) {
               enqueueSnackbar('Task deleted.', { variant: 'success' });

@@ -31,13 +31,13 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export const GET_PROJECT = gql`
-  query Project($_id: String) {
-    project(filter: { _id: $_id }) {
-      _id
+  query Project($id: Float) {
+    project(filter: { id: $id }) {
+      id
       name
       description
       tasks {
-        _id
+        id
         name
         description
         createdAt
@@ -51,12 +51,11 @@ export const GET_PROJECT = gql`
 interface Props {
   open: boolean;
   handleClose: () => void;
-  projectId: string;
+  projectId: number;
   data: {
     name: string;
     description?: string;
   };
-  userId?: string;
 }
 
 export const UpdateProjectModal: React.FC<Props> = ({
@@ -64,7 +63,6 @@ export const UpdateProjectModal: React.FC<Props> = ({
   handleClose,
   projectId,
   data,
-  userId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();

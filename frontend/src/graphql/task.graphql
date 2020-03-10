@@ -1,6 +1,6 @@
-query Task($_id: String!) {
-  task(filter: { _id: $_id }) {
-    _id
+query Task($id: Float!) {
+  task(filter: { id: $id }) {
+    id
     name
     description
     dueDate

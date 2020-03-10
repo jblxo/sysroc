@@ -1,18 +1,17 @@
 import { Field, ID, ObjectType } from 'type-graphql';
-import { User } from '../../users/models/users.model';
-import { Ref } from '@typegoose/typegoose';
+import { UserDto } from '../../users/dto/user.dto';
 import { TaskDto } from '../../tasks/dto/task.dto';
 
 @ObjectType()
 export class ProjectDto {
   @Field(type => ID)
-  readonly _id: string;
+  readonly id: number;
   @Field()
   readonly name: string;
   @Field()
   readonly description: string;
-  @Field(type => User, { nullable: true })
-  readonly user?: Ref<User>;
-  @Field(type => [TaskDto], { defaultValue: [] })
-  readonly tasks: Ref<TaskDto>[];
+  @Field(type => UserDto)
+  readonly user: UserDto;
+  @Field(type => [TaskDto], {defaultValue: []})
+  readonly tasks: TaskDto[];
 }

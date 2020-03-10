@@ -1,6 +1,6 @@
-mutation deleteProject($projectId: String!) {
+mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
-    _id
+    id
     name
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import * as jwt from 'jsonwebtoken';
@@ -12,20 +12,18 @@ export class AuthService {
     private readonly userService: UsersService,
   ) {}
 
-  async createToken(email: string, userId: string): Promise<string> {
+  async createToken(email: string, userId: number): Promise<string> {
     const user: JwtPayload = { email, sub: userId };
-    const token = jwt.sign(user, jwtConstants.accessSecret, {
+    return jwt.sign(user, jwtConstants.accessSecret, {
       expiresIn: jwtConstants.expiresIn,
     });
-    return token;
   }
 
-  async createRefreshToken(email: string, userId: string): Promise<string> {
+  async createRefreshToken(email: string, userId: number): Promise<string> {
     const user: JwtPayload = { email, sub: userId };
-    const refresh = jwt.sign(user, jwtConstants.refreshSecret, {
+    return jwt.sign(user, jwtConstants.refreshSecret, {
       expiresIn: '7d',
     });
-    return refresh;
   }
 
   async validateUser(signedUser): Promise<UserDto> {

@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
-  project: string;
+  project: number;
 }
 
 export const CreateTaskModal: React.FC<Props> = ({
@@ -49,7 +49,7 @@ export const CreateTaskModal: React.FC<Props> = ({
       try {
         cache.writeQuery({
           query: GET_PROJECT,
-          variables: { _id: project },
+          variables: { id: project },
           data: {
             project: result.data?.createTask.project
           }

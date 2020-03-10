@@ -1,7 +1,7 @@
 query MeExtended {
   me {
     user {
-      _id
+      id
       name
       email
       adEmail

@@ -17,8 +17,8 @@ const Transition = React.forwardRef<unknown, TransitionProps>(
 interface Props {
   open: boolean;
   handleClose: () => void;
-  handleDeleteProject: (projectId: string) => Promise<void>;
-  projectId: string | null;
+  handleDeleteProject: (projectId: number) => Promise<void>;
+  projectId: number | null;
 }
 
 export const DeleteProjectAlert: React.FC<Props> = ({

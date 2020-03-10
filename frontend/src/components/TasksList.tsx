@@ -16,9 +16,9 @@ const TaskListHeader = styled.div`
 interface Props {
   tasks: ITask[];
   date: string;
-  project: string;
+  project: number;
   handleUpdateModalOpen: () => void;
-  selectTask: (id: string) => void;
+  selectTask: (id: number) => void;
 }
 
 export const TasksList: React.FC<Props> = ({
@@ -33,7 +33,7 @@ export const TasksList: React.FC<Props> = ({
       <TaskListHeader>Task for month: {date}</TaskListHeader>
       {tasks.map(task => (
         <Task
-          key={task._id}
+          key={task.id}
           task={task}
           project={project}
           handleUpdateModalOpen={handleUpdateModalOpen}

@@ -6,11 +6,11 @@ import { UsersFilter } from './filters/users.filter';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import {
   ConflictException,
-  HttpService,
+  HttpService, NotImplementedException,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { UserAuthDto, UserAuthInputDto } from './dto/user-auth.dto';
+import { UserAuthDto } from './dto/user-auth.dto';
 import { AuthService } from '../auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -23,12 +23,11 @@ import { ConfigService } from '../config/config.service';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { redisConstants } from '../redis/constants';
-import { User } from './models/users.model';
-import { mongoose } from '@typegoose/typegoose';
+import { User } from './entities/users.entity';
 import { HasPermissions } from './decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
-import { RoleDto } from '../roles/dto/role.dto';
 import { RolesService } from '../roles/roles.service';
+import { UserAuthInputDto } from './dto/user-auth-input.dto';
 
 @Resolver()
 export class UsersResolver {
@@ -72,49 +71,20 @@ export class UsersResolver {
 
   @Query(() => UserAuthDto, { nullable: true })
   @UseGuards(GqlAuthGuard)
-  async meExtended(@CurrentUser() user: User & mongoose.Document) {
-    const me = await this.me(user);
-    user = await user.populate('roles').populate('groups').execPopulate();
-
-    return {
-      user,
-      permissions: me.permissions,
-    };
+  async meExtended(@CurrentUser() user: User) {
+    // TODO: implements
+    throw new NotImplementedException();
   }
 
   @Mutation(() => UserDto)
   @UseGuards(GqlAuthGuard)
   @HasPermissions(PERMISSIONS.MANAGE_STUDENT_USERS, PERMISSIONS.MANAGE_TEACHER_USERS)
   async createUser(
-    @CurrentUser() user: User & mongoose.Document,
+    @CurrentUser() user: User,
     @Args('input') input: CreateUserDto,
   ) {
-    // New user cannot be created with the same role as of the creator (unless the creator is an administrator)
-    const hasRole = user.roles.some((role: RoleDto) => input.roleSlugs.includes(role.slug));
-    const isAdmin = user.roles.some((role: RoleDto) => role.admin);
-    // The selected role cannot be for administrators
-    let isForAdmins = false;
-    for (const slug of input.roleSlugs) {
-      if (!slug) {
-        continue;
-      }
-
-      try {
-        const role = await this.rolesService.findOneBySlug(slug);
-        if (role.admin) {
-          isForAdmins = true;
-          break;
-        }
-      } catch {
-        // Nothing has to be done here as the role has not been found
-      }
-    }
-
-    if ((hasRole && !isAdmin) || isForAdmins) {
-      throw new UnauthorizedException('You cannot create a user account with the role.');
-    }
-
-    return await this.usersService.create(input);
+    // TODO: implement
+    throw new NotImplementedException();
   }
 
   @Mutation(() => UserAuthDto)
@@ -164,14 +134,14 @@ export class UsersResolver {
 
     const token = await this.authService.createToken(
       registeredUser.email,
-      registeredUser._id,
+      registeredUser.id,
     );
 
     await this.redisClient.del(registerToken);
 
     const refreshToken = await this.authService.createRefreshToken(
       registeredUser.email,
-      registeredUser._id,
+      registeredUser.id,
     );
 
     res.cookie('token', refreshToken, {
@@ -194,11 +164,7 @@ export class UsersResolver {
     @Context() { res }: MyContext,
   ): Promise<UserAuthDto> {
     const user = await this.usersService
-      .findOne({ email: auth.email })
-      .catch(() => {
-        // TODO: remove
-        console.log('User not found.');
-      });
+      .findOne({ email: auth.email });
 
     if (user) {
       const valid = await bcrypt.compare(auth.password, user.password);
@@ -208,11 +174,13 @@ export class UsersResolver {
 
       const permissions = await this.usersService.getPermissionStates(user);
 
-      const token = await this.authService.createToken(user.email, user._id);
+      const token = await this.authService.createToken(user.email, user.id);
       const refreshToken = await this.authService.createRefreshToken(
         user.email,
-        user._id,
+        user.id,
       );
+
+      console.log(refreshToken);
 
       res.cookie('token', refreshToken, {
         httpOnly: true,
@@ -229,12 +197,7 @@ export class UsersResolver {
     }
 
     const userWithADEmail = await this.usersService
-      .findOne({ adEmail: auth.email })
-      .catch(() => {
-        console.log(
-          'User with the forwarded email from Active Directory not found.',
-        );
-      });
+      .findOne({ adEmail: auth.email });
     if (userWithADEmail) {
       throw new ConflictException(
         'This email has already been registered. Have you forgotten your customized email?',
@@ -291,7 +254,7 @@ export class UsersResolver {
     return true;
   }
 
-  // TODO: Only for GraphQL
+  // TODO: Add Guard
   @Mutation(() => Boolean)
   deleteUser(@Args('userId') userId: string): Promise<boolean> {
     return this.usersService.delete(userId);

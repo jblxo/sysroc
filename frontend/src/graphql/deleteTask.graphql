@@ -1,6 +1,6 @@
-mutation DeleteTask($_id: String!) {
-  deleteTask(filter: { _id: $_id }) {
-    _id
+mutation DeleteTask($id: Float!) {
+  deleteTask(filter: { id: $id }) {
+    id
     name
   }
 }

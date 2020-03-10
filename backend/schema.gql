@@ -19,7 +19,7 @@ input CreateTaskDto {
   description: String
   dueDate: DateTime!
   completed: Boolean
-  project: String!
+  project: Float!
 }
 
 input CreateUserDto {
@@ -36,8 +36,9 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Group {
+  id: Float!
   name: String!
-  users: [User!]
+  users: [User!]!
 }
 
 type Mutation {
@@ -47,7 +48,7 @@ type Mutation {
   logout: Boolean!
   deleteUser(userId: String!): Boolean!
   createProject(input: CreateProjectDto!): ProjectDto!
-  deleteProject(projectId: String!): ProjectDto!
+  deleteProject(projectId: Float!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!
@@ -55,10 +56,16 @@ type Mutation {
 }
 
 type Permission {
-  _id: ID!
+  id: ID!
   name: String!
   slug: String!
-  roles: [Role!]
+  roles: [Role!]!
+}
+
+type PermissionDto {
+  id: ID!
+  name: String!
+  slug: String!
 }
 
 type PermissionStateDto {
@@ -67,7 +74,7 @@ type PermissionStateDto {
 }
 
 type Project {
-  _id: ID!
+  id: ID!
   name: String!
   description: String!
   user: User!
@@ -75,22 +82,22 @@ type Project {
 }
 
 type ProjectDto {
-  _id: ID!
+  id: ID!
   name: String!
   description: String!
-  user: User
+  user: UserDto!
   tasks: [TaskDto!]
 }
 
 input ProjectsFilter {
-  _id: String
+  id: Float
   name: String
   user: String
 }
 
 type Query {
   authUser(auth: UserAuthInputDto!): ADUser!
-  user(_id: String, email: String, adEmail: String, name: String): UserDto!
+  user(id: Float, email: String, adEmail: String, name: String): UserDto!
   users: [UserDto!]!
   me: UserAuthDto
   meExtended: UserAuthDto
@@ -101,25 +108,24 @@ type Query {
 }
 
 type Role {
-  _id: ID!
+  id: ID!
   name: String!
   slug: String!
   admin: Boolean!
-  permissions: [Permission!]
-  users: [User!]
+  permissions: [Permission!]!
+  users: [User!]!
 }
 
 type RoleDto {
-  _id: ID!
+  id: ID!
   name: String!
   slug: String!
   admin: Boolean!
-  users: [User!]
-  permissions: [Permission!]
+  permissions: [PermissionDto!]!
 }
 
 input RolesFilter {
-  _id: String
+  id: Float
   name: String
   slug: String
   admin: Boolean
@@ -134,7 +140,7 @@ input SignUpUserDto {
 }
 
 type Task {
-  _id: ID!
+  id: ID!
   name: String!
   description: String!
   dueDate: DateTime!
@@ -144,17 +150,17 @@ type Task {
 }
 
 type TaskDto {
-  _id: ID!
+  id: Float!
   name: String!
   description: String!
   dueDate: DateTime!
   createdAt: DateTime!
   completed: Boolean!
-  project: Project!
+  project: ProjectDto!
 }
 
 input TasksFilter {
-  _id: String
+  id: Float
   name: String
 }
 
@@ -170,14 +176,14 @@ input UpdateTaskDto {
 }
 
 type User {
-  _id: ID!
+  id: ID!
   name: String!
   password: String!
   email: String!
   adEmail: String!
-  groups: [Group!]
-  projects: [Project!]
-  roles: [Role!]
+  roles: [Role!]!
+  groups: [Group!]!
+  projects: [Project!]!
 }
 
 type UserAuthDto {
@@ -194,13 +200,13 @@ input UserAuthInputDto {
 }
 
 type UserDto {
-  _id: ID!
+  id: ID!
   name: String!
   email: String!
   adEmail: String!
   password: String!
-  groups: [Group!]
-  roles: [Role!]
+  groups: [Group!]!
+  roles: [RoleDto!]!
 }
 
 type UserTempDto {
