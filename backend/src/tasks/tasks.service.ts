@@ -24,7 +24,7 @@ export class TasksService {
   }
 
   async deleteOne(filter: TasksFilter): Promise<TaskDto> {
-    const task = await this.taskRepository.findOne(filter);
+    const task = await this.taskRepository.findOne(filter.id);
     if(!task) {
       throw new NotFoundException(`Could not find task with given ID!`);
     }
