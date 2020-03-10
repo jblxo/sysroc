@@ -1,0 +1,216 @@
+# This file was generated based on ".graphqlconfig". Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type ADUser {
+    cn: String!
+    dn: String!
+    userPrincipalName: String!
+}
+
+type Group {
+    id: Float!
+    name: String!
+    users: [User!]!
+}
+
+type Mutation {
+    createProject(input: CreateProjectDto!): ProjectDto!
+    createTask(input: CreateTaskDto!): TaskDto!
+    createUser(input: CreateUserDto!): UserDto!
+    deleteProject(projectId: Float!): ProjectDto!
+    deleteTask(filter: TasksFilter!): TaskDto!
+    deleteUser(userId: String!): Boolean!
+    logout: Boolean!
+    signin(auth: UserAuthInputDto!): UserAuthDto!
+    signup(input: SignUpUserDto!): UserAuthDto!
+    updateProject(filter: ProjectsFilter!, updates: UpdateProjectDto!): ProjectDto!
+    updateTask(filter: TasksFilter!, updates: UpdateTaskDto!): TaskDto!
+}
+
+type Permission {
+    id: ID!
+    name: String!
+    roles: [Role!]!
+    slug: String!
+}
+
+type PermissionDto {
+    id: ID!
+    name: String!
+    slug: String!
+}
+
+type PermissionStateDto {
+    permitted: Boolean!
+    slug: String!
+}
+
+type Project {
+    description: String!
+    id: ID!
+    name: String!
+    tasks: [Task!]!
+    user: User!
+}
+
+type ProjectDto {
+    description: String!
+    id: ID!
+    name: String!
+    tasks: [TaskDto!]
+    user: UserDto!
+}
+
+type Query {
+    authUser(auth: UserAuthInputDto!): ADUser!
+    me: UserAuthDto
+    meExtended: UserAuthDto
+    project(filter: ProjectsFilter!): ProjectDto!
+    projects(filter: ProjectsFilter!): [ProjectDto!]!
+    roles(filter: RolesFilter!): [RoleDto!]!
+    task(filter: TasksFilter!): TaskDto!
+    user(adEmail: String, email: String, id: Float, name: String): UserDto!
+    users: [UserDto!]!
+}
+
+type Role {
+    admin: Boolean!
+    id: ID!
+    name: String!
+    permissions: [Permission!]!
+    slug: String!
+    users: [User!]!
+}
+
+type RoleDto {
+    admin: Boolean!
+    id: ID!
+    name: String!
+    permissions: [PermissionDto!]!
+    slug: String!
+}
+
+type Task {
+    completed: Boolean!
+    createdAt: DateTime!
+    description: String!
+    dueDate: DateTime!
+    id: ID!
+    name: String!
+    project: Project!
+}
+
+type TaskDto {
+    completed: Boolean!
+    createdAt: DateTime!
+    description: String!
+    dueDate: DateTime!
+    id: Float!
+    name: String!
+    project: ProjectDto!
+}
+
+type User {
+    adEmail: String!
+    email: String!
+    groups: [Group!]!
+    id: ID!
+    name: String!
+    password: String!
+    projects: [Project!]!
+    roles: [Role!]!
+}
+
+type UserAuthDto {
+    accessToken: String
+    permissions: [PermissionStateDto!]
+    registerToken: String
+    user: UserDto
+    userTemp: UserTempDto
+}
+
+type UserDto {
+    adEmail: String!
+    email: String!
+    groups: [Group!]!
+    id: ID!
+    name: String!
+    password: String!
+    roles: [RoleDto!]!
+}
+
+type UserTempDto {
+    email: String!
+    name: String!
+}
+
+input CreateProjectDto {
+    description: String
+    name: String!
+}
+
+input CreateTaskDto {
+    completed: Boolean
+    description: String
+    dueDate: DateTime!
+    name: String!
+    project: Float!
+}
+
+input CreateUserDto {
+    adEmail: String
+    email: String!
+    name: String!
+    password: String
+    roleSlugs: [String!]
+}
+
+input ProjectsFilter {
+    id: Float
+    name: String
+    user: String
+}
+
+input RolesFilter {
+    admin: Boolean
+    id: Float
+    name: String
+    permission: String
+    slug: String
+    user: String
+}
+
+input SignUpUserDto {
+    email: String
+    name: String
+    password: String
+}
+
+input TasksFilter {
+    id: Float
+    name: String
+}
+
+input UpdateProjectDto {
+    description: String
+    name: String
+}
+
+input UpdateTaskDto {
+    description: String
+    dueDate: DateTime
+    name: String
+}
+
+input UserAuthInputDto {
+    email: String!
+    password: String!
+}
+
+
+"The javascript `Date` as string. Type represents date and time as the ISO Date string."
+scalar DateTime

@@ -4,20 +4,17 @@ import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserDto } from '../users/dto/user.dto';
-import { NotImplementedException, UseGuards } from '@nestjs/common';
+import { UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
-import { User } from '../users/entities/users.entity';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
-import { UsersService } from '../users/users.service';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Resolver('Projects')
 export class ProjectsResolver {
   constructor(
-    private readonly projectsService: ProjectsService,
-    private readonly usersService: UsersService,
+    private readonly projectsService: ProjectsService
   ) {}
 
   @Mutation(() => ProjectDto)
@@ -49,30 +46,27 @@ export class ProjectsResolver {
   @HasPermissions(PERMISSIONS.PROJECTS_CREATE)
   async deleteProject(
     @CurrentUser() user: UserDto,
-    @Args('projectId') projectId: string,
+    @Args('projectId') projectId: number,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.deleteOne(projectId);
   }
 
   @Query(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async project(
+  project(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.getOne(filter.id);
   }
 
   @Mutation(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  async updateProject(
+  updateProject(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
     @Args('updates') updates: UpdateProjectDto,
   ) {
-    // TODO: implement
-    throw new NotImplementedException();
+    return this.projectsService.updateOne(filter, updates);
   }
 }

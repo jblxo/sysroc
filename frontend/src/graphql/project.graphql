@@ -1,5 +1,5 @@
-query Project($_id: String) {
-  project(filter: { _id: $_id }) {
+query Project($id: Float) {
+  project(filter: { id: $id }) {
     id
     name
     description

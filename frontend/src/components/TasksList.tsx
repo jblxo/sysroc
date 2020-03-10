@@ -16,7 +16,7 @@ const TaskListHeader = styled.div`
 interface Props {
   tasks: ITask[];
   date: string;
-  project: string;
+  project: number;
   handleUpdateModalOpen: () => void;
   selectTask: (id: number) => void;
 }

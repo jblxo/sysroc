@@ -34,7 +34,7 @@ interface Props {
   open: boolean;
   handleClose: () => void;
   task: number;
-  projectId: string;
+  projectId: number;
 }
 
 export const UpdateTaskModal: React.FC<Props> = ({
@@ -52,18 +52,20 @@ export const UpdateTaskModal: React.FC<Props> = ({
       try {
         const { project }: any = cache.readQuery({
           query: GET_PROJECT,
-          variables: { _id: projectId }
+          variables: { id: projectId }
         });
 
+        console.log(result.data?.updateTask);
+
         const index = project.tasks.findIndex(
-          (task: any) => task._id === result.data?.updateTask.id
+          (task: any) => task.id === result.data?.updateTask.id
         );
 
         project.tasks[index] = result.data?.updateTask;
 
         cache.writeQuery({
           query: GET_PROJECT,
-          variables: { _id: projectId },
+          variables: { id: projectId },
           data: {
             project: project
           }
@@ -92,6 +94,7 @@ export const UpdateTaskModal: React.FC<Props> = ({
             error={error}
             task={data.task}
             onSubmit={async ({ name, description, dueDate }) => {
+              console.log('Task ID', task);
               const res = await updateTask({
                 variables: { name, description, dueDate, id: task }
               });

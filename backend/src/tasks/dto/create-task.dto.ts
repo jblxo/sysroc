@@ -15,5 +15,5 @@ export class CreateTaskDto {
   completed?: boolean;
 
   @Field({ nullable: false })
-  project: string;
+  project: number;
 }

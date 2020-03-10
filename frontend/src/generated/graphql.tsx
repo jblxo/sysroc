@@ -38,7 +38,7 @@ export type CreateTaskDto = {
   description?: Maybe<Scalars['String']>,
   dueDate: Scalars['DateTime'],
   completed?: Maybe<Scalars['Boolean']>,
-  project: Scalars['String'],
+  project: Scalars['Float'],
 };
 
 export type CreateUserDto = {
@@ -106,7 +106,7 @@ export type MutationCreateProjectArgs = {
 
 
 export type MutationDeleteProjectArgs = {
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -171,7 +171,7 @@ export type ProjectDto = {
 };
 
 export type ProjectsFilter = {
-  _id?: Maybe<Scalars['String']>,
+  id?: Maybe<Scalars['Float']>,
   name?: Maybe<Scalars['String']>,
   user?: Maybe<Scalars['String']>,
 };
@@ -194,17 +194,6 @@ export type Query = {
 export type QueryAuthUserArgs = {
   auth: UserAuthInputDto
 };
-
-
-export type QueryUserArgs = {
-  filter: UsersFilter
-};
-
-
-export type QueryUsersArgs = {
-  filter: AllUsersFilter
-};
-
 
 export type QueryRolesArgs = {
   filter: RolesFilter
@@ -313,6 +302,7 @@ export type User = {
   adEmail: Scalars['String'],
   roles: Array<Role>,
   groups: Array<Group>,
+  projects: Array<Project>,
 };
 
 export type UserAuthDto = {
@@ -375,7 +365,7 @@ export type CreateTaskMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
   dueDate: Scalars['DateTime'],
-  project: Scalars['String']
+  project: Scalars['Float']
 };
 
 
@@ -420,7 +410,7 @@ export type CreateUserMutation = (
 );
 
 export type DeleteProjectMutationVariables = {
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -516,7 +506,7 @@ export type MeExtendedQuery = (
 );
 
 export type ProjectQueryVariables = {
-  _id?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['Float']>
 };
 
 
@@ -628,7 +618,7 @@ export type TaskQuery = (
 export type UpdateProjectMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
-  projectId: Scalars['String']
+  projectId: Scalars['Float']
 };
 
 
@@ -748,7 +738,7 @@ export type CreateProjectMutationHookResult = ReturnType<typeof useCreateProject
 export type CreateProjectMutationResult = ApolloReactCommon.MutationResult<CreateProjectMutation>;
 export type CreateProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateProjectMutation, CreateProjectMutationVariables>;
 export const CreateTaskDocument = gql`
-    mutation CreateTask($name: String!, $description: String, $dueDate: DateTime!, $project: String!) {
+    mutation CreateTask($name: String!, $description: String, $dueDate: DateTime!, $project: Float!) {
   createTask(input: {name: $name, description: $description, dueDate: $dueDate, project: $project}) {
     id
     name
@@ -850,7 +840,7 @@ export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutati
 export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const DeleteProjectDocument = gql`
-    mutation deleteProject($projectId: String!) {
+    mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
     id
     name
@@ -1096,8 +1086,8 @@ export type MeExtendedQueryHookResult = ReturnType<typeof useMeExtendedQuery>;
 export type MeExtendedLazyQueryHookResult = ReturnType<typeof useMeExtendedLazyQuery>;
 export type MeExtendedQueryResult = ApolloReactCommon.QueryResult<MeExtendedQuery, MeExtendedQueryVariables>;
 export const ProjectDocument = gql`
-    query Project($_id: String) {
-  project(filter: {_id: $_id}) {
+    query Project($id: Float) {
+  project(filter: {id: $id}) {
     id
     name
     description
@@ -1125,7 +1115,7 @@ export const ProjectDocument = gql`
  * @example
  * const { data, loading, error } = useProjectQuery({
  *   variables: {
- *      _id: // value for '_id'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -1343,8 +1333,8 @@ export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
 export const UpdateProjectDocument = gql`
-    mutation UpdateProject($name: String!, $description: String, $projectId: String!) {
-  updateProject(updates: {name: $name, description: $description}, filter: {_id: $projectId}) {
+    mutation UpdateProject($name: String!, $description: String, $projectId: Float!) {
+  updateProject(updates: {name: $name, description: $description}, filter: {id: $projectId}) {
     id
     name
     description
