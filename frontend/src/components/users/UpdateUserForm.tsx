@@ -5,6 +5,7 @@ import { MyField } from '../MyField';
 import { ApolloError } from 'apollo-client';
 import { Error } from '../Error';
 import { UserRoles } from './UserRoles';
+import { UserGroups } from './UserGroups';
 
 const useStyles = makeStyles({
   form: {
@@ -27,29 +28,34 @@ const useStyles = makeStyles({
 interface Values {
   name: string;
   email: string;
-  adEmail?: string;
-  password?: string;
   roles?: string[];
+  groups?: number[];
 }
 
 interface Props {
   onSubmit: (values: Values) => void;
+  userData: Values;
   error: ApolloError | any;
 }
 
-export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
+export const UpdateUserForm: React.FC<Props> = ({ onSubmit, userData, error }) => {
   const classes = useStyles({});
-  let roles: string[] = ['guest'];
+  let roles: string[] | undefined = userData.roles;
+  let groups: number[] | undefined = userData.groups;
 
   const handleRoleChange = (roleSlugs: string[]) => {
     roles = roleSlugs;
   };
 
+  const handleGroupChange = (groupIds: number[]) => {
+    groups = groupIds;
+  };
+
   return (
     <Formik
-      initialValues={{ name: '', email: '', adEmail: '', password: '' }}
+      initialValues={{ name: userData.name, email: userData.email }}
       onSubmit={values => {
-        onSubmit({ ...values, roles });
+        onSubmit({ ...values, roles, groups });
       }}
     >
       {() => (
@@ -80,40 +86,23 @@ export const NewUserForm: React.FC<Props> = ({ onSubmit, error }) => {
           </Typography>
           <UserRoles
             admin={false}
-            userRoles={roles}
+            userRoles={userData.roles}
             onRolesStateChange={handleRoleChange}
           />
-          <Typography className={classes.formTitle} variant="h5">
-            Active Directory Credentials
+          <Typography className={classes.formTitle} variant="h6">
+            Groups
           </Typography>
-          <p className={classes.formNote}>
-            Fill details below to connect the user account with Active Directory.
-          </p>
-          <div>
-            <Field
-              name="adEmail"
-              type="text"
-              placeholder="Active Directory Email"
-              label="Active Directory Email"
-              component={MyField}
-            />
-          </div>
-          <div>
-            <Field
-              name="password"
-              type="password"
-              placeholder="Active Directory Password"
-              label="Active Directory Password"
-              component={MyField}
-            />
-          </div>
+          <UserGroups
+            userGroups={userData.groups}
+            onGroupsStateChange={handleGroupChange}
+          />
           <Button
             className={classes.button}
             type="submit"
             variant="contained"
             color="primary"
           >
-            Create
+            Update
           </Button>
         </Form>
       )}

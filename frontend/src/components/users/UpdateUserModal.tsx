@@ -1,9 +1,9 @@
 import React from 'react';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import { NewUserForm } from './NewUserForm';
-import { useCreateUserMutation, UsersDocument } from '../../generated/graphql';
+import { UsersDocument, useUpdateUserMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
+import { UpdateUserForm } from './UpdateUserForm';
 import { getUserFilters, setDefaultUserFilters, triggerUserFiltersChange } from '../../filters/users';
 import { useApolloClient } from '@apollo/react-hooks';
 
@@ -36,13 +36,22 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
+  userId: number;
+  data: {
+    name: string;
+    email: string;
+    roles?: string[];
+    groups?: number[];
+  };
 }
 
 const GET_USERS = UsersDocument;
 
-export const NewUserModal: React.FC<Props> = ({
+export const UpdateUserModal: React.FC<Props> = ({
   open,
-  handleClose
+  handleClose,
+  userId,
+  data,
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
@@ -50,7 +59,7 @@ export const NewUserModal: React.FC<Props> = ({
 
   const [modalStyle] = React.useState(getModalStyle);
 
-  const [createUser, { error }] = useCreateUserMutation({
+  const [updateUser, { error }] = useUpdateUserMutation({
     async update(cache, result) {
       try {
         setDefaultUserFilters();
@@ -62,11 +71,17 @@ export const NewUserModal: React.FC<Props> = ({
 
         await apolloClient.reset();
 
+        const index = users.findIndex(
+          (user: any) => user.id === result.data?.updateUser.id
+        );
+
+        users[index] = result.data?.updateUser;
+
         cache.writeQuery({
           query: GET_USERS,
           variables: getUserFilters(),
           data: {
-            users: users.concat([result.data?.createUser])
+            users,
           }
         });
 
@@ -81,22 +96,23 @@ export const NewUserModal: React.FC<Props> = ({
 
   return (
     <Modal
-      aria-labelledby="new user"
-      aria-describedby="modal with form to create new user"
+      aria-labelledby="update user"
+      aria-describedby="modal with form to update an existing user"
       open={open}
       onClose={handleClose}
     >
       <div style={modalStyle} className={classes.paper}>
-        <h2 id="new-user-modal-title">New User</h2>
-        <p id="new-user-modal-description">Create new user account.</p>
-        <NewUserForm
+        <h2 id="update-user-modal-title">Edit User</h2>
+        <p id="update-user-modal-description">Edit the user account.</p>
+        <UpdateUserForm
           error={error}
-          onSubmit={async ({ name, email, adEmail, password, roles }) => {
-            const res = await createUser({
-              variables: { name, email, adEmail, password, roleSlugs: roles }
+          userData={data}
+          onSubmit={async ({ name, email, roles, groups }) => {
+            const res = await updateUser({
+              variables: { name, email, roleSlugs: roles, groups, userId }
             });
             if (res.data) {
-              enqueueSnackbar('User created!', { variant: 'success' });
+              enqueueSnackbar('User updated!', { variant: 'success' });
               handleClose();
             }
           }}

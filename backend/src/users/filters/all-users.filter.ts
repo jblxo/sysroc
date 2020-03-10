@@ -1,10 +1,7 @@
 import { Field, InputType } from 'type-graphql';
 
 @InputType()
-export class UsersFilter {
-  @Field({ nullable: true })
-  id?: number;
-
+export class AllUsersFilter {
   @Field({ nullable: true })
   email?: string;
 
@@ -13,4 +10,10 @@ export class UsersFilter {
 
   @Field({ nullable: true })
   name?: string;
+
+  @Field(type => [Number], { nullable: true })
+  roles?: number[];
+
+  @Field(type => [Number], { nullable: true })
+  groups?: number[];
 }

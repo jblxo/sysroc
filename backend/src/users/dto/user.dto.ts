@@ -14,8 +14,8 @@ export class UserDto {
   readonly adEmail: string;
   @Field()
   readonly password?: string;
-  @Field(type => [Group])
-  readonly groups: Group[];
+  @Field(type => [Group], { defaultValue: undefined })
+  readonly groups?: Group[];
   @Field(type => [RoleDto])
   readonly roles: RoleDto[];
 }

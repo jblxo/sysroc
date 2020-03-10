@@ -1,13 +1,29 @@
-query Users {
-  users {
+query Users(
+  $name: String
+  $email: String
+  $adEmail: String
+  $roles: [Float!]
+  $groups: [Float!]
+) {
+  users(
+    filter: {
+      name: $name
+      email: $email
+      adEmail: $adEmail
+      roles: $roles
+      groups: $groups
+    }
+  ) {
     id
     name
     email
     adEmail
     groups {
+      id
       name
     }
     roles {
+      id
       name
       slug
       admin

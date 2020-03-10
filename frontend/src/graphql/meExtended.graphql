@@ -6,6 +6,7 @@ query MeExtended {
       email
       adEmail
       roles {
+        id
         name
         slug
         admin

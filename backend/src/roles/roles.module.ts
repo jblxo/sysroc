@@ -34,6 +34,7 @@ export class RolesModule {
         PERMISSIONS.PROJECTS_CREATE,
         PERMISSIONS.PROJECTS_VIEW,
         PERMISSIONS.MANAGE_STUDENT_USERS,
+        PERMISSIONS.DELETE_USERS,
       ],
     });
     await this.rolesService.createOrUpdate({

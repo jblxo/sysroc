@@ -1,18 +1,13 @@
-mutation CreateUser(
+mutation UpdateUser(
   $name: String!
-  $adEmail: String
   $email: String!
-  $password: String
   $roleSlugs: [String!]
+  $groups: [Float!]
+  $userId: Float!
 ) {
-  createUser(
-    input: {
-      name: $name
-      adEmail: $adEmail
-      email: $email
-      password: $password
-      roleSlugs: $roleSlugs
-    }
+  updateUser(
+    input: { name: $name, email: $email, roleSlugs: $roleSlugs, groups: $groups }
+    filter: { id: $userId }
   ) {
     id
     name

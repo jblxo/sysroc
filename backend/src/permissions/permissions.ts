@@ -13,4 +13,7 @@ export const PERMISSIONS = {
 
   // Can create and manage teacher accounts
   MANAGE_TEACHER_USERS: 'users.teachers.manage',
+
+  // Can delete accounts which are manageable by the user
+  DELETE_USERS: 'users.delete',
 };

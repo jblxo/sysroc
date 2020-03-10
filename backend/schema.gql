@@ -9,6 +9,14 @@ type ADUser {
   cn: String!
 }
 
+input AllUsersFilter {
+  email: String
+  adEmail: String
+  name: String
+  roles: [Float!]
+  groups: [Float!]
+}
+
 input CreateProjectDto {
   name: String!
   description: String
@@ -36,7 +44,7 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Group {
-  id: Float!
+  id: ID!
   name: String!
   users: [User!]!
 }
@@ -45,8 +53,9 @@ type Mutation {
   createUser(input: CreateUserDto!): UserDto!
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
+  updateUser(input: UpdateUserDto!, filter: UsersFilter!): UserDto!
   logout: Boolean!
-  deleteUser(userId: String!): Boolean!
+  deleteUser(userId: Float!): UserDto!
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: Float!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
@@ -96,9 +105,10 @@ input ProjectsFilter {
 }
 
 type Query {
+  groups: [Group!]!
   authUser(auth: UserAuthInputDto!): ADUser!
-  user(id: Float, email: String, adEmail: String, name: String): UserDto!
-  users: [UserDto!]!
+  user(filter: UsersFilter!): UserDto!
+  users(filter: AllUsersFilter!): [UserDto!]!
   me: UserAuthDto
   meExtended: UserAuthDto
   roles(filter: RolesFilter!): [RoleDto!]!
@@ -175,6 +185,13 @@ input UpdateTaskDto {
   dueDate: DateTime
 }
 
+input UpdateUserDto {
+  name: String!
+  email: String!
+  roleSlugs: [String!]
+  groups: [Float!]
+}
+
 type User {
   id: ID!
   name: String!
@@ -207,6 +224,13 @@ type UserDto {
   password: String!
   groups: [Group!]!
   roles: [RoleDto!]!
+}
+
+input UsersFilter {
+  id: Float
+  email: String
+  adEmail: String
+  name: String
 }
 
 type UserTempDto {

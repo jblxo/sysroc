@@ -1,4 +1,4 @@
-import { HttpService, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common';
+import { HttpService, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
@@ -15,6 +15,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserAuthInputDto } from './dto/user-auth-input.dto';
 import { Role } from '../roles/entities/roles.entity';
+import { GroupsService } from '../groups/groups.service';
+import { CreateGroupDto } from '../groups/dto/create-group.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { AllUsersFilter } from './filters/all-users.filter';
 
 @Injectable()
 export class UsersService {
@@ -25,49 +29,138 @@ export class UsersService {
     private readonly config: ConfigService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly rolesService: RolesService,
+    private readonly groupsService: GroupsService,
   ) {
     this.ADEndpoint = config.get('AD_ENDPOINT');
   }
 
-  async findAll(): Promise<UserDto[]> {
-    // TODO: implement
-    throw new NotImplementedException();
+  async findAll(filter: AllUsersFilter): Promise<UserDto[]> {
+    const query = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.groups', 'groups');
+
+    const whereLike = (key: string) => {
+      if (filter[key]) {
+        return query.where(`LOWER(user.${key}) LIKE :${key}`, { [key]: `%${filter[key].toLowerCase()}%` });
+      }
+      return query;
+    };
+
+    whereLike('name');
+    whereLike('email');
+    whereLike('adEmail');
+
+    let users = await query.getMany();
+
+    if (filter.roles && filter.roles.length > 0) {
+      users = users.filter(user => user.roles.some(role => filter.roles.includes(role.id)));
+    }
+    if (filter.groups && filter.groups.length > 0) {
+      users = users.filter(user => user.groups.some(group => filter.groups.includes(group.id)));
+    }
+
+    return users;
   }
 
   async findOne(filter: UsersFilter): Promise<UserDto> {
+    // Fix issues with null prototype objects which do not work as filters
+    filter = JSON.parse(JSON.stringify(filter));
+
     const user = await this.userRepository
-      .findOne(filter, {relations: ['roles']});
+      .findOne(filter, { relations: ['roles', 'groups'] });
 
     if (!user) {
       throw new Error(`User not found!`);
     }
 
     return user;
-
   }
 
   async getADUser(
     authInputDto: UserAuthInputDto,
   ): Promise<ADResponse> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const { email: username, password } = authInputDto;
+
+    let response: ADResponse = null;
+    await this.httpService
+      .post(`${this.ADEndpoint}/auth/login`, {
+        username,
+        password,
+      })
+      .toPromise()
+      .then(res => (response = res.data));
+
+    return response;
   }
 
   async register(registerUserDto: RegisterUserDto): Promise<UserDto> {
-    // TODO: implement
-    throw new NotImplementedException();
+    const groups: CreateGroupDto[] = registerUserDto.dn
+      .split(',')
+      .map(val => ({ name: val.substring(val.indexOf('=') + 1) }));
+
+    const createdGroups = await this.groupsService.createMany(groups);
+
+    const createUser = {
+      email: registerUserDto.email,
+      adEmail: registerUserDto.adEmail,
+      password: registerUserDto.password,
+      name: registerUserDto.name,
+      groups: [],
+      roles: [],
+    };
+
+    createdGroups.forEach(group => {
+      createUser.groups.push(group.id);
+    });
+
+    let guestRole = null;
+    if (!registerUserDto.roleSlugs || registerUserDto.roleSlugs.length === 0) {
+      guestRole = await this.rolesService.findOneBySlug('guest');
+      createUser.roles.push(guestRole.id);
+    }
+
+    let newUser: User = null;
+    try {
+      newUser = await this.userRepository.save(this.userRepository.create(createUser));
+    } catch {
+      throw new Error('Email already in use.');
+    }
+
+    for (const group of createdGroups) {
+      newUser.groups.push(group);
+    }
+
+    if (guestRole) {
+      newUser.roles.push(guestRole);
+    } else {
+      await this.addRoles(newUser, registerUserDto.roleSlugs);
+    }
+
+    await this.userRepository.save(newUser);
+
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(newUser.id)
+      .leftJoinAndSelect('user.roles', 'roles')
+      .getOne();
   }
 
   async create(
     createUserDto: CreateUserDto,
   ): Promise<UserDto> {
     if (createUserDto.adEmail && createUserDto.password) {
-      const response = await this.getADUser({
-        email: createUserDto.adEmail,
-        password: createUserDto.password,
-      });
+      let response: ADResponse = null;
+      try {
+        response = await this.getADUser({
+          email: createUserDto.adEmail,
+          password: createUserDto.password,
+        });
+      } catch {
+        // Nothing has to be done here
+      }
 
-      if (!response) {
+      if (!response || !response.exists) {
         throw new NotFoundException('Incorrect Active Directory email address or password.');
       }
 
@@ -83,7 +176,7 @@ export class UsersService {
       });
     }
 
-// Unencrypted password that can be sent to the user via a mail, for example
+    // Unencrypted password that can be sent to the user via a mail, for example
     const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
     const password = await this.hashPassword(passwordRaw);
 
@@ -95,16 +188,50 @@ export class UsersService {
       roles: [],
     };
 
-    const createdUser = this.userRepository.create(createUser);
+    let createdUser: User = null;
+    try {
+      createdUser = await this.userRepository.save(this.userRepository.create(createUser));
+    } catch {
+      throw new Error('Email already in use.');
+    }
 
     await this.addRoles(createdUser, createUserDto.roleSlugs);
+    await this.userRepository.save(createdUser);
 
     return await this.userRepository
       .createQueryBuilder('user')
       .whereInIds(createdUser.id)
       .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.groups', 'groups')
       .getOne();
+  }
 
+  async update(
+    user: UserDto,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserDto> {
+    await this.userRepository.update(user.id, {
+      name: updateUserDto.name,
+      email: updateUserDto.email,
+    });
+
+    const updatedUser = await this.userRepository.findOne({ id: user.id }, { relations: ['roles', 'groups'] });
+
+    // Remove all roles
+    updatedUser.roles.length = 0;
+    // Remove all groups
+    updatedUser.groups.length = 0;
+
+    await this.addRoles(updatedUser, updateUserDto.roleSlugs);
+    await this.addGroups(updatedUser, updateUserDto.groups);
+    await this.userRepository.save(updatedUser);
+
+    return await this.userRepository
+      .createQueryBuilder('user')
+      .whereInIds(updatedUser.id)
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('user.groups', 'groups')
+      .getOne();
   }
 
   async hashPassword(password: string): Promise<string> {
@@ -131,7 +258,6 @@ export class UsersService {
       }
     }
     return false;
-
   }
 
   /**
@@ -155,13 +281,20 @@ export class UsersService {
     return permissions;
   }
 
-  async delete(userId: string): Promise<boolean> {
-    // TODO: implement
-    throw new NotImplementedException();
+  async delete(user: UserDto): Promise<UserDto> {
+    const result = await this.userRepository.delete({ id: user.id });
+
+    if (result.affected < 1) {
+      throw new InternalServerErrorException('There has been an error while deleting the user.');
+    }
+
+    return user;
   }
 
   /**
    * Assign new roles to the user.
+   *
+   * The user entity is **NOT** saved afterwards.
    *
    * @param user
    * @param roleSlugs
@@ -175,6 +308,20 @@ export class UsersService {
       const role = await this.rolesService.findOneBySlug(roleSlug);
       user.roles.push(role);
     }
-    await this.userRepository.save(user);
+  }
+
+  /**
+   * Assign new groups to the user.
+   *
+   * The user entity is **NOT** saved afterwards.
+   *
+   * @param user
+   * @param groups
+   */
+  async addGroups(user: User, groups: number[]): Promise<void> {
+    for (const groupId of groups) {
+      const group = await this.groupsService.findOne({ id: groupId });
+      user.groups.push(group);
+    }
   }
 }
