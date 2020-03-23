@@ -19,8 +19,8 @@ export const UserRoles: React.FC<Props> = ({
   const { data: rolesData, loading: rolesLoading } = useRolesQuery({ variables: { admin } });
   const { data: me, loading: meLoading } = useMeExtendedQuery();
 
-  const canManageTeachers = me && me.me && hasPermissions(me.me, 'users.teachers.manage');
-  const canManageStudents = me && me.me && hasPermissions(me.me, 'users.students.manage');
+  const canManageTeachers = me && me.me && hasPermissions(me.me, 'User.teachers.manage');
+  const canManageStudents = me && me.me && hasPermissions(me.me, 'User.students.manage');
 
   const handleRoleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
     let newRoles: string[];

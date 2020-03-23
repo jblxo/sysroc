@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useDeleteProjectMutation, useProjectsQuery } from '../generated/graphql';
+import { useDeleteProjectMutation, useProjectsQuery } from '../../generated/graphql';
 import Paper from '@material-ui/core/Paper';
 import { Fab } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import { DeleteProjectAlert } from './DeleteProjectAlert';
 import { GET_PROJECTS } from './NewProjectModal';
 import { useHistory } from 'react-router';
-import { Item } from './layout/Item';
-import { List } from './layout/List';
+import { Item } from '../Layout/Item';
+import { List } from '../Layout/List';
 
 interface Props {
   userId?: string;

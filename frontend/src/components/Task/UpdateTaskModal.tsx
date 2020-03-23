@@ -2,9 +2,9 @@ import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { UpdateTaskForm } from './UpdateTaskForm';
-import { useTaskQuery, useUpdateTaskMutation } from '../generated/graphql';
+import { useTaskQuery, useUpdateTaskMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
-import { GET_PROJECT } from './UpdateProjectModal';
+import { GET_PROJECT } from '../Project/UpdateProjectModal';
 
 function getModalStyle() {
   const top = 50;

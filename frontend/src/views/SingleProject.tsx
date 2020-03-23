@@ -3,12 +3,12 @@ import { useProjectQuery, useMeQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
-import { UpdateProjectModal } from '../components/UpdateProjectModal';
-import { TasksList } from '../components/TasksList';
-import { CreateTaskModal } from '../components/CreateTaskModal';
+import { UpdateProjectModal } from '../components/Project/UpdateProjectModal';
+import { TasksList } from '../components/Task/TasksList';
+import { CreateTaskModal } from '../components/Task/CreateTaskModal';
 import moment from 'moment';
-import { ITask } from '../components/Task';
-import { UpdateTaskModal } from '../components/UpdateTaskModal';
+import { ITask } from '../components/Task/Task';
+import { UpdateTaskModal } from '../components/Task/UpdateTaskModal';
 
 const ProjectControls = styled.div`
   display: grid;

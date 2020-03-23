@@ -1,8 +1,8 @@
 import React from 'react';
-import { UsersHeader } from '../components/users/UsersHeader';
-import { UsersList } from '../components/users/UsersList';
+import { UsersHeader } from '../components/User/UsersHeader';
+import { UsersList } from '../components/User/UsersList';
 import { useMeQuery } from '../generated/graphql';
-import { NewUserModal } from '../components/users/NewUserModal';
+import { NewUserModal } from '../components/User/NewUserModal';
 
 interface Props {}
 

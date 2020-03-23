@@ -5,9 +5,9 @@ import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import grey from '@material-ui/core/colors/grey';
-import { useDeleteTaskMutation } from '../generated/graphql';
+import { useDeleteTaskMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
-import { GET_PROJECT } from './UpdateProjectModal';
+import { GET_PROJECT } from '../Project/UpdateProjectModal';
 
 const TaskStyles = styled.div`
   padding: 1rem 1.4rem;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import { UpdateProjectForm } from './UpdateProjectForm';
-import { useUpdateProjectMutation } from '../generated/graphql';
+import { NewProjectForm } from './NewProjectForm';
+import { useCreateProjectMutation } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
 import gql from 'graphql-tag';
 
@@ -30,56 +30,51 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const GET_PROJECT = gql`
-  query Project($id: Float) {
-    project(filter: { id: $id }) {
+interface Props {
+  open: boolean;
+  handleClose: () => void;
+  userId?: string;
+}
+
+export const GET_PROJECTS = gql`
+  query Projects($userId: String) {
+    projects(filter: { user: $userId }) {
       id
       name
       description
-      tasks {
-        id
+      user {
         name
-        description
-        createdAt
-        dueDate
-        completed
       }
     }
   }
 `;
 
-interface Props {
-  open: boolean;
-  handleClose: () => void;
-  projectId: number;
-  data: {
-    name: string;
-    description?: string;
-  };
-}
-
-export const UpdateProjectModal: React.FC<Props> = ({
+export const NewProjectModal: React.FC<Props> = ({
   open,
   handleClose,
-  projectId,
-  data,
+  userId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
   const [modalStyle] = React.useState(getModalStyle);
-  const [updateProject, { error }] = useUpdateProjectMutation({
+  const [createProject, { error }] = useCreateProjectMutation({
     update(cache, result) {
       try {
+        const { projects }: any = cache.readQuery({
+          query: GET_PROJECTS,
+          variables: { userId }
+        });
+
         cache.writeQuery({
-          query: GET_PROJECT,
-          variables: { _id: projectId },
+          query: GET_PROJECTS,
+          variables: { userId },
           data: {
-            project: result.data?.updateProject
+            projects: projects.concat([result.data?.createProject])
           }
         });
-      } catch (e) {
-        if (e instanceof Error) {
-          enqueueSnackbar(e.message, { variant: 'error' });
+      } catch (error) {
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
         }
       }
     }
@@ -95,15 +90,14 @@ export const UpdateProjectModal: React.FC<Props> = ({
       <div style={modalStyle} className={classes.paper}>
         <h2 id="new-project-modal-title">New Project</h2>
         <p id="new-project-modal-description">Create something great</p>
-        <UpdateProjectForm
-          data={data}
+        <NewProjectForm
           error={error}
           onSubmit={async ({ name, description }) => {
-            const res = await updateProject({
-              variables: { name, description, projectId }
+            const res = await createProject({
+              variables: { name, description }
             });
             if (res.data) {
-              enqueueSnackbar('Project updated!', { variant: 'success' });
+              enqueueSnackbar('Project created!', { variant: 'success' });
               handleClose();
             }
           }}

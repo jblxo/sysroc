@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import { Fab, makeStyles } from '@material-ui/core';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
-import { useMeQuery } from '../generated/graphql';
-import { hasPermissions } from '../auth/hasPermissions';
+import { useMeQuery } from '../../generated/graphql';
+import { hasPermissions } from '../../auth/hasPermissions';
 
 const ProjectsHeaderStyles = styled.div`
   display: grid;

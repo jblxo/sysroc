@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Paper from '@material-ui/core/Paper';
-import { Item } from '../layout/Item';
-import { List } from '../layout/List';
+import { Item } from '../Layout/Item';
+import { List } from '../Layout/List';
 import { useDeleteUserMutation, useMeExtendedQuery, UsersDocument, useUsersQuery } from '../../generated/graphql';
 import { Fab } from '@material-ui/core';
 import { UpdateUserModal } from './UpdateUserModal';
@@ -71,9 +71,9 @@ export const UsersList: React.FC<Props> = () => {
     }
   });
 
-  const canManageTeachers = me && me.me && hasPermissions(me.me, 'users.teachers.manage');
-  const canManageStudents = me && me.me && hasPermissions(me.me, 'users.students.manage');
-  const canDeleteUsers = me && me.me && hasPermissions(me.me, 'users.delete');
+  const canManageTeachers = me && me.me && hasPermissions(me.me, 'User.teachers.manage');
+  const canManageStudents = me && me.me && hasPermissions(me.me, 'User.students.manage');
+  const canDeleteUsers = me && me.me && hasPermissions(me.me, 'User.delete');
   const isAdmin = me && me.me && me.me.user && me.me.user.roles && me.me.user.roles.some(role => role.admin);
 
   const handleCloseUserModal = () => {

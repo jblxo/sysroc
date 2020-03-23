@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button, makeStyles, Typography } from '@material-ui/core';
 import { Field, Form, Formik } from 'formik';
-import { MyField } from './MyField';
+import { MyField } from '../MyField';
 import { ApolloError } from 'apollo-client';
-import { Error } from './Error';
+import { Error } from '../Error';
 
 const useStyles = makeStyles({
   form: {

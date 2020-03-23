@@ -1,7 +1,7 @@
 import React from 'react';
-import { ProjectsHeader } from '../components/ProjectsHeader';
-import { NewProjectModal } from '../components/NewProjectModal';
-import { ProjectsList } from '../components/ProjectsList';
+import { ProjectsHeader } from '../components/Project/ProjectsHeader';
+import { NewProjectModal } from '../components/Project/NewProjectModal';
+import { ProjectsList } from '../components/Project/ProjectsList';
 import { useMeQuery } from '../generated/graphql';
 
 interface Props {}

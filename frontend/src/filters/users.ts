@@ -1,4 +1,4 @@
-import { UserFilters } from '../components/users/UsersFilter';
+import { UserFilters } from '../components/User/UsersFilter';
 
 /**
  * Get default filters that are useful for default values for a new entry.
