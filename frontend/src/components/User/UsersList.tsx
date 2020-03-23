@@ -71,9 +71,9 @@ export const UsersList: React.FC<Props> = () => {
     }
   });
 
-  const canManageTeachers = me && me.me && hasPermissions(me.me, 'User.teachers.manage');
-  const canManageStudents = me && me.me && hasPermissions(me.me, 'User.students.manage');
-  const canDeleteUsers = me && me.me && hasPermissions(me.me, 'User.delete');
+  const canManageTeachers = me && me.me && hasPermissions(me.me, 'users.teachers.manage');
+  const canManageStudents = me && me.me && hasPermissions(me.me, 'users.students.manage');
+  const canDeleteUsers = me && me.me && hasPermissions(me.me, 'users.delete');
   const isAdmin = me && me.me && me.me.user && me.me.user.roles && me.me.user.roles.some(role => role.admin);
 
   const handleCloseUserModal = () => {
