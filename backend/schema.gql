@@ -17,6 +17,14 @@ input AllUsersFilter {
   groups: [Float!]
 }
 
+type Classification {
+  id: ID!
+  mark: Float!
+  createdAt: DateTime!
+  project: Project!
+  user: User!
+}
+
 input CreateProjectDto {
   name: String!
   description: String
@@ -88,6 +96,7 @@ type Project {
   description: String!
   user: User!
   tasks: [Task!]!
+  classifications: [Classification!]!
 }
 
 type ProjectDto {
@@ -201,6 +210,7 @@ type User {
   roles: [Role!]!
   groups: [Group!]!
   projects: [Project!]!
+  classifications: [Classification!]!
 }
 
 type UserAuthDto {

@@ -2,6 +2,7 @@ import { ObjectType, Field, ID } from 'type-graphql';
 import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { User } from '../../users/entities/users.entity';
 import { Task } from '../../tasks/entities/tasks.entity';
+import {Classification} from '../../classification/entities/classification.entity';
 
 @Entity()
 @ObjectType()
@@ -25,4 +26,8 @@ export class Project {
   @OneToMany(type => Task, task => task.project)
   @Field(type => [Task])
   tasks: Task[];
+
+  @OneToMany(type => Classification, classification => classification.project)
+  @Field(type => [Classification])
+  classifications: Classification[];
 }
