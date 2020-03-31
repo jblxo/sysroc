@@ -25,6 +25,26 @@ type Classification {
   user: User!
 }
 
+type ClassificationDto {
+  id: Float!
+  mark: Float!
+  createdAt: DateTime!
+  project: ProjectDto!
+  user: UserDto!
+}
+
+input ClassificationsFilter {
+  id: Float
+  project: Float
+  user: Float
+}
+
+input CreateClassificationDto {
+  mark: Float!
+  project: Float!
+  user: Float!
+}
+
 input CreateProjectDto {
   name: String!
   description: String
@@ -70,6 +90,7 @@ type Mutation {
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!
   updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
+  createClassification(input: CreateClassificationDto!): ClassificationDto!
 }
 
 type Permission {
@@ -124,6 +145,7 @@ type Query {
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
   task(filter: TasksFilter!): TaskDto!
+  classifications(filter: ClassificationsFilter!): [ClassificationDto!]!
 }
 
 type Role {
