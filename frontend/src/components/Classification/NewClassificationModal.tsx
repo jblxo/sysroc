@@ -31,9 +31,10 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
     open: boolean;
     handleClose: () => void;
+    userId?: string;
 }
 
-export const NewClassificationModal: React.FC<Props> = ({open, handleClose}) => {
+export const NewClassificationModal: React.FC<Props> = ({open, handleClose, userId}) => {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const [modalStyle] = React.useState(getModalStyle);
@@ -50,7 +51,7 @@ export const NewClassificationModal: React.FC<Props> = ({open, handleClose}) => 
                 <p id="new-classification-modal-description">Select and mark project</p>
                 <NewClassificationForm onSubmit={async ({mark, note, project}) => {
                     console.log(mark, note, project);
-                }} error='' />
+                }} error='' userId={userId} />
             </div>
         </Modal>
     )

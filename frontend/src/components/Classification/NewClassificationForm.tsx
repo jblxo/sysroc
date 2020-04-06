@@ -5,6 +5,7 @@ import {Field, Form, Formik} from "formik";
 import {Button, Typography} from "@material-ui/core";
 import {Error} from "../Error";
 import {MyField} from "../MyField";
+import {ProjectAutocomplete} from "../Project/ProjectAutocomplete";
 
 const useStyles = makeStyles({
     form: {
@@ -29,9 +30,10 @@ interface Values {
 interface Props {
     onSubmit: (values: Values) => void;
     error: ApolloError | any;
+    userId?: string;
 }
 
-export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error }) => {
+export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId }) => {
     const classes = useStyles();
 
     return (
@@ -65,9 +67,13 @@ export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error }) => {
                             type="number"
                             placeholder="Select Project"
                             label="Project"
-                            component={MyField}
-                            required
-                        />
+                        >
+                            {() => (
+                                <div style={{marginTop: 10}}>
+                                    <ProjectAutocomplete userId={userId}/>
+                                </div>
+                            )}
+                        </Field>
                     </div>
                     <div>
                         <Field
