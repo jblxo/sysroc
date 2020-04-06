@@ -20,6 +20,7 @@ input AllUsersFilter {
 type Classification {
   id: ID!
   mark: Float!
+  note: String!
   createdAt: DateTime!
   project: Project!
   user: User!
@@ -28,6 +29,7 @@ type Classification {
 type ClassificationDto {
   id: Float!
   mark: Float!
+  note: String!
   createdAt: DateTime!
   project: ProjectDto!
   user: UserDto!
@@ -41,6 +43,7 @@ input ClassificationsFilter {
 
 input CreateClassificationDto {
   mark: Float!
+  note: String
   project: Float!
   user: Float!
 }

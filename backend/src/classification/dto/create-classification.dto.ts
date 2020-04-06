@@ -5,6 +5,9 @@ export class CreateClassificationDto {
     @Field({nullable: false})
     mark: number;
 
+    @Field({nullable: true})
+    note: string;
+
     @Field({nullable: false})
     project: number;
 

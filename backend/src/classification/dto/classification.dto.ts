@@ -10,6 +10,9 @@ export class ClassificationDto {
     @Field()
     readonly mark: number;
 
+    @Field()
+    readonly note: string;
+
     @Field(type => Date)
     readonly createdAt: Date;
 

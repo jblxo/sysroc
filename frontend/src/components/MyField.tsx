@@ -11,6 +11,8 @@ interface Props extends FieldProps {
   multiline?: boolean;
   rows?: number;
   rowsMax?: number;
+  min?: number;
+  max?: number;
 }
 
 export const MyField: React.FC<Props> = ({
@@ -22,7 +24,9 @@ export const MyField: React.FC<Props> = ({
   required,
   multiline,
   rows,
-  rowsMax
+  rowsMax,
+    min,
+    max
 }) => {
   return (
     <TextField
@@ -34,6 +38,10 @@ export const MyField: React.FC<Props> = ({
       multiline={multiline || false}
       rows={rows}
       rowsMax={rowsMax}
+      inputProps={{
+        min,
+        max,
+      }}
       {...field}
     />
   );

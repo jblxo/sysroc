@@ -2,6 +2,7 @@ import React from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {useSnackbar} from "notistack";
 import Modal from "@material-ui/core/Modal";
+import {NewClassificationForm} from "./NewClassificationForm";
 
 function getModalStyle() {
     const top = 50;
@@ -46,7 +47,10 @@ export const NewClassificationModal: React.FC<Props> = ({open, handleClose}) => 
         >
             <div style={modalStyle} className={classes.paper}>
                 <h2 id="new-classification-modal-title">New Classification</h2>
-                <p id="new-classification-modal-description">Mark this project</p>
+                <p id="new-classification-modal-description">Select and mark project</p>
+                <NewClassificationForm onSubmit={async ({mark, note, project}) => {
+                    console.log(mark, note, project);
+                }} error='' />
             </div>
         </Modal>
     )

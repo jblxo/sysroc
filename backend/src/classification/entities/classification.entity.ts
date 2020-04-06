@@ -14,6 +14,10 @@ export class Classification {
     @Field()
     mark: number;
 
+    @Column({nullable: true})
+    @Field()
+    note: string;
+
     @CreateDateColumn({type: 'timestamp with time zone', name: 'created_at'})
     @Field(type => Date)
     createdAt: Date;
