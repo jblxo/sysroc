@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
 import {ApolloError} from "apollo-client";
 import {Field, Form, Formik} from "formik";
@@ -6,6 +6,7 @@ import {Button, Typography} from "@material-ui/core";
 import {Error} from "../Error";
 import {MyField} from "../MyField";
 import {ProjectAutocomplete} from "../Project/ProjectAutocomplete";
+import {ProjectDto} from "../../generated/graphql";
 
 const useStyles = makeStyles({
     form: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles({
 interface Values {
     mark: number;
     note: string;
-    project: number;
+    project: string;
 }
 
 interface Props {
@@ -35,12 +36,19 @@ interface Props {
 
 export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId }) => {
     const classes = useStyles();
+    const [selectedProjectId, setSelectedProjectId] = useState("");
+
+    const handleAutocompleteChange = (project: ProjectDto | null) => {
+        if(project) {
+            setSelectedProjectId(project.id);
+        }
+    };
 
     return (
         <Formik
-            initialValues={{ mark: 1, note: '', project: 0 }}
+            initialValues={{ mark: 1, note: '', project: "" }}
             onSubmit={values => {
-                onSubmit(values);
+                onSubmit({...values, project: selectedProjectId});
             }}
         >
             {() => (
@@ -70,7 +78,7 @@ export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId
                         >
                             {() => (
                                 <div style={{marginTop: 10}}>
-                                    <ProjectAutocomplete userId={userId}/>
+                                    <ProjectAutocomplete userId={userId} handleChange={handleAutocompleteChange}/>
                                 </div>
                             )}
                         </Field>
