@@ -36,13 +36,12 @@ interface Props {
 
 export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId }) => {
     const classes = useStyles();
-    const [selectedProjectId, setSelectedProjectId] = useState("");
+    const [selectedProjectId, setSelectedProjectId] = useState<string | undefined>("");
     const [projectError, setProjectError] = useState("");
 
     const handleAutocompleteChange = (project: ProjectDto | null) => {
-        if(project) {
-            setSelectedProjectId(project.id);
-        }
+        setSelectedProjectId(project?.id);
+        setProjectError("");
     };
 
     return (
