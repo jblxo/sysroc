@@ -400,6 +400,30 @@ export type UserTempDto = {
   email: Scalars['String'],
 };
 
+export type ClassificationsQueryVariables = {
+  user: Scalars['Float']
+};
+
+
+export type ClassificationsQuery = (
+  { __typename?: 'Query' }
+  & { classifications: Array<(
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
+  )> }
+);
+
 export type CreateClassificationMutationVariables = {
   mark: Scalars['Float'],
   note?: Maybe<Scalars['String']>,
@@ -772,6 +796,53 @@ export type UsersQuery = (
 );
 
 
+export const ClassificationsDocument = gql`
+    query Classifications($user: Float!) {
+  classifications(filter: {user: $user}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useClassificationsQuery__
+ *
+ * To run a query within a React component, call `useClassificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClassificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClassificationsQuery({
+ *   variables: {
+ *      user: // value for 'user'
+ *   },
+ * });
+ */
+export function useClassificationsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ClassificationsQuery, ClassificationsQueryVariables>) {
+        return ApolloReactHooks.useQuery<ClassificationsQuery, ClassificationsQueryVariables>(ClassificationsDocument, baseOptions);
+      }
+export function useClassificationsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ClassificationsQuery, ClassificationsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ClassificationsQuery, ClassificationsQueryVariables>(ClassificationsDocument, baseOptions);
+        }
+export type ClassificationsQueryHookResult = ReturnType<typeof useClassificationsQuery>;
+export type ClassificationsLazyQueryHookResult = ReturnType<typeof useClassificationsLazyQuery>;
+export type ClassificationsQueryResult = ApolloReactCommon.QueryResult<ClassificationsQuery, ClassificationsQueryVariables>;
 export const CreateClassificationDocument = gql`
     mutation CreateClassification($mark: Float!, $note: String, $project: Float!, $user: Float!) {
   createClassification(input: {mark: $mark, note: $note, project: $project, user: $user}) {

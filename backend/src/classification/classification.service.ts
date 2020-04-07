@@ -39,6 +39,6 @@ export class ClassificationService {
     }
 
     async getMany(filter: ClassificationsFilter): Promise<ClassificationDto[]> {
-        return this.classificationRepository.find({where: {user: {id: filter.user}}, relations: ['user', 'project']});
+        return this.classificationRepository.find({...filter, relations: ['user', 'project', 'project.user']});
     }
 }

@@ -1,0 +1,19 @@
+query Classifications($user: Float!) {
+    classifications(filter: {user: $user}) {
+        id
+        mark
+        note
+        project {
+            id
+            name
+            user {
+                name
+            }
+        }
+        createdAt
+        user {
+            id
+            name
+        }
+    }
+}
