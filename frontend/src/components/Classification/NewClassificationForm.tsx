@@ -37,6 +37,7 @@ interface Props {
 export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId }) => {
     const classes = useStyles();
     const [selectedProjectId, setSelectedProjectId] = useState("");
+    const [projectError, setProjectError] = useState("");
 
     const handleAutocompleteChange = (project: ProjectDto | null) => {
         if(project) {
@@ -48,6 +49,12 @@ export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId
         <Formik
             initialValues={{ mark: 1, note: '', project: "" }}
             onSubmit={values => {
+                if(selectedProjectId === "" || !selectedProjectId) {
+                    setProjectError("Please select project!");
+                    return;
+                }
+
+                setProjectError("");
                 onSubmit({...values, project: selectedProjectId});
             }}
         >
@@ -78,6 +85,7 @@ export const NewClassificationForm: React.FC<Props> = ({ onSubmit, error, userId
                         >
                             {() => (
                                 <div style={{marginTop: 10}}>
+                                    {projectError && <div style={{color: "red"}}>{projectError}</div>}
                                     <ProjectAutocomplete userId={userId} handleChange={handleAutocompleteChange}/>
                                 </div>
                             )}

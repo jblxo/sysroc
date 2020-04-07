@@ -1,0 +1,6 @@
+mutation CreateClassification($mark: Float!, $note: String, $project: Float!, $user: Float!) {
+    createClassification(input: {mark: $mark, note: $note, project: $project, user: $user}) {
+        id
+        mark
+    }
+}
