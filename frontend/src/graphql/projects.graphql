@@ -6,5 +6,8 @@ query Projects($userId: String) {
     user {
       name
     }
+    supervisor {
+      name
+    }
   }
 }

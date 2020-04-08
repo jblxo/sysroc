@@ -59,6 +59,7 @@ type Mutation {
   createProject(input: CreateProjectDto!): ProjectDto!
   deleteProject(projectId: Float!): ProjectDto!
   updateProject(updates: UpdateProjectDto!, filter: ProjectsFilter!): ProjectDto!
+  claimProject(filter: ProjectsFilter!): ProjectDto!
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!
   updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
@@ -87,6 +88,7 @@ type Project {
   name: String!
   description: String!
   user: User!
+  supervisor: User!
   tasks: [Task!]!
 }
 
@@ -95,6 +97,7 @@ type ProjectDto {
   name: String!
   description: String!
   user: UserDto!
+  supervisor: UserDto
   tasks: [TaskDto!]
 }
 
@@ -177,6 +180,7 @@ input TasksFilter {
 input UpdateProjectDto {
   name: String
   description: String
+  supervisor: Float
 }
 
 input UpdateTaskDto {
@@ -201,6 +205,7 @@ type User {
   roles: [Role!]!
   groups: [Group!]!
   projects: [Project!]!
+  supervisedProjects: [Project!]!
 }
 
 type UserAuthDto {

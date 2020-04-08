@@ -2,9 +2,10 @@ mutation UpdateProject(
   $name: String!
   $description: String
   $projectId: Float!
+  $supervisor: Float
 ) {
   updateProject(
-    updates: { name: $name, description: $description }
+    updates: { name: $name, description: $description, supervisor: $supervisor }
     filter: { id: $projectId }
   ) {
     id
@@ -12,6 +13,10 @@ mutation UpdateProject(
     description
     user {
       id
+    }
+    supervisor {
+      id
+      name
     }
   }
 }

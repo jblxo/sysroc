@@ -1,0 +1,11 @@
+mutation ClaimProject($projectId: Float!) {
+  claimProject(filter: { id: $projectId }) {
+    id
+    user {
+      id
+    }
+    supervisor {
+      id
+    }
+  }
+}
