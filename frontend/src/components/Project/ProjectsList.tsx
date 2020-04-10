@@ -77,12 +77,6 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
               <div>Supervisor</div>
             </Item>
             <Item>
-              <div>Url</div>
-            </Item>
-            <Item>
-              <div>Database</div>
-            </Item>
-            <Item>
               <div>Description</div>
             </Item>
             <Item>
@@ -101,12 +95,6 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                 </Item>
                 <Item>
                   <div>{project.supervisor && project.supervisor.name}</div>
-                </Item>
-                <Item>
-                  <div>/{project.name}</div>
-                </Item>
-                <Item>
-                  <div>{project.name}_db</div>
                 </Item>
                 <Item>
                   <div>{project.description.slice(0, 10)}...</div>
