@@ -182,8 +182,8 @@ input AllUsersFilter {
 
 input ClassificationsFilter {
     id: Float
-    project: Float
-    user: Float
+    projects: [Float!]
+    users: [Float!]
 }
 
 input CreateClassificationDto {

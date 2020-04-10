@@ -5,9 +5,9 @@ export class    ClassificationsFilter {
     @Field({nullable: true})
     id?: number;
 
-    @Field({nullable: true})
-    project?: number;
+    @Field(type => [Number], { nullable: true, defaultValue: [] })
+    projects?: number[];
 
-    @Field({nullable: true})
-    user?: number;
+    @Field(type => [Number], { nullable: true, defaultValue: [] })
+    users?: number[];
 }

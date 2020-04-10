@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Classification} from './entities/classification.entity';
-import {Repository} from 'typeorm';
+import {In, Repository} from 'typeorm';
 import {CreateClassificationDto} from './dto/create-classification.dto';
 import {ClassificationDto} from './dto/classification.dto';
 import {Project} from '../projects/entities/projects.entity';
@@ -39,6 +39,19 @@ export class ClassificationService {
     }
 
     async getMany(filter: ClassificationsFilter): Promise<ClassificationDto[]> {
-        return this.classificationRepository.find({...filter, relations: ['user', 'project', 'project.user']});
+        const query = this.classificationRepository.createQueryBuilder('classification')
+            .leftJoinAndSelect('classification.project', 'project')
+            .leftJoinAndSelect('classification.user', 'user')
+            .leftJoinAndSelect('project.user', 'projectUser');
+
+        if(filter.projects && filter.projects.length > 0) {
+            query.orWhere('project.id IN (:...projectIds)', {projectIds: filter.projects});
+        }
+
+        if(filter.users && filter.users.length > 0) {
+            query.orWhere('user.id IN (:...userIds)', {userIds: filter.users});
+        }
+
+        return query.getMany();
     }
 }

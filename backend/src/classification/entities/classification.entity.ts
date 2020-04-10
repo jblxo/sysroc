@@ -1,4 +1,4 @@
-import {BeforeInsert, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
+import {BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm';
 import {Field, ID, ObjectType} from 'type-graphql';
 import {Project} from '../../projects/entities/projects.entity';
 import {User} from '../../users/entities/users.entity';
@@ -23,10 +23,12 @@ export class Classification {
     createdAt: Date;
 
     @ManyToOne(type => Project, project => project.classifications)
+    @JoinColumn({name: 'projectId'})
     @Field(type => Project)
     project: Project;
 
     @ManyToOne(type => User, user => user.classifications)
+    @JoinColumn({name: 'userId'})
     @Field(type => User)
     user: User;
 

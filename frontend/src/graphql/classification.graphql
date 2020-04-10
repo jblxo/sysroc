@@ -1,5 +1,5 @@
-query Classifications($user: Float!) {
-    classifications(filter: {user: $user}) {
+query Classifications($users: [Float!], $projects: [Float!]) {
+    classifications(filter: {users: $users, projects: $projects}) {
         id
         mark
         note

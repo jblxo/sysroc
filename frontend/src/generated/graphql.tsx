@@ -49,8 +49,8 @@ export type ClassificationDto = {
 
 export type ClassificationsFilter = {
   id?: Maybe<Scalars['Float']>,
-  project?: Maybe<Scalars['Float']>,
-  user?: Maybe<Scalars['Float']>,
+  projects?: Maybe<Array<Scalars['Float']>>,
+  users?: Maybe<Array<Scalars['Float']>>,
 };
 
 export type CreateClassificationDto = {
@@ -401,7 +401,8 @@ export type UserTempDto = {
 };
 
 export type ClassificationsQueryVariables = {
-  user: Scalars['Float']
+  users?: Maybe<Array<Scalars['Float']>>,
+  projects?: Maybe<Array<Scalars['Float']>>
 };
 
 
@@ -797,8 +798,8 @@ export type UsersQuery = (
 
 
 export const ClassificationsDocument = gql`
-    query Classifications($user: Float!) {
-  classifications(filter: {user: $user}) {
+    query Classifications($users: [Float!], $projects: [Float!]) {
+  classifications(filter: {users: $users, projects: $projects}) {
     id
     mark
     note
@@ -830,7 +831,8 @@ export const ClassificationsDocument = gql`
  * @example
  * const { data, loading, error } = useClassificationsQuery({
  *   variables: {
- *      user: // value for 'user'
+ *      users: // value for 'users'
+ *      projects: // value for 'projects'
  *   },
  * });
  */
