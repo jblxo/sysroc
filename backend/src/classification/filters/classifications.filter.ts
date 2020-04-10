@@ -10,4 +10,10 @@ export class    ClassificationsFilter {
 
     @Field(type => [Number], { nullable: true, defaultValue: [] })
     users?: number[];
+
+    @Field(type => Date, {nullable: true, defaultValue: new Date(new Date().setMonth(new Date().getMonth()-1))})
+    fromDate?: Date;
+
+    @Field(type => Date, {nullable: true, defaultValue: new Date()})
+    toDate?: Date;
 }

@@ -3,6 +3,11 @@ import React from "react";
 import {useProjectsQuery, useUsersQuery} from "../../generated/graphql";
 import {Form, Formik} from "formik";
 import {Autocomplete} from "@material-ui/lab";
+import {KeyboardDatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
+import {MaterialUiPickersDate} from "@material-ui/pickers/typings/date";
+import MomentUtils from "@date-io/moment";
+import moment, { Moment } from "moment";
+import {getClassificationFilters} from "../../filters/classification";
 
 const useStyles = makeStyles({
     form: {
@@ -24,6 +29,8 @@ const useStyles = makeStyles({
 export interface ClassificationFilters {
     projects?: number[];
     users?: number[];
+    fromDate?: Date;
+    toDate?: Date;
 }
 
 interface Props {
@@ -36,6 +43,16 @@ export const ClassificationFilter: React.FC<Props> = ({defaultValues, onSubmit})
 
     const { data: projectsData, loading: projectsLoading} = useProjectsQuery();
     const { data: usersData, loading: usersLoading} = useUsersQuery();
+    const [fromDate, setFromDate] = React.useState<Moment | null>(moment(getClassificationFilters().fromDate));
+    const [toDate, setToDate] = React.useState<Moment | null>(moment(getClassificationFilters().toDate));
+
+    const handleFromDateChange = (date: Moment | null) => {
+        setFromDate(date);
+    };
+
+    const handleToDateChange = (date: MaterialUiPickersDate) => {
+        setToDate(date);
+    };
 
     let projects: number[] | undefined = defaultValues.projects;
     let users: number[] | undefined = defaultValues.users;
@@ -44,13 +61,13 @@ export const ClassificationFilter: React.FC<Props> = ({defaultValues, onSubmit})
         if(projectsData && projectsData.projects) {
             projects = projectsData.projects.filter(project => value.includes(project.name)).map(project => parseInt(project.id));
         }
-    }
+    };
 
     const handleUsersChange = (event: React.ChangeEvent<{}>, value: any) => {
         if(usersData && usersData.users) {
             users = usersData.users.filter(user => value.includes(user.name)).map(user => parseInt(user.id));
         }
-    }
+    };
 
     let defaultProjects: string[] = [];
     if (projectsData && projectsData.projects) {
@@ -65,53 +82,83 @@ export const ClassificationFilter: React.FC<Props> = ({defaultValues, onSubmit})
     if(projectsLoading || usersLoading) return <span>Loading...</span>;
 
     return (
-        <Formik
-            initialValues={defaultValues}
-            onSubmit={values => {
-                onSubmit({...values, projects, users});
-            }}
-        >
-            <Form className={classes.form}>
-                <Autocomplete
-                    placeholder="Projects"
-                    multiple
-                    options={projectsData?.projects?.map(project => project.name) as string[]}
-                    onChange={handleProjectsChange}
-                    className={classes.autoComplete}
-                    defaultValue={defaultProjects}
-                    renderInput={params => (
-                        <TextField
-                            {...params}
-                            label="Projects"
-                            className={classes.autoCompleteField}
-                            variant="standard"
-                        />
-                    )}
-                />
-                <Autocomplete
-                    placeholder="Users"
-                    multiple
-                    options={usersData?.users?.map(user => user.name) as string[]}
-                    onChange={handleUsersChange}
-                    className={classes.autoComplete}
-                    defaultValue={defaultUsers}
-                    renderInput={params => (
-                        <TextField
-                            {...params}
-                            label="Users"
-                            className={classes.autoCompleteField}
-                            variant="standard"
-                        />
-                    )}
-                />
-                <Button
-                    type="submit"
-                    variant="contained"
-                    color="primary"
-                >
-                    Filter
-                </Button>
-            </Form>
-        </Formik>
+        <MuiPickersUtilsProvider utils={MomentUtils}>
+            <Formik
+                initialValues={defaultValues}
+                onSubmit={values => {
+                    onSubmit({
+                        ...values,
+                        projects,
+                        users,
+                        fromDate: fromDate?.toDate() ?? defaultValues.fromDate,
+                        toDate: toDate?.toDate() ?? defaultValues.toDate
+                    });
+                }}
+            >
+                <Form className={classes.form}>
+                    <Autocomplete
+                        placeholder="Projects"
+                        multiple
+                        options={projectsData?.projects?.map(project => project.name) as string[]}
+                        onChange={handleProjectsChange}
+                        className={classes.autoComplete}
+                        defaultValue={defaultProjects}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label="Projects"
+                                className={classes.autoCompleteField}
+                                variant="standard"
+                            />
+                        )}
+                    />
+                    <Autocomplete
+                        placeholder="Users"
+                        multiple
+                        options={usersData?.users?.map(user => user.name) as string[]}
+                        onChange={handleUsersChange}
+                        className={classes.autoComplete}
+                        defaultValue={defaultUsers}
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label="Users"
+                                className={classes.autoCompleteField}
+                                variant="standard"
+                            />
+                        )}
+                    />
+                    <KeyboardDatePicker
+                        disableToolbar
+                        className={classes.textField}
+                        label="From date"
+                        value={fromDate}
+                        maxDate={toDate}
+                        onChange={handleFromDateChange}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                    />
+                    <KeyboardDatePicker
+                        disableToolbar
+                        className={classes.textField}
+                        label="To date"
+                        value={toDate}
+                        minDate={fromDate}
+                        onChange={handleToDateChange}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                    />
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                    >
+                        Filter
+                    </Button>
+                </Form>
+            </Formik>
+        </MuiPickersUtilsProvider>
     )
 };

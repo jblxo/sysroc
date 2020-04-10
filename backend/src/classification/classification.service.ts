@@ -42,7 +42,10 @@ export class ClassificationService {
         const query = this.classificationRepository.createQueryBuilder('classification')
             .leftJoinAndSelect('classification.project', 'project')
             .leftJoinAndSelect('classification.user', 'user')
-            .leftJoinAndSelect('project.user', 'projectUser');
+            .leftJoinAndSelect('project.user', 'projectUser')
+            .where(
+                'DATE(classification.createdAt) >= DATE(:fromDate) AND DATE(classification.createdAt) <= DATE(:toDate)',
+                {fromDate: filter.fromDate, toDate: filter.toDate});
 
         if(filter.projects && filter.projects.length > 0) {
             query.orWhere('project.id IN (:...projectIds)', {projectIds: filter.projects});

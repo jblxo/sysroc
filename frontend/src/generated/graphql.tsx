@@ -51,6 +51,8 @@ export type ClassificationsFilter = {
   id?: Maybe<Scalars['Float']>,
   projects?: Maybe<Array<Scalars['Float']>>,
   users?: Maybe<Array<Scalars['Float']>>,
+  fromDate?: Maybe<Scalars['DateTime']>,
+  toDate?: Maybe<Scalars['DateTime']>,
 };
 
 export type CreateClassificationDto = {
@@ -402,7 +404,9 @@ export type UserTempDto = {
 
 export type ClassificationsQueryVariables = {
   users?: Maybe<Array<Scalars['Float']>>,
-  projects?: Maybe<Array<Scalars['Float']>>
+  projects?: Maybe<Array<Scalars['Float']>>,
+  fromDate?: Maybe<Scalars['DateTime']>,
+  toDate?: Maybe<Scalars['DateTime']>
 };
 
 
@@ -798,8 +802,8 @@ export type UsersQuery = (
 
 
 export const ClassificationsDocument = gql`
-    query Classifications($users: [Float!], $projects: [Float!]) {
-  classifications(filter: {users: $users, projects: $projects}) {
+    query Classifications($users: [Float!], $projects: [Float!], $fromDate: DateTime, $toDate: DateTime) {
+  classifications(filter: {users: $users, projects: $projects, fromDate: $fromDate, toDate: $toDate}) {
     id
     mark
     note
@@ -833,6 +837,8 @@ export const ClassificationsDocument = gql`
  *   variables: {
  *      users: // value for 'users'
  *      projects: // value for 'projects'
+ *      fromDate: // value for 'fromDate'
+ *      toDate: // value for 'toDate'
  *   },
  * });
  */
