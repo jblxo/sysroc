@@ -11,5 +11,12 @@ query Project($id: Float) {
       dueDate
       completed
     }
+    user {
+      id
+    }
+    supervisor {
+      id
+      name
+    }
   }
 }

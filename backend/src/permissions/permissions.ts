@@ -8,6 +8,12 @@ export const PERMISSIONS = {
   // Can view all other projects
   PROJECTS_VIEW: 'projects.view',
 
+  // Can claim a project as its supervisor
+  PROJECTS_CLAIM: 'projects.claim',
+
+  // Can manage the supervisor of a project
+  PROJECTS_CLAIM_MANAGE: 'projects.claim.manage',
+
   // Can create and manage student accounts
   MANAGE_STUDENT_USERS: 'users.students.manage',
 

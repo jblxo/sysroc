@@ -12,23 +12,25 @@ type ADUser {
 }
 
 type Group {
-    id: Float!
+    id: ID!
     name: String!
     users: [User!]!
 }
 
 type Mutation {
+    claimProject(filter: ProjectsFilter!): ProjectDto!
     createProject(input: CreateProjectDto!): ProjectDto!
     createTask(input: CreateTaskDto!): TaskDto!
     createUser(input: CreateUserDto!): UserDto!
     deleteProject(projectId: Float!): ProjectDto!
     deleteTask(filter: TasksFilter!): TaskDto!
-    deleteUser(userId: String!): Boolean!
+    deleteUser(userId: Float!): UserDto!
     logout: Boolean!
     signin(auth: UserAuthInputDto!): UserAuthDto!
     signup(input: SignUpUserDto!): UserAuthDto!
     updateProject(filter: ProjectsFilter!, updates: UpdateProjectDto!): ProjectDto!
     updateTask(filter: TasksFilter!, updates: UpdateTaskDto!): TaskDto!
+    updateUser(filter: UsersFilter!, input: UpdateUserDto!): UserDto!
 }
 
 type Permission {
@@ -53,6 +55,7 @@ type Project {
     description: String!
     id: ID!
     name: String!
+    supervisor: User!
     tasks: [Task!]!
     user: User!
 }
@@ -61,20 +64,22 @@ type ProjectDto {
     description: String!
     id: ID!
     name: String!
+    supervisor: UserDto
     tasks: [TaskDto!]
     user: UserDto!
 }
 
 type Query {
     authUser(auth: UserAuthInputDto!): ADUser!
+    groups: [Group!]!
     me: UserAuthDto
     meExtended: UserAuthDto
     project(filter: ProjectsFilter!): ProjectDto!
     projects(filter: ProjectsFilter!): [ProjectDto!]!
     roles(filter: RolesFilter!): [RoleDto!]!
     task(filter: TasksFilter!): TaskDto!
-    user(adEmail: String, email: String, id: Float, name: String): UserDto!
-    users: [UserDto!]!
+    user(filter: UsersFilter!): UserDto!
+    users(filter: AllUsersFilter!): [UserDto!]!
 }
 
 type Role {
@@ -123,6 +128,7 @@ type User {
     password: String!
     projects: [Project!]!
     roles: [Role!]!
+    supervisedProjects: [Project!]!
 }
 
 type UserAuthDto {
@@ -146,6 +152,14 @@ type UserDto {
 type UserTempDto {
     email: String!
     name: String!
+}
+
+input AllUsersFilter {
+    adEmail: String
+    email: String
+    groups: [Float!]
+    name: String
+    roles: [Float!]
 }
 
 input CreateProjectDto {
@@ -198,6 +212,7 @@ input TasksFilter {
 input UpdateProjectDto {
     description: String
     name: String
+    supervisor: Float
 }
 
 input UpdateTaskDto {
@@ -206,9 +221,23 @@ input UpdateTaskDto {
     name: String
 }
 
+input UpdateUserDto {
+    email: String!
+    groups: [Float!]
+    name: String!
+    roleSlugs: [String!]
+}
+
 input UserAuthInputDto {
     email: String!
     password: String!
+}
+
+input UsersFilter {
+    adEmail: String
+    email: String
+    id: Float
+    name: String
 }
 
 

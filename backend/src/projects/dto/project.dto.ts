@@ -12,6 +12,8 @@ export class ProjectDto {
   readonly description: string;
   @Field(type => UserDto)
   readonly user: UserDto;
+  @Field(type => UserDto, { nullable: true })
+  readonly supervisor?: UserDto;
   @Field(type => [TaskDto], {defaultValue: []})
   readonly tasks: TaskDto[];
 }

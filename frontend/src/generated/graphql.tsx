@@ -68,6 +68,7 @@ export type Mutation = {
   createProject: ProjectDto,
   deleteProject: ProjectDto,
   updateProject: ProjectDto,
+  claimProject: ProjectDto,
   createTask: TaskDto,
   deleteTask: TaskDto,
   updateTask: TaskDto,
@@ -116,6 +117,11 @@ export type MutationUpdateProjectArgs = {
 };
 
 
+export type MutationClaimProjectArgs = {
+  filter: ProjectsFilter
+};
+
+
 export type MutationCreateTaskArgs = {
   input: CreateTaskDto
 };
@@ -158,6 +164,7 @@ export type Project = {
   name: Scalars['String'],
   description: Scalars['String'],
   user: User,
+  supervisor: User,
   tasks: Array<Task>,
 };
 
@@ -167,6 +174,7 @@ export type ProjectDto = {
   name: Scalars['String'],
   description: Scalars['String'],
   user: UserDto,
+  supervisor?: Maybe<UserDto>,
   tasks?: Maybe<Array<TaskDto>>,
 };
 
@@ -194,6 +202,17 @@ export type Query = {
 export type QueryAuthUserArgs = {
   auth: UserAuthInputDto
 };
+
+
+export type QueryUserArgs = {
+  filter: UsersFilter
+};
+
+
+export type QueryUsersArgs = {
+  filter: AllUsersFilter
+};
+
 
 export type QueryRolesArgs = {
   filter: RolesFilter
@@ -278,6 +297,7 @@ export type TasksFilter = {
 export type UpdateProjectDto = {
   name?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
+  supervisor?: Maybe<Scalars['Float']>,
 };
 
 export type UpdateTaskDto = {
@@ -303,6 +323,7 @@ export type User = {
   roles: Array<Role>,
   groups: Array<Group>,
   projects: Array<Project>,
+  supervisedProjects: Array<Project>,
 };
 
 export type UserAuthDto = {
@@ -342,6 +363,26 @@ export type UserTempDto = {
   name: Scalars['String'],
   email: Scalars['String'],
 };
+
+export type ClaimProjectMutationVariables = {
+  projectId: Scalars['Float']
+};
+
+
+export type ClaimProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { claimProject: (
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, 'id'>
+    & { user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    )> }
+  ) }
+);
 
 export type CreateProjectMutationVariables = {
   name: Scalars['String'],
@@ -518,7 +559,13 @@ export type ProjectQuery = (
     & { tasks: Maybe<Array<(
       { __typename?: 'TaskDto' }
       & Pick<TaskDto, 'id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
-    )>> }
+    )>>, user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -535,12 +582,16 @@ export type ProjectsQuery = (
     & { user: (
       { __typename?: 'UserDto' }
       & Pick<UserDto, 'name'>
-    ) }
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'name'>
+    )> }
   )> }
 );
 
 export type RolesQueryVariables = {
-  admin?: Maybe<Scalars['Boolean']>
+  admin?: Maybe<Scalars['Boolean']>,
+  permission?: Maybe<Scalars['String']>
 };
 
 
@@ -618,7 +669,8 @@ export type TaskQuery = (
 export type UpdateProjectMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
-  projectId: Scalars['Float']
+  projectId: Scalars['Float'],
+  supervisor?: Maybe<Scalars['Float']>
 };
 
 
@@ -630,7 +682,10 @@ export type UpdateProjectMutation = (
     & { user: (
       { __typename?: 'UserDto' }
       & Pick<UserDto, 'id'>
-    ) }
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -699,6 +754,44 @@ export type UsersQuery = (
 );
 
 
+export const ClaimProjectDocument = gql`
+    mutation ClaimProject($projectId: Float!) {
+  claimProject(filter: {id: $projectId}) {
+    id
+    user {
+      id
+    }
+    supervisor {
+      id
+    }
+  }
+}
+    `;
+export type ClaimProjectMutationFn = ApolloReactCommon.MutationFunction<ClaimProjectMutation, ClaimProjectMutationVariables>;
+
+/**
+ * __useClaimProjectMutation__
+ *
+ * To run a mutation, you first call `useClaimProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useClaimProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [claimProjectMutation, { data, loading, error }] = useClaimProjectMutation({
+ *   variables: {
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useClaimProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<ClaimProjectMutation, ClaimProjectMutationVariables>) {
+        return ApolloReactHooks.useMutation<ClaimProjectMutation, ClaimProjectMutationVariables>(ClaimProjectDocument, baseOptions);
+      }
+export type ClaimProjectMutationHookResult = ReturnType<typeof useClaimProjectMutation>;
+export type ClaimProjectMutationResult = ApolloReactCommon.MutationResult<ClaimProjectMutation>;
+export type ClaimProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<ClaimProjectMutation, ClaimProjectMutationVariables>;
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!, $description: String) {
   createProject(input: {name: $name, description: $description}) {
@@ -1099,6 +1192,13 @@ export const ProjectDocument = gql`
       dueDate
       completed
     }
+    user {
+      id
+    }
+    supervisor {
+      id
+      name
+    }
   }
 }
     `;
@@ -1137,6 +1237,9 @@ export const ProjectsDocument = gql`
     user {
       name
     }
+    supervisor {
+      name
+    }
   }
 }
     `;
@@ -1167,8 +1270,8 @@ export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
 export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
 export type ProjectsQueryResult = ApolloReactCommon.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
 export const RolesDocument = gql`
-    query Roles($admin: Boolean) {
-  roles(filter: {admin: $admin}) {
+    query Roles($admin: Boolean, $permission: String) {
+  roles(filter: {admin: $admin, permission: $permission}) {
     id
     name
     slug
@@ -1194,6 +1297,7 @@ export const RolesDocument = gql`
  * const { data, loading, error } = useRolesQuery({
  *   variables: {
  *      admin: // value for 'admin'
+ *      permission: // value for 'permission'
  *   },
  * });
  */
@@ -1333,13 +1437,17 @@ export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
 export const UpdateProjectDocument = gql`
-    mutation UpdateProject($name: String!, $description: String, $projectId: Float!) {
-  updateProject(updates: {name: $name, description: $description}, filter: {id: $projectId}) {
+    mutation UpdateProject($name: String!, $description: String, $projectId: Float!, $supervisor: Float) {
+  updateProject(updates: {name: $name, description: $description, supervisor: $supervisor}, filter: {id: $projectId}) {
     id
     name
     description
     user {
       id
+    }
+    supervisor {
+      id
+      name
     }
   }
 }
@@ -1362,6 +1470,7 @@ export type UpdateProjectMutationFn = ApolloReactCommon.MutationFunction<UpdateP
  *      name: // value for 'name'
  *      description: // value for 'description'
  *      projectId: // value for 'projectId'
+ *      supervisor: // value for 'supervisor'
  *   },
  * });
  */

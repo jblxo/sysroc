@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useProjectQuery, useMeQuery } from '../generated/graphql';
+import { useMeQuery, useProjectQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
@@ -9,11 +9,13 @@ import { CreateTaskModal } from '../components/Task/CreateTaskModal';
 import moment from 'moment';
 import { ITask } from '../components/Task/Task';
 import { UpdateTaskModal } from '../components/Task/UpdateTaskModal';
+import { ClaimProjectFab } from '../components/Project/ClaimProjectFab';
+import { hasPermissions } from '../auth/hasPermissions';
 
 const ProjectControls = styled.div`
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 15rem 1fr 1fr;
+  grid-template-columns: 20rem 1fr 1fr;
 
   margin-bottom: 2rem;
 
@@ -68,11 +70,12 @@ export const SingleProject: React.FC<Props> = props => {
   const [upTaskModalOpen, setUpTaskModalOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number>(0);
-  const { loading: meLoading } = useMeQuery();
+  const { data: meData, loading: meLoading } = useMeQuery();
   const { data, loading } = useProjectQuery({
     variables: { id: parseInt(props.match.params.projectId) }
   });
   const history = useHistory();
+  const canManageProject = meData?.me && hasPermissions(meData.me, "projects.manage");
 
   const handleModalOpen = () => {
     setModalOpen(true);
@@ -132,6 +135,13 @@ export const SingleProject: React.FC<Props> = props => {
           >
             Edit
           </Fab>
+          { data && (
+            <ClaimProjectFab
+              projectId={parseInt(data.project.id)}
+              hasSupervisor={data.project.supervisor !== null}
+              supervisorId={data?.project.supervisor ? parseInt(data.project.supervisor.id) : null}
+            />
+          )}
         </Actions>
       </ProjectControls>
       {data ? (
@@ -167,7 +177,7 @@ export const SingleProject: React.FC<Props> = props => {
       ) : (
         <div>There is no project with ID {props.match.params.projectId}</div>
       )}
-      {data && (
+      {data && (canManageProject || data.project.user.id === meData?.me?.user?.id) && (
         <UpdateProjectModal
           open={modalOpen}
           handleClose={handleModalClose}
