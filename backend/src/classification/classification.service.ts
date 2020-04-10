@@ -43,16 +43,17 @@ export class ClassificationService {
             .leftJoinAndSelect('classification.project', 'project')
             .leftJoinAndSelect('classification.user', 'user')
             .leftJoinAndSelect('project.user', 'projectUser')
-            .where(
+            .andWhere(
                 'DATE(classification.createdAt) >= DATE(:fromDate) AND DATE(classification.createdAt) <= DATE(:toDate)',
-                {fromDate: filter.fromDate, toDate: filter.toDate});
+                {fromDate: filter.fromDate, toDate: filter.toDate})
+            .orderBy('classification.createdAt', 'DESC');
 
         if(filter.projects && filter.projects.length > 0) {
-            query.orWhere('project.id IN (:...projectIds)', {projectIds: filter.projects});
+            query.andWhere('project.id IN (:...projectIds)', {projectIds: filter.projects});
         }
 
         if(filter.users && filter.users.length > 0) {
-            query.orWhere('user.id IN (:...userIds)', {userIds: filter.users});
+            query.andWhere('user.id IN (:...userIds)', {userIds: filter.users});
         }
 
         return query.getMany();
