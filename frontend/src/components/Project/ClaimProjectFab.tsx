@@ -41,6 +41,8 @@ export const ClaimProjectFab: React.FC<Props> = ({
             project: project
           }
         });
+        const message = hasSupervisor ? 'unclaimed' : 'claimed';
+        enqueueSnackbar(`Project successfully ${message}!`, {variant: 'success'});
       } catch (error) {
         if (error instanceof Error) {
           enqueueSnackbar(error.message, { variant: 'error' });
