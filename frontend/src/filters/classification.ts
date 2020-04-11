@@ -1,10 +1,7 @@
 import {ClassificationFilters} from "../components/Classification/ClassificationFilter";
 
 const getDefaultClassificationFilters = (): ClassificationFilters => {
-    return {
-        fromDate: new Date(new Date().setMonth(new Date().getMonth()-1)),
-        toDate: new Date()
-    };
+    return {};
 };
 
 let filters: ClassificationFilters = getDefaultClassificationFilters();

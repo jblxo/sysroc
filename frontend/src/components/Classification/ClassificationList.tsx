@@ -1,5 +1,11 @@
 import React, {useState} from "react";
-import {useClassificationsQuery, useDeleteClassificationMutation, useMeExtendedQuery} from "../../generated/graphql";
+import {
+    ClassificationsDocument,
+    ClassificationsQuery,
+    useClassificationsQuery,
+    useDeleteClassificationMutation,
+    useMeExtendedQuery
+} from "../../generated/graphql";
 import {Item} from '../Layout/Item';
 import {List} from '../Layout/List';
 import moment from "moment";
@@ -7,13 +13,15 @@ import {ClassificationFilter, ClassificationFilters} from "./ClassificationFilte
 import {
     getClassificationFilters,
     registerClassificationFiltersListener,
-    setClassificationFilters
+    setClassificationFilters, setDefaultClassificationFilter, triggerClassificationFiltersChange
 } from "../../filters/classification";
 import {Fab, Paper} from "@material-ui/core";
 import {DeleteClassificationDialog} from "./DeleteClassificationDialog";
 import {useSnackbar} from "notistack";
 import {useApolloClient} from "@apollo/react-hooks";
 import {hasPermissions} from "../../auth/hasPermissions";
+
+const GET_CLASSIFICATION = ClassificationsDocument;
 
 interface Props {}
 
@@ -26,7 +34,43 @@ export const ClassificationList: React.FC<Props> = props => {
     const [filters, setFilters] = useState<ClassificationFilters>(getClassificationFilters());
     const {data, loading} = useClassificationsQuery({variables: filters});
     const { data: me, loading: meLoading } = useMeExtendedQuery();
-    const [deleteClassification] = useDeleteClassificationMutation();
+    const [deleteClassification] = useDeleteClassificationMutation({
+        async update(cache, result) {
+            if(!result.data?.deleteClassification) {
+                enqueueSnackbar('An error occurred while deleting the classification.', { variant: 'error' });
+                return;
+            }
+
+            setDefaultClassificationFilter();
+
+            const query: ClassificationsQuery | null = cache.readQuery({
+                query: GET_CLASSIFICATION,
+                variables: getClassificationFilters()
+            });
+
+            await apolloClient.reset();
+
+            if(query && query.classifications) {
+                const updatedClassifications = query.classifications.filter(
+                    (classification) => classification.id !== result.data?.deleteClassification.id
+                );
+
+                cache.writeQuery({
+                    query: GET_CLASSIFICATION,
+                    variables: getClassificationFilters(),
+                    data: {
+                        classifications: updatedClassifications
+                    }
+                });
+
+                if(data) {
+                    data.classifications = updatedClassifications;
+                }
+
+                triggerClassificationFiltersChange();
+            }
+        }
+    });
 
     const [deleteClassificationDialogOpen, setDeleteClassificationDialogOpen] = useState(false);
     const [selectedClassificationId, setSelectedClassificationId] = useState<number | null>(null);

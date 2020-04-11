@@ -43,8 +43,8 @@ export const ClassificationFilter: React.FC<Props> = ({defaultValues, onSubmit})
 
     const { data: projectsData, loading: projectsLoading} = useProjectsQuery();
     const { data: usersData, loading: usersLoading} = useUsersQuery();
-    const [fromDate, setFromDate] = React.useState<Moment | null>(moment(getClassificationFilters().fromDate));
-    const [toDate, setToDate] = React.useState<Moment | null>(moment(getClassificationFilters().toDate));
+    const [fromDate, setFromDate] = React.useState<Moment | null>(moment(getClassificationFilters().fromDate ?? new Date(new Date().setMonth(new Date().getMonth()-1))));
+    const [toDate, setToDate] = React.useState<Moment | null>(moment(getClassificationFilters().toDate ?? new Date()));
 
     const handleFromDateChange = (date: Moment | null) => {
         setFromDate(date);
