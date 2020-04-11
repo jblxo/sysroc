@@ -21,7 +21,7 @@ import {useSnackbar} from "notistack";
 import {useApolloClient} from "@apollo/react-hooks";
 import {hasPermissions} from "../../auth/hasPermissions";
 
-const GET_CLASSIFICATION = ClassificationsDocument;
+export const GET_CLASSIFICATION = ClassificationsDocument;
 
 interface Props {}
 

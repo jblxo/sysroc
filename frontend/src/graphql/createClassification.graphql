@@ -2,5 +2,18 @@ mutation CreateClassification($mark: Float!, $note: String, $project: Float!, $u
     createClassification(input: {mark: $mark, note: $note, project: $project, user: $user}) {
         id
         mark
+        note
+        project {
+            id
+            name
+            user {
+                name
+            }
+        }
+        createdAt
+        user {
+            id
+            name
+        }
     }
 }

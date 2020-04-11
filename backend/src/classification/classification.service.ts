@@ -31,7 +31,9 @@ export class ClassificationService {
             {relations: ['projects']}
         );
         await this.classificationRepository.save(newClassification);
-        return newClassification;
+        return this.classificationRepository.findOne(newClassification.id, {relations: [
+            'project', 'user', 'project.user'
+            ]});
     }
 
     async getOne(filter: ClassificationsFilter): Promise<ClassificationDto> {

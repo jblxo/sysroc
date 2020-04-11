@@ -182,10 +182,10 @@ input AllUsersFilter {
 }
 
 input ClassificationsFilter {
-    fromDate: DateTime = "2020-03-11T13:42:59.558Z"
+    fromDate: DateTime = "2020-03-11T16:14:12.294Z"
     id: Float
     projects: [Float!] = []
-    toDate: DateTime = "2020-04-11T12:42:59.559Z"
+    toDate: DateTime = "2020-04-11T15:14:12.297Z"
     users: [Float!] = []
 }
 

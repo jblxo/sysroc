@@ -3,7 +3,14 @@ import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
 import {useSnackbar} from "notistack";
 import Modal from "@material-ui/core/Modal";
 import {NewClassificationForm} from "./NewClassificationForm";
-import {useCreateClassificationMutation} from "../../generated/graphql";
+import {ClassificationsQuery, useCreateClassificationMutation} from "../../generated/graphql";
+import {
+    getClassificationFilters,
+    setDefaultClassificationFilter,
+    triggerClassificationFiltersChange
+} from "../../filters/classification";
+import {GET_CLASSIFICATION} from "./ClassificationList";
+import {useApolloClient} from "@apollo/react-hooks";
 
 function getModalStyle() {
     const top = 50;
@@ -38,8 +45,37 @@ interface Props {
 export const NewClassificationModal: React.FC<Props> = ({open, handleClose, userId}) => {
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
+    const { cache: apolloClient } = useApolloClient();
     const [modalStyle] = React.useState(getModalStyle);
-    const [createClassification, {error}] = useCreateClassificationMutation();
+    const [createClassification, {error}] = useCreateClassificationMutation({
+        async update(cache, result) {
+            if(!result.data?.createClassification) {
+                enqueueSnackbar('An error occurred while adding classification.', { variant: 'error' });
+                return;
+            }
+
+            setDefaultClassificationFilter();
+
+            const query: ClassificationsQuery | null = cache.readQuery({
+                query: GET_CLASSIFICATION,
+                variables: getClassificationFilters()
+            });
+
+            await apolloClient.reset();
+
+            if(query && query.classifications) {
+                cache.writeQuery({
+                    query: GET_CLASSIFICATION,
+                    variables: getClassificationFilters(),
+                    data: {
+                        classifications: [result.data.createClassification].concat(query.classifications)
+                    }
+                });
+
+                triggerClassificationFiltersChange();
+            }
+        }
+    });
 
     return (
         <Modal

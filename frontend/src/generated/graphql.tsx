@@ -447,7 +447,18 @@ export type CreateClassificationMutation = (
   { __typename?: 'Mutation' }
   & { createClassification: (
     { __typename?: 'ClassificationDto' }
-    & Pick<ClassificationDto, 'id' | 'mark'>
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -886,6 +897,19 @@ export const CreateClassificationDocument = gql`
   createClassification(input: {mark: $mark, note: $note, project: $project, user: $user}) {
     id
     mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
   }
 }
     `;
