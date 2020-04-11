@@ -52,7 +52,7 @@ export const ClassificationHeader: React.FC<Props> = ({ handleOpen }) => {
                 <h2>Classification</h2>
                 <p>Review or add new marks!</p>
             </div>
-            { !loading && data && data.me && hasPermissions(data.me, 'projects.manage') &&
+            { !loading && data && data.me && hasPermissions(data.me, 'classification.create') &&
             <div className="new-project">
                 <Fab color="primary" variant="extended" onClick={handleOpen}>
                     <AddCircleIcon className={classes.extendedIcon}/>
