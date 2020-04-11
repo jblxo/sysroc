@@ -23,7 +23,7 @@ export const Classification: React.FC<Props> = props => {
     return (
         <>
             <ClassificationHeader handleOpen={handleOpen} />
-            <ClassificationList userId={data?.me?.user?.id} />
+            <ClassificationList />
             <NewClassificationModal open={open} handleClose={handleClose} userId={data?.me?.user?.id}/>
         </>
     )

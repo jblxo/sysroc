@@ -17,4 +17,9 @@ export class ClassificationResolver {
     classifications(@Args('filter') filter: ClassificationsFilter): Promise<ClassificationDto[]> {
         return this.classificationService.getMany(filter);
     }
+
+    @Mutation(() => ClassificationDto)
+    deleteClassification(@Args('filter') filter: ClassificationsFilter): Promise<ClassificationDto> {
+        return this.classificationService.deleteOne(filter);
+    }
 }

@@ -1,0 +1,19 @@
+mutation DeleteClassification($id: Float!) {
+    deleteClassification(filter: {id: $id}) {
+        id
+        mark
+        note
+        project {
+            id
+            name
+            user {
+                name
+            }
+        }
+        createdAt
+        user {
+            id
+            name
+        }
+    }
+}

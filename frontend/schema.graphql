@@ -40,6 +40,7 @@ type Mutation {
     createProject(input: CreateProjectDto!): ProjectDto!
     createTask(input: CreateTaskDto!): TaskDto!
     createUser(input: CreateUserDto!): UserDto!
+    deleteClassification(filter: ClassificationsFilter!): ClassificationDto!
     deleteProject(projectId: Float!): ProjectDto!
     deleteTask(filter: TasksFilter!): TaskDto!
     deleteUser(userId: Float!): UserDto!
@@ -181,10 +182,10 @@ input AllUsersFilter {
 }
 
 input ClassificationsFilter {
-    fromDate: DateTime = "2020-03-10T15:59:58.940Z"
+    fromDate: DateTime = "2020-03-11T13:42:59.558Z"
     id: Float
     projects: [Float!] = []
-    toDate: DateTime = "2020-04-10T14:59:58.942Z"
+    toDate: DateTime = "2020-04-11T12:42:59.559Z"
     users: [Float!] = []
 }
 

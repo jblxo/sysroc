@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Classification} from './entities/classification.entity';
-import {In, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {CreateClassificationDto} from './dto/create-classification.dto';
 import {ClassificationDto} from './dto/classification.dto';
 import {Project} from '../projects/entities/projects.entity';
@@ -35,7 +35,11 @@ export class ClassificationService {
     }
 
     async getOne(filter: ClassificationsFilter): Promise<ClassificationDto> {
-        return this.classificationRepository.findOne({id: filter.id});
+        return this.classificationRepository.findOne({id: filter.id}, {relations: [
+                'project',
+                'project.user',
+                'user'
+            ]});
     }
 
     async getMany(filter: ClassificationsFilter): Promise<ClassificationDto[]> {
@@ -57,5 +61,21 @@ export class ClassificationService {
         }
 
         return query.getMany();
+    }
+
+    async deleteOne(filter: ClassificationsFilter): Promise<ClassificationDto> {
+        const classification = await this.getOne(filter);
+
+        if(!classification) {
+            throw new NotFoundException(`Could not find project for given filter!`);
+        }
+
+        const res = await this.classificationRepository.delete({id: filter.id});
+
+        if(!res || res.affected < 1) {
+            throw new InternalServerErrorException(`There has been an error deleting project!`);
+        }
+
+        return classification;
     }
 }

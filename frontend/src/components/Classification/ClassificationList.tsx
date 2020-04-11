@@ -1,20 +1,39 @@
 import React, {useState} from "react";
-import { useClassificationsQuery } from "../../generated/graphql";
-import { Item } from '../Layout/Item';
-import { List } from '../Layout/List';
+import {useClassificationsQuery, useDeleteClassificationMutation, useMeExtendedQuery} from "../../generated/graphql";
+import {Item} from '../Layout/Item';
+import {List} from '../Layout/List';
 import moment from "moment";
 import {ClassificationFilter, ClassificationFilters} from "./ClassificationFilter";
 import {getClassificationFilters, setClassificationFilters} from "../../filters/classification";
+import {Fab, Paper} from "@material-ui/core";
+import {DeleteClassificationDialog} from "./DeleteClassificationDialog";
+import {useSnackbar} from "notistack";
+import {useApolloClient} from "@apollo/react-hooks";
 
-interface Props {
-    userId?: string;
-}
+interface Props {}
 
-export const ClassificationList: React.FC<Props> = ({userId}) => {
+export const ClassificationList: React.FC<Props> = props => {
+    const { enqueueSnackbar } = useSnackbar();
+    const { cache: apolloClient } = useApolloClient();
+
     const [filters, setFilters] = useState<ClassificationFilters>(getClassificationFilters());
     const {data, loading} = useClassificationsQuery({variables: filters});
+    const { data: me, loading: meLoading } = useMeExtendedQuery();
+    const [deleteClassification] = useDeleteClassificationMutation();
 
-    if(loading) return <div>Loading...</div>;
+    const [deleteClassificationDialogOpen, setDeleteClassificationDialogOpen] = useState(false);
+    const [selectedClassificationId, setSelectedClassificationId] = useState<number | null>(null);
+
+    const handleDeleteClassificationDialogClose = () => {
+        setDeleteClassificationDialogOpen(false);
+    };
+
+    const handleDeleteClassificationDialogSubmit = async (classificationId: number) => {
+        await deleteClassification({variables: {id: classificationId}});
+        enqueueSnackbar('Classification deleted!', { variant: 'success' });
+    };
+
+    if(loading || meLoading) return <div>Loading...</div>;
 
     return (
         <div>
@@ -23,50 +42,76 @@ export const ClassificationList: React.FC<Props> = ({userId}) => {
                 setFilters(filter);
             }}/>
             <h2>Classification List</h2>
-            <List>
-                <div className="flex">
-                    <Item>
-                        <div>Mark</div>
-                    </Item>
-                    <Item>
-                        <div>Note</div>
-                    </Item>
-                    <Item>
-                        <div>Project</div>
-                    </Item>
-                    <Item>
-                        <div>User</div>
-                    </Item>
-                    <Item>
-                        <div>Created</div>
-                    </Item>
-                    <Item>
-                        <div>Action</div>
-                    </Item>
-                </div>
-                {data && data.classifications && data.classifications.map(classification => (
-                    <div key={classification.id} className="flex">
+            <Paper>
+                <List>
+                    <div className="flex">
                         <Item>
-                            <div>{classification.mark}</div>
+                            <div>Mark</div>
                         </Item>
                         <Item>
-                            <div>{classification.note}</div>
+                            <div>Note</div>
                         </Item>
                         <Item>
-                            <div>{classification.project.name}</div>
+                            <div>Project</div>
                         </Item>
                         <Item>
-                            <div>{classification.user.name}</div>
+                            <div>User</div>
                         </Item>
                         <Item>
-                            <div>{moment(classification.createdAt).format('DD. MM. YYYY, dddd')}</div>
+                            <div>Created</div>
                         </Item>
                         <Item>
-                            <div>Actions</div>
+                            <div>Action</div>
                         </Item>
-                    </div>
-                ))}
-            </List>
+                        </div>
+                        {data && data.classifications && data.classifications.map(classification => (
+                            <div key={classification.id} className="flex">
+                                <Item>
+                                    <div>{classification.mark}</div>
+                                </Item>
+                                <Item>
+                                    <div>{classification.note}</div>
+                                </Item>
+                                <Item>
+                                    <div>{classification.project.name}</div>
+                                </Item>
+                                <Item>
+                                    <div>{classification.user.name}</div>
+                                </Item>
+                                <Item>
+                                    <div>{moment(classification.createdAt).format('DD. MM. YYYY, dddd')}</div>
+                                </Item>
+                                <Item className='actions'>
+                                    <Fab
+                                        color="primary"
+                                        variant="extended"
+                                        onClick={() => {
+
+                                        }}
+                                    >
+                                        Edit
+                                    </Fab>
+                                    <Fab
+                                        color="secondary"
+                                        variant="extended"
+                                        onClick={() => {
+                                            setSelectedClassificationId(classification.id);
+                                            setDeleteClassificationDialogOpen(true);
+                                        }}
+                                    >
+                                        Delete
+                                    </Fab>
+                                </Item>
+                            </div>
+                        ))}
+                    </List>
+                </Paper>
+                <DeleteClassificationDialog
+                    onSubmit={handleDeleteClassificationDialogSubmit}
+                    classificationId={selectedClassificationId ?? 0}
+                    onClose={handleDeleteClassificationDialogClose}
+                    open={deleteClassificationDialogOpen}
+                />
         </div>
     );
 };

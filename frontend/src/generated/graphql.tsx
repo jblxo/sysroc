@@ -106,6 +106,7 @@ export type Mutation = {
   deleteTask: TaskDto,
   updateTask: TaskDto,
   createClassification: ClassificationDto,
+  deleteClassification: ClassificationDto,
 };
 
 
@@ -169,6 +170,11 @@ export type MutationUpdateTaskArgs = {
 
 export type MutationCreateClassificationArgs = {
   input: CreateClassificationDto
+};
+
+
+export type MutationDeleteClassificationArgs = {
+  filter: ClassificationsFilter
 };
 
 export type Permission = {
@@ -508,6 +514,30 @@ export type CreateUserMutation = (
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
     )> }
+  ) }
+);
+
+export type DeleteClassificationMutationVariables = {
+  id: Scalars['Float']
+};
+
+
+export type DeleteClassificationMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -1027,6 +1057,52 @@ export function useCreateUserMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const DeleteClassificationDocument = gql`
+    mutation DeleteClassification($id: Float!) {
+  deleteClassification(filter: {id: $id}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+export type DeleteClassificationMutationFn = ApolloReactCommon.MutationFunction<DeleteClassificationMutation, DeleteClassificationMutationVariables>;
+
+/**
+ * __useDeleteClassificationMutation__
+ *
+ * To run a mutation, you first call `useDeleteClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClassificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClassificationMutation, { data, loading, error }] = useDeleteClassificationMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteClassificationMutation, DeleteClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<DeleteClassificationMutation, DeleteClassificationMutationVariables>(DeleteClassificationDocument, baseOptions);
+      }
+export type DeleteClassificationMutationHookResult = ReturnType<typeof useDeleteClassificationMutation>;
+export type DeleteClassificationMutationResult = ApolloReactCommon.MutationResult<DeleteClassificationMutation>;
+export type DeleteClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteClassificationMutation, DeleteClassificationMutationVariables>;
 export const DeleteProjectDocument = gql`
     mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
