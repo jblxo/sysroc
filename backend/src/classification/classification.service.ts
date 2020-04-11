@@ -42,7 +42,7 @@ export class ClassificationService {
             ]});
     }
 
-    async getMany(filter: ClassificationsFilter): Promise<ClassificationDto[]> {
+    getMany(filter: ClassificationsFilter): Promise<ClassificationDto[]> {
         const query = this.classificationRepository.createQueryBuilder('classification')
             .leftJoinAndSelect('classification.project', 'project')
             .leftJoinAndSelect('classification.user', 'user')

@@ -72,7 +72,7 @@ export const Routes: React.FC = () => {
             <ProtectedRoute
                 isAuthenticated={!!data?.me}
                 isAllowed={verifyPermissions(data?.me, [
-                    'projects.manage'
+                    'classification.view'
                 ])}
                 restrictedPath={'/notallowed'}
                 authenticationPath={'/signin'}

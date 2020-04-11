@@ -4,11 +4,16 @@ import {Item} from '../Layout/Item';
 import {List} from '../Layout/List';
 import moment from "moment";
 import {ClassificationFilter, ClassificationFilters} from "./ClassificationFilter";
-import {getClassificationFilters, setClassificationFilters} from "../../filters/classification";
+import {
+    getClassificationFilters,
+    registerClassificationFiltersListener,
+    setClassificationFilters
+} from "../../filters/classification";
 import {Fab, Paper} from "@material-ui/core";
 import {DeleteClassificationDialog} from "./DeleteClassificationDialog";
 import {useSnackbar} from "notistack";
 import {useApolloClient} from "@apollo/react-hooks";
+import {hasPermissions} from "../../auth/hasPermissions";
 
 interface Props {}
 
@@ -16,6 +21,8 @@ export const ClassificationList: React.FC<Props> = props => {
     const { enqueueSnackbar } = useSnackbar();
     const { cache: apolloClient } = useApolloClient();
 
+    const [loaded, setLoaded] = useState(false);
+    const [revision, setRevision] = useState(0);
     const [filters, setFilters] = useState<ClassificationFilters>(getClassificationFilters());
     const {data, loading} = useClassificationsQuery({variables: filters});
     const { data: me, loading: meLoading } = useMeExtendedQuery();
@@ -23,6 +30,8 @@ export const ClassificationList: React.FC<Props> = props => {
 
     const [deleteClassificationDialogOpen, setDeleteClassificationDialogOpen] = useState(false);
     const [selectedClassificationId, setSelectedClassificationId] = useState<number | null>(null);
+
+    const canManageClassification = me && me.me && hasPermissions(me.me, 'classification.manage');
 
     const handleDeleteClassificationDialogClose = () => {
         setDeleteClassificationDialogOpen(false);
@@ -34,6 +43,14 @@ export const ClassificationList: React.FC<Props> = props => {
     };
 
     if(loading || meLoading) return <div>Loading...</div>;
+
+    if (!loaded) {
+        registerClassificationFiltersListener((data: ClassificationFilters) => {
+            setFilters(data);
+            setRevision(revision + 1);
+        });
+        setLoaded(true);
+    }
 
     return (
         <div>
@@ -82,36 +99,40 @@ export const ClassificationList: React.FC<Props> = props => {
                                     <div>{moment(classification.createdAt).format('DD. MM. YYYY, dddd')}</div>
                                 </Item>
                                 <Item className='actions'>
-                                    <Fab
-                                        color="primary"
-                                        variant="extended"
-                                        onClick={() => {
+                                    {canManageClassification && (
+                                        <>
+                                            <Fab
+                                                color="primary"
+                                                variant="extended"
+                                                onClick={() => {
 
-                                        }}
-                                    >
-                                        Edit
-                                    </Fab>
-                                    <Fab
-                                        color="secondary"
-                                        variant="extended"
-                                        onClick={() => {
-                                            setSelectedClassificationId(classification.id);
-                                            setDeleteClassificationDialogOpen(true);
-                                        }}
-                                    >
-                                        Delete
-                                    </Fab>
+                                                }}
+                                            >
+                                                Edit
+                                            </Fab>
+                                            <Fab
+                                                color="secondary"
+                                                variant="extended"
+                                                onClick={() => {
+                                                    setSelectedClassificationId(classification.id);
+                                                    setDeleteClassificationDialogOpen(true);
+                                                }}
+                                            >
+                                                Delete
+                                            </Fab>
+                                        </>
+                                    )}
                                 </Item>
                             </div>
                         ))}
                     </List>
                 </Paper>
-                <DeleteClassificationDialog
+                {canManageClassification && <DeleteClassificationDialog
                     onSubmit={handleDeleteClassificationDialogSubmit}
                     classificationId={selectedClassificationId ?? 0}
                     onClose={handleDeleteClassificationDialogClose}
                     open={deleteClassificationDialogOpen}
-                />
+                />}
         </div>
     );
 };

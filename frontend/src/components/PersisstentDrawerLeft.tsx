@@ -162,7 +162,7 @@ export const PersistentDrawerLeft: React.FC<Props> = props => {
           {!loading &&
           data &&
           data.me &&
-          hasPermissions(data.me, 'projects.manage') && (
+          hasPermissions(data.me, 'classification.view') && (
               <ListItem
                   button
                   onClick={() => {
