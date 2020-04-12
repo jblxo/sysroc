@@ -28,7 +28,7 @@ export class AuthService {
 
   async validateUser(signedUser): Promise<UserDto> {
     if (signedUser && signedUser.email) {
-      return this.userService.findOne({ email: signedUser.email });
+      return this.userService.findOne({ adEmail: signedUser.email });
     }
     return null;
   }

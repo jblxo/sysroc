@@ -31,7 +31,7 @@ export class UsersModule {
     const adminEmail = 'admin@spsul.cz';
 
     try {
-      await this.usersService.findOne({ email: adminEmail });
+      await this.usersService.findOne({ adEmail: adminEmail });
       // The admin account is already created, no action has to be performed anymore as
       // we are only catching the error that occurs when the account does not exist
     } catch {

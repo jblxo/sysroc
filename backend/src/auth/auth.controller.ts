@@ -1,5 +1,5 @@
-import { Controller, Post, Res, Req } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Controller, Post, Req, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { verify } from 'jsonwebtoken';
 import { jwtConstants } from './constants';
 import { UsersService } from '../users/users.service';
@@ -33,11 +33,11 @@ export class AuthController {
     }
 
     const refresh = await this.authService.createRefreshToken(
-      user.email,
+      user.adEmail,
       user.id,
     );
 
-    const access = await this.authService.createToken(user.email, user.id);
+    const access = await this.authService.createToken(user.adEmail, user.id);
 
     res.cookie('token', refresh, {
       httpOnly: true,

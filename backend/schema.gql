@@ -54,6 +54,7 @@ type Mutation {
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   updateUser(input: UpdateUserDto!, filter: UsersFilter!): UserDto!
+  updateProfile(input: UpdateProfileDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: Float!): UserDto!
   createProject(input: CreateProjectDto!): ProjectDto!
@@ -175,6 +176,14 @@ type TaskDto {
 input TasksFilter {
   id: Float
   name: String
+}
+
+input UpdateProfileDto {
+  name: String!
+  email: String
+  oldPassword: String
+  password: String
+  passwordAgain: String
 }
 
 input UpdateProjectDto {

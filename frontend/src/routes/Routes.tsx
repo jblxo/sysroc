@@ -11,6 +11,7 @@ import { useMeQuery, UserAuthDto } from '../generated/graphql';
 import { NotAllowed } from '../views/NotAllowed';
 import { Users } from '../views/Users';
 import { hasPermissions } from '../auth/hasPermissions';
+import { Settings } from '../views/Settings';
 
 export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
@@ -67,6 +68,15 @@ export const Routes: React.FC = () => {
               exact
               path="/users"
               component={Users}
+            />
+            <ProtectedRoute
+              isAuthenticated={!!data?.me}
+              isAllowed={true}
+              restrictedPath={''}
+              authenticationPath={'/signin'}
+              exact
+              path="/settings"
+              component={Settings}
             />
           </Switch>
         </PersistentDrawerLeft>

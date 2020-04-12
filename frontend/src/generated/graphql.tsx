@@ -63,6 +63,7 @@ export type Mutation = {
   signup: UserAuthDto,
   signin: UserAuthDto,
   updateUser: UserDto,
+  updateProfile: UserAuthDto,
   logout: Scalars['Boolean'],
   deleteUser: UserDto,
   createProject: ProjectDto,
@@ -93,6 +94,11 @@ export type MutationSigninArgs = {
 export type MutationUpdateUserArgs = {
   input: UpdateUserDto,
   filter: UsersFilter
+};
+
+
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileDto
 };
 
 
@@ -292,6 +298,14 @@ export type TaskDto = {
 export type TasksFilter = {
   id?: Maybe<Scalars['Float']>,
   name?: Maybe<Scalars['String']>,
+};
+
+export type UpdateProfileDto = {
+  name: Scalars['String'],
+  email?: Maybe<Scalars['String']>,
+  oldPassword?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>,
+  passwordAgain?: Maybe<Scalars['String']>,
 };
 
 export type UpdateProjectDto = {
@@ -663,6 +677,29 @@ export type TaskQuery = (
   & { task: (
     { __typename?: 'TaskDto' }
     & Pick<TaskDto, 'id' | 'name' | 'description' | 'dueDate' | 'createdAt' | 'completed'>
+  ) }
+);
+
+export type UpdateProfileMutationVariables = {
+  name: Scalars['String'],
+  email?: Maybe<Scalars['String']>,
+  oldPassword?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>,
+  passwordAgain?: Maybe<Scalars['String']>
+};
+
+
+export type UpdateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProfile: (
+    { __typename?: 'UserAuthDto' }
+    & { user: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'email'>
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>> }
   ) }
 );
 
@@ -1436,6 +1473,49 @@ export function useTaskLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOpt
 export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
+export const UpdateProfileDocument = gql`
+    mutation UpdateProfile($name: String!, $email: String, $oldPassword: String, $password: String, $passwordAgain: String) {
+  updateProfile(input: {name: $name, email: $email, oldPassword: $oldPassword, password: $password, passwordAgain: $passwordAgain}) {
+    user {
+      id
+      email
+    }
+    permissions {
+      slug
+      permitted
+    }
+  }
+}
+    `;
+export type UpdateProfileMutationFn = ApolloReactCommon.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      email: // value for 'email'
+ *      oldPassword: // value for 'oldPassword'
+ *      password: // value for 'password'
+ *      passwordAgain: // value for 'passwordAgain'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, baseOptions);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = ApolloReactCommon.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
 export const UpdateProjectDocument = gql`
     mutation UpdateProject($name: String!, $description: String, $projectId: Float!, $supervisor: Float) {
   updateProject(updates: {name: $name, description: $description, supervisor: $supervisor}, filter: {id: $projectId}) {
