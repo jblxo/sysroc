@@ -7,6 +7,7 @@ import {UseGuards} from '@nestjs/common';
 import {GqlAuthGuard} from '../auth/graphql-auth.guard';
 import {HasPermissions} from '../users/decorators/has-permissions.decorator';
 import {PERMISSIONS} from '../permissions/permissions';
+import {UpdateClassificationDto} from "./dto/update-classification.dto";
 
 @Resolver('Classification')
 export class ClassificationResolver {
@@ -31,5 +32,15 @@ export class ClassificationResolver {
     @HasPermissions(PERMISSIONS.CLASSIFICATION_MANAGE)
     deleteClassification(@Args('filter') filter: ClassificationsFilter): Promise<ClassificationDto> {
         return this.classificationService.deleteOne(filter);
+    }
+
+    @Mutation(() => ClassificationDto)
+    @UseGuards(GqlAuthGuard)
+    @HasPermissions(PERMISSIONS.CLASSIFICATION_MANAGE)
+    updateClassification(
+        @Args('filter') filter: ClassificationsFilter,
+        @Args('updates') updates: UpdateClassificationDto
+    ) {
+        return this.classificationService.updateOne(filter, updates);
     }
 }

@@ -7,6 +7,7 @@ import {ClassificationDto} from './dto/classification.dto';
 import {Project} from '../projects/entities/projects.entity';
 import {User} from '../users/entities/users.entity';
 import {ClassificationsFilter} from './filters/classifications.filter';
+import {UpdateClassificationDto} from "./dto/update-classification.dto";
 
 @Injectable()
 export class ClassificationService {
@@ -79,5 +80,23 @@ export class ClassificationService {
         }
 
         return classification;
+    }
+
+    async updateOne(filter: ClassificationsFilter, updates: UpdateClassificationDto): Promise<ClassificationDto> {
+        const classification = await this.classificationRepository.findOne(filter.id);
+
+        if(!classification) {
+            throw new NotFoundException(`Could not find classification for given ID!`);
+        }
+
+        const updateClassification = {...classification, ...updates};
+
+        const res = await this.classificationRepository.update(filter.id, updateClassification);
+
+        if(!res || res.affected < 1) {
+            throw new InternalServerErrorException(`Could not update the classification!`);
+        }
+
+        return this.classificationRepository.findOne(filter.id, {relations: ['user', 'project', 'project.user']});
     }
 }
