@@ -7,7 +7,7 @@ import {ClassificationDto} from './dto/classification.dto';
 import {Project} from '../projects/entities/projects.entity';
 import {User} from '../users/entities/users.entity';
 import {ClassificationsFilter} from './filters/classifications.filter';
-import {UpdateClassificationDto} from "./dto/update-classification.dto";
+import {UpdateClassificationDto} from './dto/update-classification.dto';
 
 @Injectable()
 export class ClassificationService {

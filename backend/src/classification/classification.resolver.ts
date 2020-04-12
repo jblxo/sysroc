@@ -7,7 +7,7 @@ import {UseGuards} from '@nestjs/common';
 import {GqlAuthGuard} from '../auth/graphql-auth.guard';
 import {HasPermissions} from '../users/decorators/has-permissions.decorator';
 import {PERMISSIONS} from '../permissions/permissions';
-import {UpdateClassificationDto} from "./dto/update-classification.dto";
+import {UpdateClassificationDto} from './dto/update-classification.dto';
 
 @Resolver('Classification')
 export class ClassificationResolver {
