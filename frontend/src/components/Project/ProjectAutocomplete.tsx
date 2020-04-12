@@ -13,7 +13,7 @@ export const ProjectAutocomplete: React.FC<Props> = ({userId, handleChange, defa
     const { data, loading } = useProjectsQuery({ variables: { userId } });
 
     if(loading) return <div>Loading...</div>;
-    // @ts-ignore
+
     return (
         <Autocomplete
             id="projects-autocomplete"
