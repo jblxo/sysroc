@@ -20,18 +20,23 @@ import {DeleteClassificationDialog} from "./DeleteClassificationDialog";
 import {useSnackbar} from "notistack";
 import {useApolloClient} from "@apollo/react-hooks";
 import {hasPermissions} from "../../auth/hasPermissions";
+import {UpdateClassificationModal} from "./UpdateClassificationModal";
 
 export const GET_CLASSIFICATION = ClassificationsDocument;
 
-interface Props {}
+interface Props {
+    userId?: string;
+}
 
-export const ClassificationList: React.FC<Props> = props => {
+export const ClassificationList: React.FC<Props> = ({userId}) => {
     const { enqueueSnackbar } = useSnackbar();
     const { cache: apolloClient } = useApolloClient();
 
     const [loaded, setLoaded] = useState(false);
     const [revision, setRevision] = useState(0);
     const [filters, setFilters] = useState<ClassificationFilters>(getClassificationFilters());
+    const [classificationData, setClassificationData] = useState<any>(null);
+    const [updateModalOpen, setUpdateModalOpen] = useState(false);
     const {data, loading} = useClassificationsQuery({variables: filters});
     const { data: me, loading: meLoading } = useMeExtendedQuery();
     const [deleteClassification] = useDeleteClassificationMutation({
@@ -84,6 +89,14 @@ export const ClassificationList: React.FC<Props> = props => {
     const handleDeleteClassificationDialogSubmit = async (classificationId: number) => {
         await deleteClassification({variables: {id: classificationId}});
         enqueueSnackbar('Classification deleted!', { variant: 'success' });
+    };
+
+    const handleUpdateModalOpen = () => {
+        setUpdateModalOpen(true);
+    };
+
+    const handleUpdateModalClose = () => {
+        setUpdateModalOpen(false);
     };
 
     if(loading || meLoading) return <div>Loading...</div>;
@@ -149,7 +162,13 @@ export const ClassificationList: React.FC<Props> = props => {
                                                 color="primary"
                                                 variant="extended"
                                                 onClick={() => {
-
+                                                    setSelectedClassificationId(classification.id);
+                                                    setClassificationData({
+                                                        mark: classification.mark,
+                                                        note: classification.note,
+                                                        project: classification.project.id
+                                                    });
+                                                    handleUpdateModalOpen();
                                                 }}
                                             >
                                                 Edit
@@ -171,12 +190,23 @@ export const ClassificationList: React.FC<Props> = props => {
                         ))}
                     </List>
                 </Paper>
-                {canManageClassification && <DeleteClassificationDialog
-                    onSubmit={handleDeleteClassificationDialogSubmit}
-                    classificationId={selectedClassificationId ?? 0}
-                    onClose={handleDeleteClassificationDialogClose}
-                    open={deleteClassificationDialogOpen}
-                />}
+                {canManageClassification && (
+                    <>
+                        <DeleteClassificationDialog
+                            onSubmit={handleDeleteClassificationDialogSubmit}
+                            classificationId={selectedClassificationId ?? 0}
+                            onClose={handleDeleteClassificationDialogClose}
+                            open={deleteClassificationDialogOpen}
+                        />
+                        <UpdateClassificationModal
+                            open={updateModalOpen}
+                            handleClose={handleUpdateModalClose}
+                            classificationId={selectedClassificationId ?? 0}
+                            data={classificationData}
+                            userId={userId}
+                        />
+                    </>
+                )}
         </div>
     );
 };

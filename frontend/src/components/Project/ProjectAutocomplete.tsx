@@ -6,17 +6,18 @@ import {ProjectDto, useProjectsQuery} from "../../generated/graphql";
 interface Props {
     userId?: string;
     handleChange: (project: ProjectDto | null) => void;
+    defaultProject?: string;
 }
 
-export const ProjectAutocomplete: React.FC<Props> = ({userId, handleChange}) => {
+export const ProjectAutocomplete: React.FC<Props> = ({userId, handleChange, defaultProject}) => {
     const { data, loading } = useProjectsQuery({ variables: { userId } });
 
     if(loading) return <div>Loading...</div>;
-
     // @ts-ignore
     return (
         <Autocomplete
             id="projects-autocomplete"
+            defaultValue={(data?.projects as ProjectDto[]).find(project => project.id === defaultProject)}
             options={data?.projects as ProjectDto[]}
             getOptionLabel={(option: ProjectDto) => option.name}
             onChange={(event: ChangeEvent<{}>, value: ProjectDto | null) => handleChange(value)}
