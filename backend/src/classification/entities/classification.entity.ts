@@ -22,6 +22,9 @@ export class Classification {
     @Field(type => Date)
     createdAt: Date;
 
+    @Column({nullable: false, type: 'int'})
+    projectId: number;
+
     @ManyToOne(type => Project, project => project.classifications)
     @JoinColumn({name: 'projectId'})
     @Field(type => Project)

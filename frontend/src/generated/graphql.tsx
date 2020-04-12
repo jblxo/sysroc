@@ -107,6 +107,7 @@ export type Mutation = {
   updateTask: TaskDto,
   createClassification: ClassificationDto,
   deleteClassification: ClassificationDto,
+  updateClassification: ClassificationDto,
 };
 
 
@@ -174,6 +175,12 @@ export type MutationCreateClassificationArgs = {
 
 
 export type MutationDeleteClassificationArgs = {
+  filter: ClassificationsFilter
+};
+
+
+export type MutationUpdateClassificationArgs = {
+  updates: UpdateClassificationDto,
   filter: ClassificationsFilter
 };
 
@@ -337,6 +344,12 @@ export type TaskDto = {
 export type TasksFilter = {
   id?: Maybe<Scalars['Float']>,
   name?: Maybe<Scalars['String']>,
+};
+
+export type UpdateClassificationDto = {
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  projectId?: Maybe<Scalars['Float']>,
 };
 
 export type UpdateProjectDto = {
@@ -755,6 +768,33 @@ export type TaskQuery = (
   & { task: (
     { __typename?: 'TaskDto' }
     & Pick<TaskDto, 'id' | 'name' | 'description' | 'dueDate' | 'createdAt' | 'completed'>
+  ) }
+);
+
+export type UpdateClassificationMutationVariables = {
+  id: Scalars['Float'],
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  project: Scalars['Float']
+};
+
+
+export type UpdateClassificationMutation = (
+  { __typename?: 'Mutation' }
+  & { updateClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -1620,6 +1660,55 @@ export function useTaskLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOpt
 export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
+export const UpdateClassificationDocument = gql`
+    mutation UpdateClassification($id: Float!, $mark: Float!, $note: String!, $project: Float!) {
+  updateClassification(filter: {id: $id}, updates: {mark: $mark, note: $note, projectId: $project}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+export type UpdateClassificationMutationFn = ApolloReactCommon.MutationFunction<UpdateClassificationMutation, UpdateClassificationMutationVariables>;
+
+/**
+ * __useUpdateClassificationMutation__
+ *
+ * To run a mutation, you first call `useUpdateClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClassificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateClassificationMutation, { data, loading, error }] = useUpdateClassificationMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      mark: // value for 'mark'
+ *      note: // value for 'note'
+ *      project: // value for 'project'
+ *   },
+ * });
+ */
+export function useUpdateClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateClassificationMutation, UpdateClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateClassificationMutation, UpdateClassificationMutationVariables>(UpdateClassificationDocument, baseOptions);
+      }
+export type UpdateClassificationMutationHookResult = ReturnType<typeof useUpdateClassificationMutation>;
+export type UpdateClassificationMutationResult = ApolloReactCommon.MutationResult<UpdateClassificationMutation>;
+export type UpdateClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateClassificationMutation, UpdateClassificationMutationVariables>;
 export const UpdateProjectDocument = gql`
     mutation UpdateProject($name: String!, $description: String, $projectId: Float!) {
   updateProject(updates: {name: $name, description: $description}, filter: {id: $projectId}) {

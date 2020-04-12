@@ -3,6 +3,7 @@ import {useSnackbar} from "notistack";
 import React from "react";
 import {Modal} from "@material-ui/core";
 import {UpdateClassificationForm} from "./UpdateClassificationForm";
+import {useUpdateClassificationMutation} from "../../generated/graphql";
 
 function getModalStyle() {
     const top = 50;
@@ -50,6 +51,7 @@ export const UpdateClassificationModal: React.FC<Props> = ({
     const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const [ modalStyle ] = React.useState(getModalStyle);
+    const [updateClassification, { error, loading }] = useUpdateClassificationMutation();
 
     return (
         <Modal
@@ -65,7 +67,13 @@ export const UpdateClassificationModal: React.FC<Props> = ({
                     data={data}
                     error={''}
                     onSubmit={async ({ mark, note, project }) => {
-                        console.log(mark, note, project);
+                        const res = await updateClassification({
+                            variables: { id: classificationId, mark, note, project: parseInt(project) }
+                        });
+                        if(res.data) {
+                            enqueueSnackbar('Classification updated!', { variant: 'success' });
+                            handleClose();
+                        }
                     }}
                     userId={userId}
                 />

@@ -39,8 +39,8 @@ input ClassificationsFilter {
   id: Float
   projects: [Float!] = []
   users: [Float!] = []
-  fromDate: DateTime = "2020-03-12T14:06:31.599Z"
-  toDate: DateTime = "2020-04-12T13:06:31.621Z"
+  fromDate: DateTime = "2020-03-12T14:20:17.006Z"
+  toDate: DateTime = "2020-04-12T13:20:17.007Z"
 }
 
 input CreateClassificationDto {
@@ -97,6 +97,7 @@ type Mutation {
   updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
   createClassification(input: CreateClassificationDto!): ClassificationDto!
   deleteClassification(filter: ClassificationsFilter!): ClassificationDto!
+  updateClassification(updates: UpdateClassificationDto!, filter: ClassificationsFilter!): ClassificationDto!
 }
 
 type Permission {
@@ -209,6 +210,12 @@ type TaskDto {
 input TasksFilter {
   id: Float
   name: String
+}
+
+input UpdateClassificationDto {
+  mark: Float!
+  note: String!
+  projectId: Float
 }
 
 input UpdateProjectDto {
