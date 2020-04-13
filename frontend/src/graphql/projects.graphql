@@ -3,6 +3,7 @@ query Projects($userId: String) {
     id
     name
     description
+    createdAt
     user {
       id
       name

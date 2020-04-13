@@ -3,6 +3,7 @@ query Project($id: Float) {
     id
     name
     description
+    createdAt
     tasks {
       id
       name

@@ -8,6 +8,7 @@ import { GET_PROJECTS } from './NewProjectModal';
 import { useHistory } from 'react-router';
 import { Item } from '../Layout/Item';
 import { List } from '../Layout/List';
+import moment from 'moment';
 
 interface Props {
   userId?: string;
@@ -80,6 +81,9 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
               <div>Description</div>
             </Item>
             <Item>
+              <div>Created</div>
+            </Item>
+            <Item>
               <div>Action</div>
             </Item>
           </div>
@@ -98,6 +102,9 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
                 </Item>
                 <Item>
                   <div>{project.description.slice(0, 10)}...</div>
+                </Item>
+                <Item>
+                  <div>{moment(project.createdAt).format('Do MMMM YYYY HH:mm')}</div>
                 </Item>
                 <Item className="actions">
                   <Fab

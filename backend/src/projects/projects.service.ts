@@ -1,13 +1,13 @@
-import {Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import {Project} from './entities/projects.entity';
-import {CreateProjectDto} from './dto/create-project.dto';
-import {UserDto} from '../users/dto/user.dto';
-import {ProjectsFilter} from './filters/project.filter';
-import {ProjectDto} from './dto/project.dto';
-import {UpdateProjectDto} from './dto/update-project.dto';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {User} from '../users/entities/users.entity';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Project } from './entities/projects.entity';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UserDto } from '../users/dto/user.dto';
+import { ProjectsFilter } from './filters/project.filter';
+import { ProjectDto } from './dto/project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/users.entity';
 import { UsersService } from '../users/users.service';
 import { PERMISSIONS } from '../permissions/permissions';
 
@@ -25,6 +25,7 @@ export class ProjectsService {
   ): Promise<ProjectDto> {
     const project = this.projectRepository.create(createProjectDto);
     project.user = await this.userRepository.findOne({ id: user.id });
+    project.createdAt = new Date();
     return this.projectRepository.save(project);
   }
 
