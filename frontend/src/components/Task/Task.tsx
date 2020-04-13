@@ -4,8 +4,16 @@ import styled from 'styled-components';
 import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
+import CheckIcon from '@material-ui/icons/Check';
+import ClearIcon from '@material-ui/icons/Clear';
 import grey from '@material-ui/core/colors/grey';
-import { useDeleteTaskMutation } from '../../generated/graphql';
+import {
+  ProjectDto,
+  ProjectQuery,
+  TaskDto,
+  useDeleteTaskMutation,
+  useToggleTaskStatusMutation
+} from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
 import { GET_PROJECT } from '../Project/UpdateProjectModal';
 
@@ -43,6 +51,7 @@ const TaskStyles = styled.div`
     grid-column: 3 / 4;
     grid-row: 1 / 1;
     text-align: right;
+    font-weight: bold;
   }
 
   .tast-due-date {
@@ -118,11 +127,50 @@ export const Task: React.FC<Props> = ({
     }
   });
 
+  const [toggleTaskStatus, {error: statusError}] = useToggleTaskStatusMutation({
+    update(cache, result) {
+      try {
+        const cacheRes: ProjectQuery | null = cache.readQuery({
+          query: GET_PROJECT,
+          variables: { id: project }
+        });
+
+
+        if(cacheRes && cacheRes.project) {
+          cache.writeQuery({
+            query: GET_PROJECT,
+            variables: { id: project },
+            data: {
+              project: {
+                ...cacheRes.project,
+                tasks: (cacheRes.project.tasks as TaskDto[]).reduce((arr: TaskDto[], item) => {
+                  const exists = !!arr.find(x => x.id === item.id);
+                  if(!exists) {
+                    arr.push(item);
+                  }
+                  return arr;
+                }, [])
+              }
+            }
+          });
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          enqueueSnackbar(error.message, { variant: 'error' });
+        }
+      }
+    }
+  });
+
   useEffect(() => {
     if (error) {
       enqueueSnackbar('Error deleting task', { variant: 'error' });
     }
-  }, [enqueueSnackbar, error]);
+
+    if(statusError) {
+      enqueueSnackbar('Error updating task', { variant: 'error' });
+    }
+  }, [enqueueSnackbar, error, statusError]);
 
   return (
     <TaskStyles>
@@ -137,6 +185,16 @@ export const Task: React.FC<Props> = ({
         {moment(task.dueDate).format('DD. MM. YYYY, dddd')}
       </div>
       <div className="task-actions">
+        <IconButton onClick={async () => {
+          const res = await toggleTaskStatus({ variables: { id: task.id, completed: !task.completed } });
+
+          if(res.data) {
+            const msg = task.completed ? 'To Do' : 'Completed';
+            enqueueSnackbar(`Task marked as ${msg}`, { variant: 'success' });
+          }
+        }}>
+          {task.completed ? <ClearIcon /> : <CheckIcon />}
+        </IconButton>
         <IconButton
           onClick={() => {
             selectTask(task.id);

@@ -8,4 +8,6 @@ export class UpdateTaskDto {
   readonly description?: string;
   @Field({ nullable: true })
   readonly dueDate?: Date;
+  @Field({ nullable: true })
+  readonly completed?: boolean;
 }
