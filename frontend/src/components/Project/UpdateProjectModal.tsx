@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { UpdateProjectForm } from './UpdateProjectForm';
 import { useUpdateProjectMutation } from '../../generated/graphql';
@@ -21,11 +21,13 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     paper: {
       position: 'absolute',
-      width: 400,
+      width: 600,
       backgroundColor: theme.palette.background.paper,
       border: '2px solid #000',
       boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 3)
+      padding: theme.spacing(2, 4, 3),
+      maxHeight: '95%',
+      overflowY: 'auto'
     }
   })
 );
@@ -55,6 +57,9 @@ interface Props {
   data: {
     name: string;
     description?: string;
+    supervisor?: {
+      name: string;
+    }
   };
 }
 
@@ -98,9 +103,9 @@ export const UpdateProjectModal: React.FC<Props> = ({
         <UpdateProjectForm
           data={data}
           error={error}
-          onSubmit={async ({ name, description }) => {
+          onSubmit={async ({ name, description, supervisor }) => {
             const res = await updateProject({
-              variables: { name, description, projectId }
+              variables: { name, description, supervisor, projectId }
             });
             if (res.data) {
               enqueueSnackbar('Project updated!', { variant: 'success' });

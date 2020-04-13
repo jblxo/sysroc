@@ -37,6 +37,7 @@ type Group {
 
 type Mutation {
     createClassification(input: CreateClassificationDto!): ClassificationDto!
+    claimProject(filter: ProjectsFilter!): ProjectDto!
     createProject(input: CreateProjectDto!): ProjectDto!
     createTask(input: CreateTaskDto!): TaskDto!
     createUser(input: CreateUserDto!): UserDto!
@@ -76,6 +77,7 @@ type Project {
     description: String!
     id: ID!
     name: String!
+    supervisor: User!
     tasks: [Task!]!
     user: User!
 }
@@ -85,6 +87,7 @@ type ProjectDto {
     description: String!
     id: ID!
     name: String!
+    supervisor: UserDto
     tasks: [TaskDto!]
     user: UserDto!
 }
@@ -150,6 +153,7 @@ type User {
     password: String!
     projects: [Project!]!
     roles: [Role!]!
+    supervisedProjects: [Project!]!
 }
 
 type UserAuthDto {
@@ -254,6 +258,7 @@ input UpdateClassificationDto {
 input UpdateProjectDto {
     description: String
     name: String
+    supervisor: Float
 }
 
 input UpdateTaskDto {

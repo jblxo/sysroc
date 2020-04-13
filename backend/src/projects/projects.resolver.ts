@@ -14,7 +14,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 @Resolver('Projects')
 export class ProjectsResolver {
   constructor(
-    private readonly projectsService: ProjectsService
+    private readonly projectsService: ProjectsService,
   ) {}
 
   @Mutation(() => ProjectDto)
@@ -67,6 +67,16 @@ export class ProjectsResolver {
     @Args('filter') filter: ProjectsFilter,
     @Args('updates') updates: UpdateProjectDto,
   ) {
-    return this.projectsService.updateOne(filter, updates);
+    return this.projectsService.updateOne(filter, updates, user);
+  }
+
+  @Mutation(() => ProjectDto)
+  @UseGuards(GqlAuthGuard)
+  @HasPermissions(PERMISSIONS.PROJECTS_CLAIM)
+  claimProject(
+    @CurrentUser() user: UserDto,
+    @Args('filter') filter: ProjectsFilter,
+  ) {
+    return this.projectsService.claim(filter, user);
   }
 }

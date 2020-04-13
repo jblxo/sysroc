@@ -19,6 +19,12 @@ query Project($id: Float) {
       user {
         name
       }
+    user {
+      id
+    }
+    supervisor {
+      id
+      name
     }
   }
 }
