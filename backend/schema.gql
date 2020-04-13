@@ -17,6 +17,39 @@ input AllUsersFilter {
   groups: [Float!]
 }
 
+type Classification {
+  id: ID!
+  mark: Float!
+  note: String!
+  createdAt: DateTime!
+  project: Project!
+  user: User!
+}
+
+type ClassificationDto {
+  id: Float!
+  mark: Float!
+  note: String!
+  createdAt: DateTime!
+  project: ProjectDto!
+  user: UserDto!
+}
+
+input ClassificationsFilter {
+  id: Float
+  projects: [Float!] = []
+  users: [Float!] = []
+  fromDate: DateTime = "2020-03-13T12:37:39.239Z"
+  toDate: DateTime = "2020-04-13T11:37:39.243Z"
+}
+
+input CreateClassificationDto {
+  mark: Float!
+  note: String
+  project: Float!
+  user: Float!
+}
+
 input CreateProjectDto {
   name: String!
   description: String
@@ -63,6 +96,9 @@ type Mutation {
   createTask(input: CreateTaskDto!): TaskDto!
   deleteTask(filter: TasksFilter!): TaskDto!
   updateTask(updates: UpdateTaskDto!, filter: TasksFilter!): TaskDto!
+  createClassification(input: CreateClassificationDto!): ClassificationDto!
+  deleteClassification(filter: ClassificationsFilter!): ClassificationDto!
+  updateClassification(updates: UpdateClassificationDto!, filter: ClassificationsFilter!): ClassificationDto!
 }
 
 type Permission {
@@ -90,6 +126,7 @@ type Project {
   user: User!
   supervisor: User!
   tasks: [Task!]!
+  classifications: [Classification!]!
 }
 
 type ProjectDto {
@@ -99,6 +136,7 @@ type ProjectDto {
   user: UserDto!
   supervisor: UserDto
   tasks: [TaskDto!]
+  classifications: [ClassificationDto!]
 }
 
 input ProjectsFilter {
@@ -118,6 +156,7 @@ type Query {
   projects(filter: ProjectsFilter!): [ProjectDto!]!
   project(filter: ProjectsFilter!): ProjectDto!
   task(filter: TasksFilter!): TaskDto!
+  classifications(filter: ClassificationsFilter!): [ClassificationDto!]!
 }
 
 type Role {
@@ -177,6 +216,12 @@ input TasksFilter {
   name: String
 }
 
+input UpdateClassificationDto {
+  mark: Float!
+  note: String!
+  projectId: Float
+}
+
 input UpdateProjectDto {
   name: String
   description: String
@@ -205,6 +250,7 @@ type User {
   roles: [Role!]!
   groups: [Group!]!
   projects: [Project!]!
+  classifications: [Classification!]!
   supervisedProjects: [Project!]!
 }
 

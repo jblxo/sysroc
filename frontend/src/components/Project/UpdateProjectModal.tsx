@@ -92,8 +92,8 @@ export const UpdateProjectModal: React.FC<Props> = ({
 
   return (
     <Modal
-      aria-labelledby="new project"
-      aria-describedby="modal with form to create new project"
+      aria-labelledby="update project"
+      aria-describedby="modal with form to update project"
       open={open}
       onClose={handleClose}
     >

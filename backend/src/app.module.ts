@@ -11,6 +11,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { TasksModule } from './tasks/tasks.module';
 import { DatabaseModule } from './database/database.module';
+import { ClassificationModule } from './classification/classification.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { DatabaseModule } from './database/database.module';
     ProjectsModule,
     TasksModule,
     DatabaseModule,
+    ClassificationModule,
   ],
 })
 export class AppModule {

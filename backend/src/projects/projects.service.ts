@@ -1,3 +1,13 @@
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import {Project} from './entities/projects.entity';
+import {CreateProjectDto} from './dto/create-project.dto';
+import {UserDto} from '../users/dto/user.dto';
+import {ProjectsFilter} from './filters/project.filter';
+import {ProjectDto} from './dto/project.dto';
+import {UpdateProjectDto} from './dto/update-project.dto';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {User} from '../users/entities/users.entity';
 import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Project } from './entities/projects.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -48,24 +58,32 @@ export class ProjectsService {
 
   async getOne(projectId: number): Promise<ProjectDto> {
     return this.projectRepository
-      .createQueryBuilder('project')
-      .where('project.id = :id', { id: projectId })
-      .innerJoinAndSelect(
-        'project.user',
-        'user'
-      )
-      .leftJoinAndSelect(
-        'project.supervisor',
-        'supervisor'
-      )
-      .leftJoinAndSelect(
-        'project.tasks',
-        'tasks'
-      )
-      .orderBy({
-        'tasks.createdAt': 'ASC'
-      })
-      .getOne();
+        .createQueryBuilder('project')
+        .where('project.id = :id', {id: projectId})
+        .innerJoinAndSelect(
+          'project.user',
+          'user'
+        )
+        .leftJoinAndSelect(
+          'project.supervisor',
+          'supervisor'
+        )
+        .leftJoinAndSelect(
+            'project.tasks',
+            'tasks'
+        )
+        .leftJoinAndSelect(
+            'project.classifications',
+            'classifications'
+        )
+        .leftJoinAndSelect(
+            'classifications.user',
+            'user'
+        )
+        .orderBy({
+          'tasks.createdAt': 'ASC'
+        })
+        .getOne();
   }
 
   async updateOne(
