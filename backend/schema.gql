@@ -39,8 +39,8 @@ input ClassificationsFilter {
   id: Float
   projects: [Float!] = []
   users: [Float!] = []
-  fromDate: DateTime = "2020-03-13T13:37:45.881Z"
-  toDate: DateTime = "2020-04-13T12:37:45.882Z"
+  fromDate: DateTime = "2020-03-13T13:52:27.523Z"
+  toDate: DateTime = "2020-04-13T12:52:27.523Z"
 }
 
 input CreateClassificationDto {
@@ -87,6 +87,7 @@ type Mutation {
   signup(input: SignUpUserDto!): UserAuthDto!
   signin(auth: UserAuthInputDto!): UserAuthDto!
   updateUser(input: UpdateUserDto!, filter: UsersFilter!): UserDto!
+  updateProfile(input: UpdateProfileDto!): UserAuthDto!
   logout: Boolean!
   deleteUser(userId: Float!): UserDto!
   createProject(input: CreateProjectDto!): ProjectDto!
@@ -220,6 +221,14 @@ input UpdateClassificationDto {
   mark: Float!
   note: String!
   projectId: Float
+}
+
+input UpdateProfileDto {
+  name: String!
+  email: String
+  oldPassword: String
+  password: String
+  passwordAgain: String
 }
 
 input UpdateProjectDto {

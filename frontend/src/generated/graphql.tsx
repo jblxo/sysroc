@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
+
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -97,6 +98,7 @@ export type Mutation = {
   signup: UserAuthDto,
   signin: UserAuthDto,
   updateUser: UserDto,
+  updateProfile: UserAuthDto,
   logout: Scalars['Boolean'],
   deleteUser: UserDto,
   createProject: ProjectDto,
@@ -130,6 +132,11 @@ export type MutationSigninArgs = {
 export type MutationUpdateUserArgs = {
   input: UpdateUserDto,
   filter: UsersFilter
+};
+
+
+export type MutationUpdateProfileArgs = {
+  input: UpdateProfileDto
 };
 
 
@@ -359,6 +366,14 @@ export type UpdateClassificationDto = {
   mark: Scalars['Float'],
   note: Scalars['String'],
   projectId?: Maybe<Scalars['Float']>,
+};
+
+export type UpdateProfileDto = {
+  name: Scalars['String'],
+  email?: Maybe<Scalars['String']>,
+  oldPassword?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>,
+  passwordAgain?: Maybe<Scalars['String']>,
 };
 
 export type UpdateProjectDto = {
@@ -846,6 +861,29 @@ export type UpdateClassificationMutation = (
   ) }
 );
 
+export type UpdateProfileMutationVariables = {
+  name: Scalars['String'],
+  email?: Maybe<Scalars['String']>,
+  oldPassword?: Maybe<Scalars['String']>,
+  password?: Maybe<Scalars['String']>,
+  passwordAgain?: Maybe<Scalars['String']>
+};
+
+
+export type UpdateProfileMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProfile: (
+    { __typename?: 'UserAuthDto' }
+    & { user: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'email'>
+    )>, permissions: Maybe<Array<(
+      { __typename?: 'PermissionStateDto' }
+      & Pick<PermissionStateDto, 'slug' | 'permitted'>
+    )>> }
+  ) }
+);
+
 export type UpdateProjectMutationVariables = {
   name: Scalars['String'],
   description?: Maybe<Scalars['String']>,
@@ -998,7 +1036,7 @@ export const ClassificationsDocument = gql`
  * __useClassificationsQuery__
  *
  * To run a query within a React component, call `useClassificationsQuery` and pass it any options that fit your needs.
- * When your component renders, `useClassificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useClassificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1368,7 +1406,7 @@ export const GroupsDocument = gql`
  * __useGroupsQuery__
  *
  * To run a query within a React component, call `useGroupsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1436,7 +1474,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1483,7 +1521,7 @@ export const MeExtendedDocument = gql`
  * __useMeExtendedQuery__
  *
  * To run a query within a React component, call `useMeExtendedQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeExtendedQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useMeExtendedQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1541,7 +1579,7 @@ export const ProjectDocument = gql`
  * __useProjectQuery__
  *
  * To run a query within a React component, call `useProjectQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1582,7 +1620,7 @@ export const ProjectsDocument = gql`
  * __useProjectsQuery__
  *
  * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1622,7 +1660,7 @@ export const RolesDocument = gql`
  * __useRolesQuery__
  *
  * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
- * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1749,7 +1787,7 @@ export const TaskDocument = gql`
  * __useTaskQuery__
  *
  * To run a query within a React component, call `useTaskQuery` and pass it any options that fit your needs.
- * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1819,6 +1857,49 @@ export function useUpdateClassificationMutation(baseOptions?: ApolloReactHooks.M
 export type UpdateClassificationMutationHookResult = ReturnType<typeof useUpdateClassificationMutation>;
 export type UpdateClassificationMutationResult = ApolloReactCommon.MutationResult<UpdateClassificationMutation>;
 export type UpdateClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateClassificationMutation, UpdateClassificationMutationVariables>;
+export const UpdateProfileDocument = gql`
+    mutation UpdateProfile($name: String!, $email: String, $oldPassword: String, $password: String, $passwordAgain: String) {
+  updateProfile(input: {name: $name, email: $email, oldPassword: $oldPassword, password: $password, passwordAgain: $passwordAgain}) {
+    user {
+      id
+      email
+    }
+    permissions {
+      slug
+      permitted
+    }
+  }
+}
+    `;
+export type UpdateProfileMutationFn = ApolloReactCommon.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+
+/**
+ * __useUpdateProfileMutation__
+ *
+ * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      email: // value for 'email'
+ *      oldPassword: // value for 'oldPassword'
+ *      password: // value for 'password'
+ *      passwordAgain: // value for 'passwordAgain'
+ *   },
+ * });
+ */
+export function useUpdateProfileMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, baseOptions);
+      }
+export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
+export type UpdateProfileMutationResult = ApolloReactCommon.MutationResult<UpdateProfileMutation>;
+export type UpdateProfileMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
 export const UpdateProjectDocument = gql`
     mutation UpdateProject($name: String!, $description: String, $projectId: Float!, $supervisor: Float) {
   updateProject(updates: {name: $name, description: $description, supervisor: $supervisor}, filter: {id: $projectId}) {
@@ -1977,7 +2058,7 @@ export const UsersDocument = gql`
  * __useUsersQuery__
  *
  * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
