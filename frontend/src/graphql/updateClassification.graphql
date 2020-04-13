@@ -1,0 +1,19 @@
+mutation UpdateClassification($id: Float!, $mark: Float!, $note: String!, $project: Float!) {
+    updateClassification(filter: {id: $id}, updates: {mark: $mark, note: $note, projectId: $project}) {
+        id
+        mark
+        note
+        project {
+            id
+            name
+            user {
+                name
+            }
+        }
+        createdAt
+        user {
+            id
+            name
+        }
+    }
+}

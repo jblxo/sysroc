@@ -1,7 +1,6 @@
 import gql from 'graphql-tag';
 import * as ApolloReactCommon from '@apollo/react-common';
 import * as ApolloReactHooks from '@apollo/react-hooks';
-
 export type Maybe<T> = T | null;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -26,6 +25,41 @@ export type AllUsersFilter = {
   name?: Maybe<Scalars['String']>,
   roles?: Maybe<Array<Scalars['Float']>>,
   groups?: Maybe<Array<Scalars['Float']>>,
+};
+
+export type Classification = {
+   __typename?: 'Classification',
+  id: Scalars['ID'],
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  createdAt: Scalars['DateTime'],
+  project: Project,
+  user: User,
+};
+
+export type ClassificationDto = {
+   __typename?: 'ClassificationDto',
+  id: Scalars['Float'],
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  createdAt: Scalars['DateTime'],
+  project: ProjectDto,
+  user: UserDto,
+};
+
+export type ClassificationsFilter = {
+  id?: Maybe<Scalars['Float']>,
+  projects?: Maybe<Array<Scalars['Float']>>,
+  users?: Maybe<Array<Scalars['Float']>>,
+  fromDate?: Maybe<Scalars['DateTime']>,
+  toDate?: Maybe<Scalars['DateTime']>,
+};
+
+export type CreateClassificationDto = {
+  mark: Scalars['Float'],
+  note?: Maybe<Scalars['String']>,
+  project: Scalars['Float'],
+  user: Scalars['Float'],
 };
 
 export type CreateProjectDto = {
@@ -63,7 +97,6 @@ export type Mutation = {
   signup: UserAuthDto,
   signin: UserAuthDto,
   updateUser: UserDto,
-  updateProfile: UserAuthDto,
   logout: Scalars['Boolean'],
   deleteUser: UserDto,
   createProject: ProjectDto,
@@ -73,6 +106,9 @@ export type Mutation = {
   createTask: TaskDto,
   deleteTask: TaskDto,
   updateTask: TaskDto,
+  createClassification: ClassificationDto,
+  deleteClassification: ClassificationDto,
+  updateClassification: ClassificationDto,
 };
 
 
@@ -94,11 +130,6 @@ export type MutationSigninArgs = {
 export type MutationUpdateUserArgs = {
   input: UpdateUserDto,
   filter: UsersFilter
-};
-
-
-export type MutationUpdateProfileArgs = {
-  input: UpdateProfileDto
 };
 
 
@@ -143,6 +174,22 @@ export type MutationUpdateTaskArgs = {
   filter: TasksFilter
 };
 
+
+export type MutationCreateClassificationArgs = {
+  input: CreateClassificationDto
+};
+
+
+export type MutationDeleteClassificationArgs = {
+  filter: ClassificationsFilter
+};
+
+
+export type MutationUpdateClassificationArgs = {
+  updates: UpdateClassificationDto,
+  filter: ClassificationsFilter
+};
+
 export type Permission = {
    __typename?: 'Permission',
   id: Scalars['ID'],
@@ -172,6 +219,7 @@ export type Project = {
   user: User,
   supervisor: User,
   tasks: Array<Task>,
+  classifications: Array<Classification>,
 };
 
 export type ProjectDto = {
@@ -182,6 +230,7 @@ export type ProjectDto = {
   user: UserDto,
   supervisor?: Maybe<UserDto>,
   tasks?: Maybe<Array<TaskDto>>,
+  classifications?: Maybe<Array<ClassificationDto>>,
 };
 
 export type ProjectsFilter = {
@@ -202,6 +251,7 @@ export type Query = {
   projects: Array<ProjectDto>,
   project: ProjectDto,
   task: TaskDto,
+  classifications: Array<ClassificationDto>,
 };
 
 
@@ -237,6 +287,11 @@ export type QueryProjectArgs = {
 
 export type QueryTaskArgs = {
   filter: TasksFilter
+};
+
+
+export type QueryClassificationsArgs = {
+  filter: ClassificationsFilter
 };
 
 export type Role = {
@@ -300,12 +355,10 @@ export type TasksFilter = {
   name?: Maybe<Scalars['String']>,
 };
 
-export type UpdateProfileDto = {
-  name: Scalars['String'],
-  email?: Maybe<Scalars['String']>,
-  oldPassword?: Maybe<Scalars['String']>,
-  password?: Maybe<Scalars['String']>,
-  passwordAgain?: Maybe<Scalars['String']>,
+export type UpdateClassificationDto = {
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  projectId?: Maybe<Scalars['Float']>,
 };
 
 export type UpdateProjectDto = {
@@ -337,6 +390,7 @@ export type User = {
   roles: Array<Role>,
   groups: Array<Group>,
   projects: Array<Project>,
+  classifications: Array<Classification>,
   supervisedProjects: Array<Project>,
 };
 
@@ -395,6 +449,60 @@ export type ClaimProjectMutation = (
       { __typename?: 'UserDto' }
       & Pick<UserDto, 'id'>
     )> }
+  ) }
+);
+
+export type ClassificationsQueryVariables = {
+  users?: Maybe<Array<Scalars['Float']>>,
+  projects?: Maybe<Array<Scalars['Float']>>,
+  fromDate?: Maybe<Scalars['DateTime']>,
+  toDate?: Maybe<Scalars['DateTime']>
+};
+
+
+export type ClassificationsQuery = (
+  { __typename?: 'Query' }
+  & { classifications: Array<(
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
+  )> }
+);
+
+export type CreateClassificationMutationVariables = {
+  mark: Scalars['Float'],
+  note?: Maybe<Scalars['String']>,
+  project: Scalars['Float'],
+  user: Scalars['Float']
+};
+
+
+export type CreateClassificationMutation = (
+  { __typename?: 'Mutation' }
+  & { createClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -461,6 +569,30 @@ export type CreateUserMutation = (
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
     )> }
+  ) }
+);
+
+export type DeleteClassificationMutationVariables = {
+  id: Scalars['Float']
+};
+
+
+export type DeleteClassificationMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -573,6 +705,13 @@ export type ProjectQuery = (
     & { tasks: Maybe<Array<(
       { __typename?: 'TaskDto' }
       & Pick<TaskDto, 'id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
+    )>>, classifications: Maybe<Array<(
+      { __typename?: 'ClassificationDto' }
+      & Pick<ClassificationDto, 'id' | 'createdAt' | 'mark' | 'note'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
     )>>, user: (
       { __typename?: 'UserDto' }
       & Pick<UserDto, 'id'>
@@ -680,26 +819,30 @@ export type TaskQuery = (
   ) }
 );
 
-export type UpdateProfileMutationVariables = {
-  name: Scalars['String'],
-  email?: Maybe<Scalars['String']>,
-  oldPassword?: Maybe<Scalars['String']>,
-  password?: Maybe<Scalars['String']>,
-  passwordAgain?: Maybe<Scalars['String']>
+export type UpdateClassificationMutationVariables = {
+  id: Scalars['Float'],
+  mark: Scalars['Float'],
+  note: Scalars['String'],
+  project: Scalars['Float']
 };
 
 
-export type UpdateProfileMutation = (
+export type UpdateClassificationMutation = (
   { __typename?: 'Mutation' }
-  & { updateProfile: (
-    { __typename?: 'UserAuthDto' }
-    & { user: Maybe<(
+  & { updateClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'id' | 'email'>
-    )>, permissions: Maybe<Array<(
-      { __typename?: 'PermissionStateDto' }
-      & Pick<PermissionStateDto, 'slug' | 'permitted'>
-    )>> }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -829,6 +972,105 @@ export function useClaimProjectMutation(baseOptions?: ApolloReactHooks.MutationH
 export type ClaimProjectMutationHookResult = ReturnType<typeof useClaimProjectMutation>;
 export type ClaimProjectMutationResult = ApolloReactCommon.MutationResult<ClaimProjectMutation>;
 export type ClaimProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<ClaimProjectMutation, ClaimProjectMutationVariables>;
+export const ClassificationsDocument = gql`
+    query Classifications($users: [Float!], $projects: [Float!], $fromDate: DateTime, $toDate: DateTime) {
+  classifications(filter: {users: $users, projects: $projects, fromDate: $fromDate, toDate: $toDate}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useClassificationsQuery__
+ *
+ * To run a query within a React component, call `useClassificationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useClassificationsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useClassificationsQuery({
+ *   variables: {
+ *      users: // value for 'users'
+ *      projects: // value for 'projects'
+ *      fromDate: // value for 'fromDate'
+ *      toDate: // value for 'toDate'
+ *   },
+ * });
+ */
+export function useClassificationsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ClassificationsQuery, ClassificationsQueryVariables>) {
+        return ApolloReactHooks.useQuery<ClassificationsQuery, ClassificationsQueryVariables>(ClassificationsDocument, baseOptions);
+      }
+export function useClassificationsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ClassificationsQuery, ClassificationsQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<ClassificationsQuery, ClassificationsQueryVariables>(ClassificationsDocument, baseOptions);
+        }
+export type ClassificationsQueryHookResult = ReturnType<typeof useClassificationsQuery>;
+export type ClassificationsLazyQueryHookResult = ReturnType<typeof useClassificationsLazyQuery>;
+export type ClassificationsQueryResult = ApolloReactCommon.QueryResult<ClassificationsQuery, ClassificationsQueryVariables>;
+export const CreateClassificationDocument = gql`
+    mutation CreateClassification($mark: Float!, $note: String, $project: Float!, $user: Float!) {
+  createClassification(input: {mark: $mark, note: $note, project: $project, user: $user}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+export type CreateClassificationMutationFn = ApolloReactCommon.MutationFunction<CreateClassificationMutation, CreateClassificationMutationVariables>;
+
+/**
+ * __useCreateClassificationMutation__
+ *
+ * To run a mutation, you first call `useCreateClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClassificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createClassificationMutation, { data, loading, error }] = useCreateClassificationMutation({
+ *   variables: {
+ *      mark: // value for 'mark'
+ *      note: // value for 'note'
+ *      project: // value for 'project'
+ *      user: // value for 'user'
+ *   },
+ * });
+ */
+export function useCreateClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateClassificationMutation, CreateClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateClassificationMutation, CreateClassificationMutationVariables>(CreateClassificationDocument, baseOptions);
+      }
+export type CreateClassificationMutationHookResult = ReturnType<typeof useCreateClassificationMutation>;
+export type CreateClassificationMutationResult = ApolloReactCommon.MutationResult<CreateClassificationMutation>;
+export type CreateClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateClassificationMutation, CreateClassificationMutationVariables>;
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!, $description: String) {
   createProject(input: {name: $name, description: $description}) {
@@ -969,6 +1211,52 @@ export function useCreateUserMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = ApolloReactCommon.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const DeleteClassificationDocument = gql`
+    mutation DeleteClassification($id: Float!) {
+  deleteClassification(filter: {id: $id}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
+    user {
+      id
+      name
+    }
+  }
+}
+    `;
+export type DeleteClassificationMutationFn = ApolloReactCommon.MutationFunction<DeleteClassificationMutation, DeleteClassificationMutationVariables>;
+
+/**
+ * __useDeleteClassificationMutation__
+ *
+ * To run a mutation, you first call `useDeleteClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteClassificationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteClassificationMutation, { data, loading, error }] = useDeleteClassificationMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteClassificationMutation, DeleteClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<DeleteClassificationMutation, DeleteClassificationMutationVariables>(DeleteClassificationDocument, baseOptions);
+      }
+export type DeleteClassificationMutationHookResult = ReturnType<typeof useDeleteClassificationMutation>;
+export type DeleteClassificationMutationResult = ApolloReactCommon.MutationResult<DeleteClassificationMutation>;
+export type DeleteClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteClassificationMutation, DeleteClassificationMutationVariables>;
 export const DeleteProjectDocument = gql`
     mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
@@ -1080,7 +1368,7 @@ export const GroupsDocument = gql`
  * __useGroupsQuery__
  *
  * To run a query within a React component, call `useGroupsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useGroupsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1148,7 +1436,7 @@ export const MeDocument = gql`
  * __useMeQuery__
  *
  * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1195,7 +1483,7 @@ export const MeExtendedDocument = gql`
  * __useMeExtendedQuery__
  *
  * To run a query within a React component, call `useMeExtendedQuery` and pass it any options that fit your needs.
- * When your component renders, `useMeExtendedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useMeExtendedQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1229,6 +1517,15 @@ export const ProjectDocument = gql`
       dueDate
       completed
     }
+    classifications {
+      id
+      createdAt
+      mark
+      note
+      user {
+        name
+      }
+    }
     user {
       id
     }
@@ -1244,7 +1541,7 @@ export const ProjectDocument = gql`
  * __useProjectQuery__
  *
  * To run a query within a React component, call `useProjectQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useProjectQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1285,7 +1582,7 @@ export const ProjectsDocument = gql`
  * __useProjectsQuery__
  *
  * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1325,7 +1622,7 @@ export const RolesDocument = gql`
  * __useRolesQuery__
  *
  * To run a query within a React component, call `useRolesQuery` and pass it any options that fit your needs.
- * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useRolesQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1452,7 +1749,7 @@ export const TaskDocument = gql`
  * __useTaskQuery__
  *
  * To run a query within a React component, call `useTaskQuery` and pass it any options that fit your needs.
- * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useTaskQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
@@ -1473,49 +1770,55 @@ export function useTaskLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOpt
 export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
-export const UpdateProfileDocument = gql`
-    mutation UpdateProfile($name: String!, $email: String, $oldPassword: String, $password: String, $passwordAgain: String) {
-  updateProfile(input: {name: $name, email: $email, oldPassword: $oldPassword, password: $password, passwordAgain: $passwordAgain}) {
+export const UpdateClassificationDocument = gql`
+    mutation UpdateClassification($id: Float!, $mark: Float!, $note: String!, $project: Float!) {
+  updateClassification(filter: {id: $id}, updates: {mark: $mark, note: $note, projectId: $project}) {
+    id
+    mark
+    note
+    project {
+      id
+      name
+      user {
+        name
+      }
+    }
+    createdAt
     user {
       id
-      email
-    }
-    permissions {
-      slug
-      permitted
+      name
     }
   }
 }
     `;
-export type UpdateProfileMutationFn = ApolloReactCommon.MutationFunction<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export type UpdateClassificationMutationFn = ApolloReactCommon.MutationFunction<UpdateClassificationMutation, UpdateClassificationMutationVariables>;
 
 /**
- * __useUpdateProfileMutation__
+ * __useUpdateClassificationMutation__
  *
- * To run a mutation, you first call `useUpdateProfileMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateProfileMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useUpdateClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateClassificationMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [updateProfileMutation, { data, loading, error }] = useUpdateProfileMutation({
+ * const [updateClassificationMutation, { data, loading, error }] = useUpdateClassificationMutation({
  *   variables: {
- *      name: // value for 'name'
- *      email: // value for 'email'
- *      oldPassword: // value for 'oldPassword'
- *      password: // value for 'password'
- *      passwordAgain: // value for 'passwordAgain'
+ *      id: // value for 'id'
+ *      mark: // value for 'mark'
+ *      note: // value for 'note'
+ *      project: // value for 'project'
  *   },
  * });
  */
-export function useUpdateProfileMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateProfileMutation, UpdateProfileMutationVariables>) {
-        return ApolloReactHooks.useMutation<UpdateProfileMutation, UpdateProfileMutationVariables>(UpdateProfileDocument, baseOptions);
+export function useUpdateClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateClassificationMutation, UpdateClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<UpdateClassificationMutation, UpdateClassificationMutationVariables>(UpdateClassificationDocument, baseOptions);
       }
-export type UpdateProfileMutationHookResult = ReturnType<typeof useUpdateProfileMutation>;
-export type UpdateProfileMutationResult = ApolloReactCommon.MutationResult<UpdateProfileMutation>;
-export type UpdateProfileMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProfileMutation, UpdateProfileMutationVariables>;
+export type UpdateClassificationMutationHookResult = ReturnType<typeof useUpdateClassificationMutation>;
+export type UpdateClassificationMutationResult = ApolloReactCommon.MutationResult<UpdateClassificationMutation>;
+export type UpdateClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateClassificationMutation, UpdateClassificationMutationVariables>;
 export const UpdateProjectDocument = gql`
     mutation UpdateProject($name: String!, $description: String, $projectId: Float!, $supervisor: Float) {
   updateProject(updates: {name: $name, description: $description, supervisor: $supervisor}, filter: {id: $projectId}) {
@@ -1674,7 +1977,7 @@ export const UsersDocument = gql`
  * __useUsersQuery__
  *
  * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties 
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;

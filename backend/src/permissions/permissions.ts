@@ -22,4 +22,13 @@ export const PERMISSIONS = {
 
   // Can delete accounts which are manageable by the user
   DELETE_USERS: 'users.delete',
+
+  // Can create classification
+  CLASSIFICATION_CREATE: 'classification.create',
+
+  // Can edit and delete classification
+  CLASSIFICATION_MANAGE: 'classification.manage',
+
+  // Can view classification
+  CLASSIFICATION_VIEW: 'classification.view',
 };

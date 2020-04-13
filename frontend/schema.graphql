@@ -11,6 +11,24 @@ type ADUser {
     userPrincipalName: String!
 }
 
+type Classification {
+    createdAt: DateTime!
+    id: ID!
+    mark: Float!
+    note: String!
+    project: Project!
+    user: User!
+}
+
+type ClassificationDto {
+    createdAt: DateTime!
+    id: Float!
+    mark: Float!
+    note: String!
+    project: ProjectDto!
+    user: UserDto!
+}
+
 type Group {
     id: ID!
     name: String!
@@ -19,15 +37,18 @@ type Group {
 
 type Mutation {
     claimProject(filter: ProjectsFilter!): ProjectDto!
+    createClassification(input: CreateClassificationDto!): ClassificationDto!
     createProject(input: CreateProjectDto!): ProjectDto!
     createTask(input: CreateTaskDto!): TaskDto!
     createUser(input: CreateUserDto!): UserDto!
+    deleteClassification(filter: ClassificationsFilter!): ClassificationDto!
     deleteProject(projectId: Float!): ProjectDto!
     deleteTask(filter: TasksFilter!): TaskDto!
     deleteUser(userId: Float!): UserDto!
     logout: Boolean!
     signin(auth: UserAuthInputDto!): UserAuthDto!
     signup(input: SignUpUserDto!): UserAuthDto!
+    updateClassification(filter: ClassificationsFilter!, updates: UpdateClassificationDto!): ClassificationDto!
     updateProject(filter: ProjectsFilter!, updates: UpdateProjectDto!): ProjectDto!
     updateTask(filter: TasksFilter!, updates: UpdateTaskDto!): TaskDto!
     updateUser(filter: UsersFilter!, input: UpdateUserDto!): UserDto!
@@ -52,6 +73,7 @@ type PermissionStateDto {
 }
 
 type Project {
+    classifications: [Classification!]!
     description: String!
     id: ID!
     name: String!
@@ -61,6 +83,7 @@ type Project {
 }
 
 type ProjectDto {
+    classifications: [ClassificationDto!]
     description: String!
     id: ID!
     name: String!
@@ -71,6 +94,7 @@ type ProjectDto {
 
 type Query {
     authUser(auth: UserAuthInputDto!): ADUser!
+    classifications(filter: ClassificationsFilter!): [ClassificationDto!]!
     groups: [Group!]!
     me: UserAuthDto
     meExtended: UserAuthDto
@@ -121,6 +145,7 @@ type TaskDto {
 
 type User {
     adEmail: String!
+    classifications: [Classification!]!
     email: String!
     groups: [Group!]!
     id: ID!
@@ -160,6 +185,21 @@ input AllUsersFilter {
     groups: [Float!]
     name: String
     roles: [Float!]
+}
+
+input ClassificationsFilter {
+    fromDate: DateTime = "2020-03-13T13:32:28.278Z"
+    id: Float
+    projects: [Float!] = []
+    toDate: DateTime = "2020-04-13T12:32:28.279Z"
+    users: [Float!] = []
+}
+
+input CreateClassificationDto {
+    mark: Float!
+    note: String
+    project: Float!
+    user: Float!
 }
 
 input CreateProjectDto {
@@ -207,6 +247,12 @@ input SignUpUserDto {
 input TasksFilter {
     id: Float
     name: String
+}
+
+input UpdateClassificationDto {
+    mark: Float!
+    note: String!
+    projectId: Float
 }
 
 input UpdateProjectDto {

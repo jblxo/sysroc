@@ -2,7 +2,8 @@ import { Field, ID, ObjectType } from 'type-graphql';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../../roles/entities/roles.entity';
 import { Group } from '../../groups/entities/groups.entity';
-import { Project } from '../../projects/entities/projects.entity';
+import {Project} from '../../projects/entities/projects.entity';
+import {Classification} from "../../classification/entities/classification.entity";
 
 @Entity()
 @ObjectType()
@@ -40,6 +41,10 @@ export class User {
   @OneToMany(type => Project, project => project.user)
   @Field(type => [Project])
   projects: Project[];
+
+  @OneToMany(type => Classification, classification => classification.user)
+  @Field(type => [Classification])
+  classifications: Classification[];
 
   @OneToMany(type => Project, project => project.supervisor)
   @Field(type => [Project])

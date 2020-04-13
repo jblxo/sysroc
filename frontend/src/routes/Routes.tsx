@@ -12,6 +12,7 @@ import { NotAllowed } from '../views/NotAllowed';
 import { Users } from '../views/Users';
 import { hasPermissions } from '../auth/hasPermissions';
 import { Settings } from '../views/Settings';
+import { Classification } from "../views/Classification";
 
 export const Routes: React.FC = () => {
   const { data, loading } = useMeQuery();
@@ -77,6 +78,17 @@ export const Routes: React.FC = () => {
               exact
               path="/settings"
               component={Settings}
+            />
+            <ProtectedRoute
+              isAuthenticated={!!data?.me}
+              isAllowed={verifyPermissions(data?.me, [
+                'classification.view'
+              ])}
+              restrictedPath={'/notallowed'}
+              authenticationPath={'/signin'}
+              exact
+              path="/classification"
+              component={Classification}
             />
           </Switch>
         </PersistentDrawerLeft>
