@@ -431,6 +431,7 @@ export type UserDto = {
   email: Scalars['String'],
   adEmail: Scalars['String'],
   password: Scalars['String'],
+  projects: Array<ProjectDto>,
   groups: Array<Group>,
   roles: Array<RoleDto>,
 };
@@ -958,6 +959,33 @@ export type UpdateUserMutation = (
     )>, roles: Array<(
       { __typename?: 'RoleDto' }
       & Pick<RoleDto, 'id' | 'name' | 'slug' | 'admin'>
+    )> }
+  ) }
+);
+
+export type UserQueryVariables = {
+  id: Scalars['Float']
+};
+
+
+export type UserQuery = (
+  { __typename?: 'Query' }
+  & { user: (
+    { __typename?: 'UserDto' }
+    & Pick<UserDto, 'id' | 'name' | 'email' | 'adEmail'>
+    & { groups: Array<(
+      { __typename?: 'Group' }
+      & Pick<Group, 'id' | 'name'>
+    )>, roles: Array<(
+      { __typename?: 'RoleDto' }
+      & Pick<RoleDto, 'id' | 'name'>
+    )>, projects: Array<(
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name' | 'description'>
+      & { supervisor: Maybe<(
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'id' | 'name'>
+      )> }
     )> }
   ) }
 );
@@ -2084,6 +2112,59 @@ export function useUpdateUserMutation(baseOptions?: ApolloReactHooks.MutationHoo
 export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
 export type UpdateUserMutationResult = ApolloReactCommon.MutationResult<UpdateUserMutation>;
 export type UpdateUserMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const UserDocument = gql`
+    query User($id: Float!) {
+  user(filter: {id: $id}) {
+    id
+    name
+    email
+    adEmail
+    groups {
+      id
+      name
+    }
+    roles {
+      id
+      name
+    }
+    projects {
+      id
+      name
+      description
+      supervisor {
+        id
+        name
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useUserQuery__
+ *
+ * To run a query within a React component, call `useUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUserQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useUserQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<UserQuery, UserQueryVariables>) {
+        return ApolloReactHooks.useQuery<UserQuery, UserQueryVariables>(UserDocument, baseOptions);
+      }
+export function useUserLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<UserQuery, UserQueryVariables>) {
+          return ApolloReactHooks.useLazyQuery<UserQuery, UserQueryVariables>(UserDocument, baseOptions);
+        }
+export type UserQueryHookResult = ReturnType<typeof useUserQuery>;
+export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>;
+export type UserQueryResult = ApolloReactCommon.QueryResult<UserQuery, UserQueryVariables>;
 export const UsersDocument = gql`
     query Users($name: String, $email: String, $adEmail: String, $roles: [Float!], $groups: [Float!]) {
   users(filter: {name: $name, email: $email, adEmail: $adEmail, roles: $roles, groups: $groups}) {

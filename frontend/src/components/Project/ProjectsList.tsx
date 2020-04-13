@@ -8,12 +8,34 @@ import { GET_PROJECTS } from './NewProjectModal';
 import { useHistory } from 'react-router';
 import { Item } from '../Layout/Item';
 import { List } from '../Layout/List';
+import styled from 'styled-components';
+import { UserLink } from '../UserLink';
+
+const PaperStyles = styled.div`
+  & > div {
+    overflow-x: auto;
+  }
+  
+  & .flex > div {
+    min-width: 10rem;
+    
+    &.description {
+      min-width: 20rem;
+    }
+  }
+`;
 
 interface Props {
   userId?: string;
+  displayAuthor?: boolean;
 }
 
-export const ProjectsList: React.FC<Props> = ({ userId }) => {
+export const ProjectsList: React.FC<Props> = ({
+  userId,
+  displayAuthor,
+}) => {
+  displayAuthor = displayAuthor === undefined ? true : displayAuthor;
+
   const { data, loading } = useProjectsQuery({ variables: { userId } });
   const [deleteProject, { error }] = useDeleteProjectMutation({
     update(cache, result) {
@@ -65,64 +87,74 @@ export const ProjectsList: React.FC<Props> = ({ userId }) => {
     <div>
       <h2>Projects List</h2>
       <Paper>
-        <List>
-          <div className="flex">
-            <Item>
-              <div>Basic info</div>
-            </Item>
-            <Item>
-              <div>Author</div>
-            </Item>
-            <Item>
-              <div>Supervisor</div>
-            </Item>
-            <Item>
-              <div>Description</div>
-            </Item>
-            <Item>
-              <div>Action</div>
-            </Item>
-          </div>
-          {data &&
-            data.projects &&
-            data.projects.map(project => (
-              <div key={project.id} className="flex">
+        <PaperStyles>
+          <List>
+            <div className="flex">
+              <Item>
+                <div>Basic info</div>
+              </Item>
+              {displayAuthor &&
                 <Item>
-                  <div>{project.name}</div>
+                  <div>Author</div>
                 </Item>
-                <Item>
-                  <div>{project.user && project.user.name}</div>
-                </Item>
-                <Item>
-                  <div>{project.supervisor && project.supervisor.name}</div>
-                </Item>
-                <Item>
-                  <div>{project.description.slice(0, 10)}...</div>
-                </Item>
-                <Item className="actions">
-                  <Fab
-                    color="primary"
-                    variant="extended"
-                    onClick={() => {
-                      history.push(`/projects/${project.id}`);
-                    }}
-                  >
-                    View
-                  </Fab>
-                  <Fab
-                    color="secondary"
-                    variant="extended"
-                    onClick={() => {
-                      setProjectId(parseInt(project.id));
-                      handleAlertOpen();
-                    }}
-                  >
-                    X
-                  </Fab>
-                </Item>
-              </div>
-            ))}
-        </List>
+              }
+              <Item>
+                <div>Supervisor</div>
+              </Item>
+              <Item className="description">
+                <div>Description</div>
+              </Item>
+              <Item>
+                <div>Action</div>
+              </Item>
+            </div>
+            {data &&
+              data.projects &&
+              data.projects.map(project => (
+                <div key={project.id} className="flex">
+                  <Item>
+                    <div>{project.name}</div>
+                  </Item>
+                  {displayAuthor &&
+                    <Item>
+                      <div>
+                        <UserLink id={parseInt(project.user.id)} name={project.user.name} />
+                      </div>
+                    </Item>
+                  }
+                  <Item>
+                    <div>
+                      {project.supervisor && <UserLink id={parseInt(project.supervisor.id)} name={project.supervisor.name} />}
+                    </div>
+                  </Item>
+                  <Item className="description">
+                    <div>{project.description.slice(0, 100)}{!project.description || project.description.length > 100 ? '...' : ''}</div>
+                  </Item>
+                  <Item className="actions">
+                    <Fab
+                      color="primary"
+                      variant="extended"
+                      onClick={() => {
+                        history.push(`/projects/${project.id}`);
+                      }}
+                    >
+                      View
+                    </Fab>
+                    <Fab
+                      color="secondary"
+                      variant="extended"
+                      onClick={() => {
+                        setProjectId(parseInt(project.id));
+                        handleAlertOpen();
+                      }}
+                    >
+                      X
+                    </Fab>
+                  </Item>
+                </div>
+              ))}
+          </List>
+        </PaperStyles>
       </Paper>
       <DeleteProjectAlert
         open={open}

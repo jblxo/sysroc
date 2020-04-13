@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {useProjectQuery, useMeQuery, ClassificationDto} from '../generated/graphql';
+import { ClassificationDto, useMeQuery, useProjectQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
@@ -9,7 +9,7 @@ import { CreateTaskModal } from '../components/Task/CreateTaskModal';
 import moment from 'moment';
 import { ITask } from '../components/Task/Task';
 import { UpdateTaskModal } from '../components/Task/UpdateTaskModal';
-import {ProjectClassificationOverview} from "../components/Project/ProjectClassificationOverview";
+import { ProjectClassificationOverview } from '../components/Project/ProjectClassificationOverview';
 import { ClaimProjectFab } from '../components/Project/ClaimProjectFab';
 import { hasPermissions } from '../auth/hasPermissions';
 
@@ -127,7 +127,7 @@ export const SingleProject: React.FC<Props> = props => {
             color="primary"
             variant="extended"
             onClick={() => {
-              history.push(`/projects`);
+              history.goBack();
             }}
           >
             Back

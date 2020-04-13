@@ -1,0 +1,25 @@
+query User($id: Float!) {
+  user(filter: { id: $id }) {
+    id
+    name
+    email
+    adEmail
+    groups {
+      id
+      name
+    }
+    roles {
+      id
+      name
+    }
+    projects {
+      id
+      name
+      description
+      supervisor {
+        id
+        name
+      }
+    }
+  }
+}

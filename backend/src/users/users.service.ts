@@ -76,7 +76,7 @@ export class UsersService {
     filter = JSON.parse(JSON.stringify(filter));
 
     const user = await this.userRepository
-      .findOne(filter, { relations: ['roles', 'groups'] });
+      .findOne(filter, { relations: ['roles', 'groups', 'projects'] });
 
     if (!user) {
       throw new Error(`User not found!`);
