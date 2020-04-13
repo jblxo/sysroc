@@ -18,7 +18,7 @@ export const UserLink: React.FC<Props> = ({
       href="#"
       onClick={(event: any) => {
         event.preventDefault();
-        history.push('/users/' + id);
+        history.push(`/users/${id}`);
       }}
     >
       {name}
