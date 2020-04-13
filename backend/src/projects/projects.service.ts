@@ -1,4 +1,4 @@
-import {Injectable, InternalServerErrorException, NotFoundException, NotImplementedException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import {Project} from './entities/projects.entity';
 import {CreateProjectDto} from './dto/create-project.dto';
 import {UserDto} from '../users/dto/user.dto';
@@ -50,6 +50,14 @@ export class ProjectsService {
         .leftJoinAndSelect(
             'project.tasks',
             'tasks'
+        )
+        .leftJoinAndSelect(
+            'project.classifications',
+            'classifications'
+        )
+        .leftJoinAndSelect(
+            'classifications.user',
+            'user'
         )
         .orderBy({
           'tasks.createdAt': 'ASC'

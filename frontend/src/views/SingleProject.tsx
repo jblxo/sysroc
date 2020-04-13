@@ -13,12 +13,12 @@ import { UpdateTaskModal } from '../components/Task/UpdateTaskModal';
 const ProjectControls = styled.div`
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 15rem 1fr 1fr;
+  grid-template-columns: 20rem 1fr 1fr;
 
   margin-bottom: 2rem;
 
   button {
-    width: 5.5rem;
+    width: auto;
   }
 `;
 
@@ -131,6 +131,15 @@ export const SingleProject: React.FC<Props> = props => {
             }}
           >
             Edit
+          </Fab>
+          <Fab
+              color="primary"
+              variant="extended"
+              onClick={() => {
+
+              }}
+          >
+            Classification
           </Fab>
         </Actions>
       </ProjectControls>

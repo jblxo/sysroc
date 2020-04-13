@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType } from 'type-graphql';
 import { UserDto } from '../../users/dto/user.dto';
 import { TaskDto } from '../../tasks/dto/task.dto';
+import {ClassificationDto} from '../../classification/dto/classification.dto';
 
 @ObjectType()
 export class ProjectDto {
@@ -14,4 +15,6 @@ export class ProjectDto {
   readonly user: UserDto;
   @Field(type => [TaskDto], {defaultValue: []})
   readonly tasks: TaskDto[];
+  @Field(type => [ClassificationDto], {defaultValue: []})
+  readonly classifications: ClassificationDto[];
 }

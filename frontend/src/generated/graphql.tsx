@@ -222,6 +222,7 @@ export type ProjectDto = {
   description: Scalars['String'],
   user: UserDto,
   tasks?: Maybe<Array<TaskDto>>,
+  classifications?: Maybe<Array<ClassificationDto>>,
 };
 
 export type ProjectsFilter = {
@@ -674,6 +675,13 @@ export type ProjectQuery = (
     & { tasks: Maybe<Array<(
       { __typename?: 'TaskDto' }
       & Pick<TaskDto, 'id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
+    )>>, classifications: Maybe<Array<(
+      { __typename?: 'ClassificationDto' }
+      & Pick<ClassificationDto, 'createdAt' | 'mark' | 'note'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
     )>> }
   ) }
 );
@@ -1426,6 +1434,14 @@ export const ProjectDocument = gql`
       createdAt
       dueDate
       completed
+    }
+    classifications {
+      createdAt
+      mark
+      note
+      user {
+        name
+      }
     }
   }
 }
