@@ -4,9 +4,11 @@ query Projects($userId: String) {
     name
     description
     user {
+      id
       name
     }
     supervisor {
+      id
       name
     }
   }

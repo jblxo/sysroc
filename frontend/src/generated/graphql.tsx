@@ -734,10 +734,10 @@ export type ProjectsQuery = (
     & Pick<ProjectDto, 'id' | 'name' | 'description'>
     & { user: (
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'name'>
+      & Pick<UserDto, 'id' | 'name'>
     ), supervisor: Maybe<(
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'name'>
+      & Pick<UserDto, 'id' | 'name'>
     )> }
   )> }
 );
@@ -1569,9 +1569,11 @@ export const ProjectsDocument = gql`
     name
     description
     user {
+      id
       name
     }
     supervisor {
+      id
       name
     }
   }
