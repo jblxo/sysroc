@@ -12,6 +12,7 @@ query Project($id: Float) {
       completed
     }
     classifications {
+      id
       createdAt
       mark
       note

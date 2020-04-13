@@ -677,7 +677,7 @@ export type ProjectQuery = (
       & Pick<TaskDto, 'id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
     )>>, classifications: Maybe<Array<(
       { __typename?: 'ClassificationDto' }
-      & Pick<ClassificationDto, 'createdAt' | 'mark' | 'note'>
+      & Pick<ClassificationDto, 'id' | 'createdAt' | 'mark' | 'note'>
       & { user: (
         { __typename?: 'UserDto' }
         & Pick<UserDto, 'name'>
@@ -1436,6 +1436,7 @@ export const ProjectDocument = gql`
       completed
     }
     classifications {
+      id
       createdAt
       mark
       note

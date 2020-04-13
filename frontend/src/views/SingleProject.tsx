@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useProjectQuery, useMeQuery } from '../generated/graphql';
+import {useProjectQuery, useMeQuery, ClassificationDto} from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
@@ -9,6 +9,7 @@ import { CreateTaskModal } from '../components/Task/CreateTaskModal';
 import moment from 'moment';
 import { ITask } from '../components/Task/Task';
 import { UpdateTaskModal } from '../components/Task/UpdateTaskModal';
+import {ProjectClassificationOverview} from "../components/Project/ProjectClassificationOverview";
 
 const ProjectControls = styled.div`
   display: grid;
@@ -65,6 +66,7 @@ interface Props
 
 export const SingleProject: React.FC<Props> = props => {
   const [modalOpen, setModalOpen] = useState(false);
+  const [classOverviewOpen, setClassOverviewOpen] = useState(false);
   const [upTaskModalOpen, setUpTaskModalOpen] = useState(false);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number>(0);
@@ -96,6 +98,10 @@ export const SingleProject: React.FC<Props> = props => {
 
   const handleUpTaskModalClose = () => {
     setUpTaskModalOpen(false);
+  };
+
+  const handleClassOverviewClose = () => {
+    setClassOverviewOpen(false);
   };
 
   const tasksByMonth: { [key: string]: ITask[] } = {};
@@ -136,7 +142,7 @@ export const SingleProject: React.FC<Props> = props => {
               color="primary"
               variant="extended"
               onClick={() => {
-
+                setClassOverviewOpen(true);
               }}
           >
             Classification
@@ -177,12 +183,19 @@ export const SingleProject: React.FC<Props> = props => {
         <div>There is no project with ID {props.match.params.projectId}</div>
       )}
       {data && (
-        <UpdateProjectModal
-          open={modalOpen}
-          handleClose={handleModalClose}
-          projectId={parseInt(props.match.params.projectId)}
-          data={data?.project}
-        />
+          <>
+            <UpdateProjectModal
+              open={modalOpen}
+              handleClose={handleModalClose}
+              projectId={parseInt(props.match.params.projectId)}
+              data={data?.project}
+            />
+            <ProjectClassificationOverview
+                open={classOverviewOpen}
+                handleClose={handleClassOverviewClose}
+                classification={data?.project.classifications as ClassificationDto[]}
+            />
+          </>
       )}
       <CreateTaskModal
         open={createTaskOpen}

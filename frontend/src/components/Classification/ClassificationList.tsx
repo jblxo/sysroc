@@ -137,7 +137,7 @@ export const ClassificationList: React.FC<Props> = ({userId}) => {
                         <Item>
                             <div>Action</div>
                         </Item>
-                        </div>
+                    </div>
                         {data && data.classifications && data.classifications.map(classification => (
                             <div key={classification.id} className="flex">
                                 <Item>
