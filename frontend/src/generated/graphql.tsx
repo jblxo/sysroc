@@ -371,6 +371,7 @@ export type UpdateTaskDto = {
   name?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   dueDate?: Maybe<Scalars['DateTime']>,
+  completed?: Maybe<Scalars['Boolean']>,
 };
 
 export type UpdateUserDto = {
@@ -816,6 +817,20 @@ export type TaskQuery = (
   & { task: (
     { __typename?: 'TaskDto' }
     & Pick<TaskDto, 'id' | 'name' | 'description' | 'dueDate' | 'createdAt' | 'completed'>
+  ) }
+);
+
+export type ToggleTaskStatusMutationVariables = {
+  id: Scalars['Float'],
+  completed: Scalars['Boolean']
+};
+
+
+export type ToggleTaskStatusMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTask: (
+    { __typename?: 'TaskDto' }
+    & Pick<TaskDto, 'id' | 'completed'>
   ) }
 );
 
@@ -1772,6 +1787,40 @@ export function useTaskLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOpt
 export type TaskQueryHookResult = ReturnType<typeof useTaskQuery>;
 export type TaskLazyQueryHookResult = ReturnType<typeof useTaskLazyQuery>;
 export type TaskQueryResult = ApolloReactCommon.QueryResult<TaskQuery, TaskQueryVariables>;
+export const ToggleTaskStatusDocument = gql`
+    mutation ToggleTaskStatus($id: Float!, $completed: Boolean!) {
+  updateTask(filter: {id: $id}, updates: {completed: $completed}) {
+    id
+    completed
+  }
+}
+    `;
+export type ToggleTaskStatusMutationFn = ApolloReactCommon.MutationFunction<ToggleTaskStatusMutation, ToggleTaskStatusMutationVariables>;
+
+/**
+ * __useToggleTaskStatusMutation__
+ *
+ * To run a mutation, you first call `useToggleTaskStatusMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useToggleTaskStatusMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [toggleTaskStatusMutation, { data, loading, error }] = useToggleTaskStatusMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      completed: // value for 'completed'
+ *   },
+ * });
+ */
+export function useToggleTaskStatusMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<ToggleTaskStatusMutation, ToggleTaskStatusMutationVariables>) {
+        return ApolloReactHooks.useMutation<ToggleTaskStatusMutation, ToggleTaskStatusMutationVariables>(ToggleTaskStatusDocument, baseOptions);
+      }
+export type ToggleTaskStatusMutationHookResult = ReturnType<typeof useToggleTaskStatusMutation>;
+export type ToggleTaskStatusMutationResult = ApolloReactCommon.MutationResult<ToggleTaskStatusMutation>;
+export type ToggleTaskStatusMutationOptions = ApolloReactCommon.BaseMutationOptions<ToggleTaskStatusMutation, ToggleTaskStatusMutationVariables>;
 export const UpdateClassificationDocument = gql`
     mutation UpdateClassification($id: Float!, $mark: Float!, $note: String!, $project: Float!) {
   updateClassification(filter: {id: $id}, updates: {mark: $mark, note: $note, projectId: $project}) {

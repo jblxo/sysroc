@@ -1,0 +1,6 @@
+mutation ToggleTaskStatus($id: Float!, $completed: Boolean!) {
+    updateTask(filter: {id: $id}, updates: {completed: $completed}) {
+        id
+        completed
+    }
+}
