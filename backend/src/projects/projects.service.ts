@@ -1,4 +1,4 @@
-import {Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
+import {Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
 import {Project} from './entities/projects.entity';
 import {CreateProjectDto} from './dto/create-project.dto';
 import {UserDto} from '../users/dto/user.dto';
@@ -8,16 +8,6 @@ import {UpdateProjectDto} from './dto/update-project.dto';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {User} from '../users/entities/users.entity';
-import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { Project } from './entities/projects.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UserDto } from '../users/dto/user.dto';
-import { ProjectsFilter } from './filters/project.filter';
-import { ProjectDto } from './dto/project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '../users/entities/users.entity';
 import { UsersService } from '../users/users.service';
 import { PERMISSIONS } from '../permissions/permissions';
 
@@ -78,7 +68,7 @@ export class ProjectsService {
         )
         .leftJoinAndSelect(
             'classifications.user',
-            'user'
+            'teacher'
         )
         .orderBy({
           'tasks.createdAt': 'ASC'

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {useProjectQuery, useMeQuery, ClassificationDto} from '../generated/graphql';
-import { useMeQuery, useProjectQuery } from '../generated/graphql';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { Fab, Typography } from '@material-ui/core';
 import styled from 'styled-components';
@@ -17,7 +16,7 @@ import { hasPermissions } from '../auth/hasPermissions';
 const ProjectControls = styled.div`
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 20rem 1fr 1fr;
+  grid-template-columns: 30rem 1fr 1fr;
 
   margin-bottom: 2rem;
 
@@ -207,6 +206,7 @@ export const SingleProject: React.FC<Props> = props => {
                 classification={data?.project.classifications as ClassificationDto[]}
             />
           </>
+      )}
       {data && (canManageProject || data.project.user.id === meData?.me?.user?.id) && (
         <UpdateProjectModal
           open={modalOpen}

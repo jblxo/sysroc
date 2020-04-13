@@ -390,6 +390,8 @@ export type User = {
   roles: Array<Role>,
   groups: Array<Group>,
   projects: Array<Project>,
+  classifications: Array<Classification>,
+  supervisedProjects: Array<Project>,
 };
 
 export type UserAuthDto = {
@@ -430,6 +432,77 @@ export type UserTempDto = {
   email: Scalars['String'],
 };
 
+export type ClaimProjectMutationVariables = {
+  projectId: Scalars['Float']
+};
+
+
+export type ClaimProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { claimProject: (
+    { __typename?: 'ProjectDto' }
+    & Pick<ProjectDto, 'id'>
+    & { user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    )> }
+  ) }
+);
+
+export type ClassificationsQueryVariables = {
+  users?: Maybe<Array<Scalars['Float']>>,
+  projects?: Maybe<Array<Scalars['Float']>>,
+  fromDate?: Maybe<Scalars['DateTime']>,
+  toDate?: Maybe<Scalars['DateTime']>
+};
+
+
+export type ClassificationsQuery = (
+  { __typename?: 'Query' }
+  & { classifications: Array<(
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
+  )> }
+);
+
+export type CreateClassificationMutationVariables = {
+  mark: Scalars['Float'],
+  note?: Maybe<Scalars['String']>,
+  project: Scalars['Float'],
+  user: Scalars['Float']
+};
+
+
+export type CreateClassificationMutation = (
+  { __typename?: 'Mutation' }
+  & { createClassification: (
+    { __typename?: 'ClassificationDto' }
+    & Pick<ClassificationDto, 'id' | 'mark' | 'note' | 'createdAt'>
+    & { project: (
+      { __typename?: 'ProjectDto' }
+      & Pick<ProjectDto, 'id' | 'name'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    ), user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ) }
   ) }
 );
 
@@ -632,6 +705,20 @@ export type ProjectQuery = (
     & { tasks: Maybe<Array<(
       { __typename?: 'TaskDto' }
       & Pick<TaskDto, 'id' | 'name' | 'description' | 'createdAt' | 'dueDate' | 'completed'>
+    )>>, classifications: Maybe<Array<(
+      { __typename?: 'ClassificationDto' }
+      & Pick<ClassificationDto, 'id' | 'createdAt' | 'mark' | 'note'>
+      & { user: (
+        { __typename?: 'UserDto' }
+        & Pick<UserDto, 'name'>
+      ) }
+    )>>, user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -847,6 +934,44 @@ export type UsersQuery = (
 );
 
 
+export const ClaimProjectDocument = gql`
+    mutation ClaimProject($projectId: Float!) {
+  claimProject(filter: {id: $projectId}) {
+    id
+    user {
+      id
+    }
+    supervisor {
+      id
+    }
+  }
+}
+    `;
+export type ClaimProjectMutationFn = ApolloReactCommon.MutationFunction<ClaimProjectMutation, ClaimProjectMutationVariables>;
+
+/**
+ * __useClaimProjectMutation__
+ *
+ * To run a mutation, you first call `useClaimProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useClaimProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [claimProjectMutation, { data, loading, error }] = useClaimProjectMutation({
+ *   variables: {
+ *      projectId: // value for 'projectId'
+ *   },
+ * });
+ */
+export function useClaimProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<ClaimProjectMutation, ClaimProjectMutationVariables>) {
+        return ApolloReactHooks.useMutation<ClaimProjectMutation, ClaimProjectMutationVariables>(ClaimProjectDocument, baseOptions);
+      }
+export type ClaimProjectMutationHookResult = ReturnType<typeof useClaimProjectMutation>;
+export type ClaimProjectMutationResult = ApolloReactCommon.MutationResult<ClaimProjectMutation>;
+export type ClaimProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<ClaimProjectMutation, ClaimProjectMutationVariables>;
 export const ClassificationsDocument = gql`
     query Classifications($users: [Float!], $projects: [Float!], $fromDate: DateTime, $toDate: DateTime) {
   classifications(filter: {users: $users, projects: $projects, fromDate: $fromDate, toDate: $toDate}) {
@@ -914,25 +1039,38 @@ export const CreateClassificationDocument = gql`
     user {
       id
       name
-export const ClaimProjectDocument = gql`
-    mutation ClaimProject($projectId: Float!) {
-  claimProject(filter: {id: $projectId}) {
-    id
-    user {
-      id
-    }
-    supervisor {
-      id
     }
   }
 }
     `;
+export type CreateClassificationMutationFn = ApolloReactCommon.MutationFunction<CreateClassificationMutation, CreateClassificationMutationVariables>;
+
+/**
+ * __useCreateClassificationMutation__
+ *
+ * To run a mutation, you first call `useCreateClassificationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateClassificationMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
+ * const [createClassificationMutation, { data, loading, error }] = useCreateClassificationMutation({
+ *   variables: {
+ *      mark: // value for 'mark'
+ *      note: // value for 'note'
+ *      project: // value for 'project'
+ *      user: // value for 'user'
+ *   },
+ * });
+ */
+export function useCreateClassificationMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CreateClassificationMutation, CreateClassificationMutationVariables>) {
+        return ApolloReactHooks.useMutation<CreateClassificationMutation, CreateClassificationMutationVariables>(CreateClassificationDocument, baseOptions);
+      }
+export type CreateClassificationMutationHookResult = ReturnType<typeof useCreateClassificationMutation>;
+export type CreateClassificationMutationResult = ApolloReactCommon.MutationResult<CreateClassificationMutation>;
+export type CreateClassificationMutationOptions = ApolloReactCommon.BaseMutationOptions<CreateClassificationMutation, CreateClassificationMutationVariables>;
 export const CreateProjectDocument = gql`
     mutation CreateProject($name: String!, $description: String) {
   createProject(input: {name: $name, description: $description}) {
@@ -1379,6 +1517,21 @@ export const ProjectDocument = gql`
       dueDate
       completed
     }
+    classifications {
+      id
+      createdAt
+      mark
+      note
+      user {
+        name
+      }
+    }
+    user {
+      id
+    }
+    supervisor {
+      id
+      name
     }
   }
 }
