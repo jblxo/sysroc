@@ -445,10 +445,10 @@ export type ClaimProjectMutation = (
     & Pick<ProjectDto, 'id'>
     & { user: (
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'id'>
+      & Pick<UserDto, 'id' | 'name'>
     ), supervisor: Maybe<(
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'id'>
+      & Pick<UserDto, 'id' | 'name'>
     )> }
   ) }
 );
@@ -471,7 +471,7 @@ export type ClassificationsQuery = (
       & Pick<ProjectDto, 'id' | 'name'>
       & { user: (
         { __typename?: 'UserDto' }
-        & Pick<UserDto, 'name'>
+        & Pick<UserDto, 'id' | 'name'>
       ) }
     ), user: (
       { __typename?: 'UserDto' }
@@ -498,7 +498,7 @@ export type CreateClassificationMutation = (
       & Pick<ProjectDto, 'id' | 'name'>
       & { user: (
         { __typename?: 'UserDto' }
-        & Pick<UserDto, 'name'>
+        & Pick<UserDto, 'id' | 'name'>
       ) }
     ), user: (
       { __typename?: 'UserDto' }
@@ -520,8 +520,11 @@ export type CreateProjectMutation = (
     & Pick<ProjectDto, 'id' | 'name' | 'description'>
     & { user: (
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'name'>
-    ) }
+      & Pick<UserDto, 'id' | 'name'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -588,7 +591,7 @@ export type DeleteClassificationMutation = (
       & Pick<ProjectDto, 'id' | 'name'>
       & { user: (
         { __typename?: 'UserDto' }
-        & Pick<UserDto, 'name'>
+        & Pick<UserDto, 'id' | 'name'>
       ) }
     ), user: (
       { __typename?: 'UserDto' }
@@ -607,6 +610,13 @@ export type DeleteProjectMutation = (
   & { deleteProject: (
     { __typename?: 'ProjectDto' }
     & Pick<ProjectDto, 'id' | 'name'>
+    & { user: (
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    ), supervisor: Maybe<(
+      { __typename?: 'UserDto' }
+      & Pick<UserDto, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -711,11 +721,11 @@ export type ProjectQuery = (
       & Pick<ClassificationDto, 'id' | 'createdAt' | 'mark' | 'note'>
       & { user: (
         { __typename?: 'UserDto' }
-        & Pick<UserDto, 'name'>
+        & Pick<UserDto, 'id' | 'name'>
       ) }
     )>>, user: (
       { __typename?: 'UserDto' }
-      & Pick<UserDto, 'id'>
+      & Pick<UserDto, 'id' | 'name'>
     ), supervisor: Maybe<(
       { __typename?: 'UserDto' }
       & Pick<UserDto, 'id' | 'name'>
@@ -852,7 +862,7 @@ export type UpdateClassificationMutation = (
       & Pick<ProjectDto, 'id' | 'name'>
       & { user: (
         { __typename?: 'UserDto' }
-        & Pick<UserDto, 'name'>
+        & Pick<UserDto, 'id' | 'name'>
       ) }
     ), user: (
       { __typename?: 'UserDto' }
@@ -955,9 +965,11 @@ export const ClaimProjectDocument = gql`
     id
     user {
       id
+      name
     }
     supervisor {
       id
+      name
     }
   }
 }
@@ -997,6 +1009,7 @@ export const ClassificationsDocument = gql`
       id
       name
       user {
+        id
         name
       }
     }
@@ -1047,6 +1060,7 @@ export const CreateClassificationDocument = gql`
       id
       name
       user {
+        id
         name
       }
     }
@@ -1093,6 +1107,11 @@ export const CreateProjectDocument = gql`
     name
     description
     user {
+      id
+      name
+    }
+    supervisor {
+      id
       name
     }
   }
@@ -1236,6 +1255,7 @@ export const DeleteClassificationDocument = gql`
       id
       name
       user {
+        id
         name
       }
     }
@@ -1277,6 +1297,14 @@ export const DeleteProjectDocument = gql`
   deleteProject(projectId: $projectId) {
     id
     name
+    user {
+      id
+      name
+    }
+    supervisor {
+      id
+      name
+    }
   }
 }
     `;
@@ -1538,11 +1566,13 @@ export const ProjectDocument = gql`
       mark
       note
       user {
+        id
         name
       }
     }
     user {
       id
+      name
     }
     supervisor {
       id
@@ -1831,6 +1861,7 @@ export const UpdateClassificationDocument = gql`
       id
       name
       user {
+        id
         name
       }
     }

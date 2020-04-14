@@ -53,6 +53,8 @@ export const ClassificationList: React.FC<Props> = ({userId}) => {
                 variables: getClassificationFilters()
             });
 
+            console.log(query);
+
             await apolloClient.reset();
 
             if(query && query.classifications) {

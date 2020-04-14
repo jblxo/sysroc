@@ -4,6 +4,11 @@ mutation CreateProject($name: String!, $description: String) {
     name
     description
     user {
+      id
+      name
+    }
+    supervisor {
+      id
       name
     }
   }

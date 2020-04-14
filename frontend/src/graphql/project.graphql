@@ -17,11 +17,13 @@ query Project($id: Float) {
       mark
       note
       user {
+        id
         name
       }
     }
     user {
       id
+      name
     }
     supervisor {
       id

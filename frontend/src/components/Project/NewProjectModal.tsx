@@ -43,6 +43,11 @@ export const GET_PROJECTS = gql`
       name
       description
       user {
+        id
+        name
+      }
+      supervisor {
+        id
         name
       }
     }
@@ -73,6 +78,7 @@ export const NewProjectModal: React.FC<Props> = ({
           }
         });
       } catch (error) {
+        console.log(error);
         if (error instanceof Error) {
           enqueueSnackbar(error.message, { variant: 'error' });
         }

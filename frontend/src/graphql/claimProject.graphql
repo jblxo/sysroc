@@ -3,9 +3,11 @@ mutation ClaimProject($projectId: Float!) {
     id
     user {
       id
+      name
     }
     supervisor {
       id
+      name
     }
   }
 }
