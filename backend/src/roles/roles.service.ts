@@ -101,17 +101,6 @@ export class RolesService {
     if (role.admin) {
       return true;
     }
-    if (!role.permissions || role.permissions.length === 0) {
-      return false;
-    }
-
-    if (!role.permissions[0].hasOwnProperty('slug')) {
-      role = await this.roleRepository
-        .createQueryBuilder('role')
-        .where({slug: role.slug})
-        .leftJoinAndSelect('role.permissions', 'permissions')
-        .getOne();
-    }
 
     for (const permissionSlug of permissionSlugs) {
       if (role.permissions.some((rolePermission: Permission) => rolePermission.slug === permissionSlug)) {

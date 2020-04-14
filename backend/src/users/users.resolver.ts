@@ -60,7 +60,7 @@ export class UsersResolver {
 
   @Query(() => UserAuthDto, { nullable: true })
   @UseGuards(GqlAuthGuard)
-  async me(@CurrentUser() user: UserDto) {
+  async me(@CurrentUser() user: User) {
     const permissions = await this.usersService.getPermissionStates(user);
 
     return {

@@ -76,7 +76,7 @@ export class UsersService {
     filter = JSON.parse(JSON.stringify(filter));
 
     const user = await this.userRepository
-      .findOne(filter, { relations: ['roles', 'groups', 'projects'] });
+      .findOne(filter, { relations: ['roles', 'roles.permissions', 'groups', 'projects'] });
 
     if (!user) {
       throw new Error(`User not found!`);
@@ -283,13 +283,7 @@ export class UsersService {
       return false;
     }
 
-    let roles = userDto.roles;
-    if (typeof roles[0] === 'string') {
-      const user = await this.findOne({ id: userDto.id });
-      roles = user.roles;
-    }
-
-    for (const role of roles) {
+    for (const role of userDto.roles) {
       if (await this.rolesService.hasPermissions(role as Role, ...permissionSlugs)) {
         return true;
       }
