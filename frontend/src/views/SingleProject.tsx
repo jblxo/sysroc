@@ -132,24 +132,34 @@ export const SingleProject: React.FC<Props> = props => {
           >
             Back
           </Fab>
-          <Fab
-            color="secondary"
-            variant="extended"
-            onClick={() => {
-              handleModalOpen();
-            }}
-          >
-            Edit
-          </Fab>
-          <Fab
-              color="primary"
-              variant="extended"
-              onClick={() => {
-                setClassOverviewOpen(true);
-              }}
-          >
-            Classification
-          </Fab>
+          {(canManageProject || data?.project?.user?.id === meData?.me?.user?.id) ? (
+            <>
+              <Fab
+                color="secondary"
+                variant="extended"
+                onClick={() => {
+                  handleModalOpen();
+                }}
+              >
+                Edit
+              </Fab>
+
+              <Fab
+                color="primary"
+                variant="extended"
+                onClick={() => {
+                  setClassOverviewOpen(true);
+                }}
+              >
+                Classification
+              </Fab>
+            </>
+          ) : (
+            <>
+              <div />
+              <div />
+            </>
+          )}
           { data && (
             <ClaimProjectFab
               projectId={parseInt(data.project.id)}
@@ -163,15 +173,17 @@ export const SingleProject: React.FC<Props> = props => {
         <Project>
           <Typography variant="h4">{data.project.name}</Typography>
           <Typography variant="h5">{data.project.description}</Typography>
-          <div className="add-task-btn">
-            <Fab
-              color="secondary"
-              variant="extended"
-              onClick={handleCreateTaskOpen}
-            >
-              Add Task
-            </Fab>
-          </div>
+          {(canManageProject || data?.project?.user?.id === meData?.me?.user?.id) &&
+            <div className="add-task-btn">
+              <Fab
+                color="secondary"
+                variant="extended"
+                onClick={handleCreateTaskOpen}
+              >
+                Add Task
+              </Fab>
+            </div>
+          }
           {data.project.tasks ? (
             <TaskLists>
               {Object.keys(tasksByMonth).map(key => (

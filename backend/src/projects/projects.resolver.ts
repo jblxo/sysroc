@@ -50,7 +50,7 @@ export class ProjectsResolver {
     @CurrentUser() user: UserDto,
     @Args('projectId') projectId: number,
   ) {
-    return this.projectsService.deleteOne(projectId);
+    return this.projectsService.deleteOne(projectId, user);
   }
 
   @Query(() => ProjectDto)

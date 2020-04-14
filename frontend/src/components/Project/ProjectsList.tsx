@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useDeleteProjectMutation, useProjectsQuery } from '../../generated/graphql';
+import { useDeleteProjectMutation, useMeQuery, useProjectsQuery } from '../../generated/graphql';
 import Paper from '@material-ui/core/Paper';
 import { Fab } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
@@ -10,8 +10,9 @@ import { Item } from '../Layout/Item';
 import { List } from '../Layout/List';
 import styled from 'styled-components';
 import { UserLink } from '../UserLink';
-import {ProjectFilters, ProjectsFilter} from "./ProjectsFilter";
-import {getProjectFilters, registerProjectFiltersListener, setProjectFilters} from "../../filters/projects";
+import { ProjectFilters, ProjectsFilter } from './ProjectsFilter';
+import { getProjectFilters, registerProjectFiltersListener, setProjectFilters } from '../../filters/projects';
+import { hasPermissions } from '../../auth/hasPermissions';
 
 const PaperStyles = styled.div`
   & > div {
@@ -42,6 +43,7 @@ export const ProjectsList: React.FC<Props> = ({
   const [revision, setRevision] = useState(0);
   const [filters, setFilters] = useState<ProjectFilters>(getProjectFilters());
 
+  const { data: meData } = useMeQuery();
   const { data, loading } = useProjectsQuery({ variables: { userId, ...filters } });
   const [deleteProject, { error }] = useDeleteProjectMutation({
     update(cache, result) {
@@ -67,6 +69,8 @@ export const ProjectsList: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
   const [projectId, setProjectId] = useState<number | null>(null);
   const history = useHistory();
+
+  const canDeleteProject = meData?.me && hasPermissions(meData.me, 'projects.manage');
 
   const handleAlertOpen = () => {
     setOpen(true);
@@ -158,16 +162,18 @@ export const ProjectsList: React.FC<Props> = ({
                     >
                       View
                     </Fab>
-                    <Fab
-                      color="secondary"
-                      variant="extended"
-                      onClick={() => {
-                        setProjectId(parseInt(project.id));
-                        handleAlertOpen();
-                      }}
-                    >
-                      X
-                    </Fab>
+                    {(canDeleteProject || project.user.id === meData?.me?.user?.id) &&
+                      <Fab
+                        color="secondary"
+                        variant="extended"
+                        onClick={() => {
+                          setProjectId(parseInt(project.id));
+                          handleAlertOpen();
+                        }}
+                      >
+                        X
+                      </Fab>
+                    }
                   </Item>
                 </div>
               ))}

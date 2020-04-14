@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Typography, IconButton } from '@material-ui/core';
+import { IconButton, Typography } from '@material-ui/core';
 import styled from 'styled-components';
 import moment from 'moment';
 import EditIcon from '@material-ui/icons/Edit';
@@ -8,14 +8,16 @@ import CheckIcon from '@material-ui/icons/Check';
 import ClearIcon from '@material-ui/icons/Clear';
 import grey from '@material-ui/core/colors/grey';
 import {
-  ProjectDto,
   ProjectQuery,
   TaskDto,
   useDeleteTaskMutation,
+  useMeQuery,
+  useProjectQuery,
   useToggleTaskStatusMutation
 } from '../../generated/graphql';
 import { useSnackbar } from 'notistack';
 import { GET_PROJECT } from '../Project/UpdateProjectModal';
+import { hasPermissions } from '../../auth/hasPermissions';
 
 const TaskStyles = styled.div`
   padding: 1rem 1.4rem;
@@ -99,6 +101,8 @@ export const Task: React.FC<Props> = ({
   selectTask
 }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const { data: dataMe, loading: loadingMe } = useMeQuery();
+  const { data: dataProject } = useProjectQuery({ variables: { id: project } });
   const [deleteTask, { error }] = useDeleteTaskMutation({
     update(cache, result) {
       try {
@@ -127,7 +131,7 @@ export const Task: React.FC<Props> = ({
     }
   });
 
-  const [toggleTaskStatus, {error: statusError}] = useToggleTaskStatusMutation({
+  const [toggleTaskStatus, { error: statusError }] = useToggleTaskStatusMutation({
     update(cache, result) {
       try {
         const cacheRes: ProjectQuery | null = cache.readQuery({
@@ -136,7 +140,7 @@ export const Task: React.FC<Props> = ({
         });
 
 
-        if(cacheRes && cacheRes.project) {
+        if (cacheRes && cacheRes.project) {
           cache.writeQuery({
             query: GET_PROJECT,
             variables: { id: project },
@@ -145,7 +149,7 @@ export const Task: React.FC<Props> = ({
                 ...cacheRes.project,
                 tasks: (cacheRes.project.tasks as TaskDto[]).reduce((arr: TaskDto[], item) => {
                   const exists = !!arr.find(x => x.id === item.id);
-                  if(!exists) {
+                  if (!exists) {
                     arr.push(item);
                   }
                   return arr;
@@ -162,15 +166,19 @@ export const Task: React.FC<Props> = ({
     }
   });
 
+  const canManageProject = dataMe?.me && hasPermissions(dataMe.me, "projects.manage");
+
   useEffect(() => {
     if (error) {
       enqueueSnackbar('Error deleting task', { variant: 'error' });
     }
 
-    if(statusError) {
+    if (statusError) {
       enqueueSnackbar('Error updating task', { variant: 'error' });
     }
   }, [enqueueSnackbar, error, statusError]);
+
+  if (loadingMe) return <div>Loading...</div>;
 
   return (
     <TaskStyles>
@@ -184,37 +192,39 @@ export const Task: React.FC<Props> = ({
       <div className="tast-due-date">
         {moment(task.dueDate).format('DD. MM. YYYY, dddd')}
       </div>
-      <div className="task-actions">
-        <IconButton onClick={async () => {
-          const res = await toggleTaskStatus({ variables: { id: task.id, completed: !task.completed } });
-
-          if(res.data) {
-            const msg = task.completed ? 'To Do' : 'Completed';
-            enqueueSnackbar(`Task marked as ${msg}`, { variant: 'success' });
-          }
-        }}>
-          {task.completed ? <ClearIcon /> : <CheckIcon />}
-        </IconButton>
-        <IconButton
-          onClick={() => {
-            selectTask(task.id);
-            handleUpdateModalOpen();
-          }}
-        >
-          <EditIcon />
-        </IconButton>
-        <IconButton
-          onClick={async () => {
-            const res = await deleteTask({ variables: { id: task.id } });
+      {(canManageProject || dataProject?.project?.user?.id === dataMe?.me?.user?.id) &&
+        <div className="task-actions">
+          <IconButton onClick={async () => {
+            const res = await toggleTaskStatus({ variables: { id: task.id, completed: !task.completed } });
 
             if (res.data) {
-              enqueueSnackbar('Task deleted.', { variant: 'success' });
+              const msg = task.completed ? 'To Do' : 'Completed';
+              enqueueSnackbar(`Task marked as ${msg}`, { variant: 'success' });
             }
-          }}
-        >
-          <DeleteIcon />
-        </IconButton>
-      </div>
+          }}>
+            {task.completed ? <ClearIcon /> : <CheckIcon />}
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              selectTask(task.id);
+              handleUpdateModalOpen();
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton
+            onClick={async () => {
+              const res = await deleteTask({ variables: { id: task.id } });
+
+              if (res.data) {
+                enqueueSnackbar('Task deleted.', { variant: 'success' });
+              }
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </div>
+      }
     </TaskStyles>
   );
 };
