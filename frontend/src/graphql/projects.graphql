@@ -1,5 +1,5 @@
-query Projects($userId: String) {
-  projects(filter: { user: $userId }) {
+query Projects($userId: String, $name: String, $authors: [Float!], $supervisors: [Float!]) {
+  projects(filter: { user: $userId, name: $name, authors: $authors, supervisors: $supervisors }) {
     id
     name
     description

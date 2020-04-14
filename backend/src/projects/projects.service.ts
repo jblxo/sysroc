@@ -30,15 +30,26 @@ export class ProjectsService {
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
-    const query = this.projectRepository
-      .createQueryBuilder('project')
-      .innerJoinAndSelect('project.user', 'user')
-      .leftJoinAndSelect('project.supervisor', 'supervisor')
-      .leftJoinAndSelect('project.tasks', 'tasks')
-      .orderBy({ 'tasks.createdAt': 'ASC' });
-
+    const query = this.projectRepository.createQueryBuilder('project')
+        .innerJoinAndSelect('project.user', 'user')
+        .leftJoinAndSelect('project.supervisor', 'supervisor')
+        .leftJoinAndSelect('project.tasks', 'tasks')
+        .orderBy({ 'tasks.createdAt': 'ASC' });
+      
     if (filter.user) {
-      query.where('project.user.id = :id', { id: filter.user });
+      query.andWhere('project.user.id = :id', { id: filter.user });
+    }
+      
+    if(filter.name && filter.name !== '') {
+      query.andWhere('project.name like :name', {name: `%${filter.name}%`});
+    }
+
+    if(filter.authors && filter.authors.length > 0) {
+      query.andWhere('user.id IN (:...userIds)', {userIds: filter.authors});
+    }
+
+    if(filter.supervisors && filter.supervisors.length > 0) {
+      query.andWhere('supervisor.id IN (:...supervisorIds)', {supervisorIds: filter.supervisors});
     }
 
     return query.getMany();

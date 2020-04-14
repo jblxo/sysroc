@@ -39,8 +39,8 @@ input ClassificationsFilter {
   id: Float
   projects: [Float!] = []
   users: [Float!] = []
-  fromDate: DateTime = "2020-03-14T15:42:37.550Z"
-  toDate: DateTime = "2020-04-14T14:42:37.550Z"
+  fromDate: DateTime = "2020-03-14T15:58:48.976Z"
+  toDate: DateTime = "2020-04-14T14:58:48.977Z"
 }
 
 input CreateClassificationDto {
@@ -144,6 +144,8 @@ input ProjectsFilter {
   id: Float
   name: String
   user: String
+  authors: [Float!] = []
+  supervisors: [Float!] = []
 }
 
 type Query {
