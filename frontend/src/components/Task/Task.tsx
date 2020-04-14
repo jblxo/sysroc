@@ -194,16 +194,18 @@ export const Task: React.FC<Props> = ({
       </div>
       {(canManageProject || dataProject?.project?.user?.id === dataMe?.me?.user?.id) &&
         <div className="task-actions">
-          <IconButton onClick={async () => {
-            const res = await toggleTaskStatus({ variables: { id: task.id, completed: !task.completed } });
+          {canManageProject &&
+            <IconButton onClick={async () => {
+              const res = await toggleTaskStatus({ variables: { id: task.id, completed: !task.completed } });
 
-            if (res.data) {
-              const msg = task.completed ? 'To Do' : 'Completed';
-              enqueueSnackbar(`Task marked as ${msg}`, { variant: 'success' });
-            }
-          }}>
-            {task.completed ? <ClearIcon /> : <CheckIcon />}
-          </IconButton>
+              if (res.data) {
+                const msg = task.completed ? 'To Do' : 'Completed';
+                enqueueSnackbar(`Task marked as ${msg}`, { variant: 'success' });
+              }
+            }}>
+              {task.completed ? <ClearIcon/> : <CheckIcon/>}
+            </IconButton>
+          }
           <IconButton
             onClick={() => {
               selectTask(task.id);

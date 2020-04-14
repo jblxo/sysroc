@@ -77,7 +77,8 @@ export class TasksService {
       throw new NotFoundException(`Could not find task with given ID!`);
     }
 
-    if (task.project.user.id !== user.id && !await this.usersService.hasPermissions(user, PERMISSIONS.PROJECTS_MANAGE)) {
+    const canManageProjects = await this.usersService.hasPermissions(user, PERMISSIONS.PROJECTS_MANAGE);
+    if (!((task.project.user.id === user.id && !updates.hasOwnProperty('completed')) || canManageProjects)) {
       throw new UnauthorizedException(`Missing permissions for updating a task of this project`);
     }
 
