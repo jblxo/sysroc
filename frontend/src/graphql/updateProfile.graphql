@@ -1,0 +1,26 @@
+mutation UpdateProfile(
+  $name: String!
+  $email: String
+  $oldPassword: String
+  $password: String
+  $passwordAgain: String
+) {
+  updateProfile(
+    input: {
+      name: $name
+      email: $email
+      oldPassword: $oldPassword
+      password: $password
+      passwordAgain: $passwordAgain
+    }
+  ) {
+    user {
+      id
+      email
+    }
+    permissions {
+      slug
+      permitted
+    }
+  }
+}

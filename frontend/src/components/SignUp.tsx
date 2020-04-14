@@ -44,6 +44,7 @@ export const SignUp: React.FC<RouteComponentProps> = ({ history }) => {
             setAccessToken(res.data.signup.accessToken);
 
             history.push('/');
+            window.location.reload();
           }
         }}
       />

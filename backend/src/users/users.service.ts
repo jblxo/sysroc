@@ -1,4 +1,11 @@
-import { HttpService, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpService,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsersFilter } from './filters/users.filter';
@@ -19,6 +26,7 @@ import { GroupsService } from '../groups/groups.service';
 import { CreateGroupDto } from '../groups/dto/create-group.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AllUsersFilter } from './filters/all-users.filter';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -68,7 +76,7 @@ export class UsersService {
     filter = JSON.parse(JSON.stringify(filter));
 
     const user = await this.userRepository
-      .findOne(filter, { relations: ['roles', 'groups'] });
+      .findOne(filter, { relations: ['roles', 'groups', 'projects'] });
 
     if (!user) {
       throw new Error(`User not found!`);
@@ -232,6 +240,35 @@ export class UsersService {
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('user.groups', 'groups')
       .getOne();
+  }
+
+  async updateProfile(
+    user: UserDto,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<void> {
+    const updateUser: any = { name: updateProfileDto.name };
+
+    if (updateProfileDto.email) {
+      updateUser.email = updateProfileDto.email;
+    }
+
+    if (updateProfileDto.oldPassword && updateProfileDto.password && updateProfileDto.passwordAgain) {
+      const valid = await bcrypt.compare(updateProfileDto.oldPassword, user.password);
+      if (!valid) {
+        throw new UnauthorizedException('The current password does not match.');
+      }
+      if (updateProfileDto.password !== updateProfileDto.passwordAgain) {
+        throw new Error('The new password has not been confirmed.');
+      }
+
+      updateUser.password = await this.hashPassword(updateProfileDto.password);
+    }
+
+    try {
+      await this.userRepository.update(user.id, updateUser);
+    } catch {
+      throw new ConflictException('This email is already in use!');
+    }
   }
 
   async hashPassword(password: string): Promise<string> {

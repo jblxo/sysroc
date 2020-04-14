@@ -1,16 +1,8 @@
 import React from 'react';
-import { useMeQuery, useLogoutMutation } from '../generated/graphql';
-import {
-  Toolbar,
-  AppBar,
-  Menu,
-  MenuItem,
-  IconButton,
-  Typography,
-  Button
-} from '@material-ui/core';
+import { useLogoutMutation, useMeExtendedQuery } from '../generated/graphql';
+import { AppBar, Button, IconButton, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core';
 import { setAccessToken } from '../auth/accessToke';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import clsx from 'clsx';
@@ -55,7 +47,7 @@ export const Header: React.FC<Props> = props => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const { data, loading } = useMeQuery();
+  const { data, loading } = useMeExtendedQuery();
   const [logout, { client }] = useLogoutMutation();
   const history = useHistory();
 
@@ -98,7 +90,7 @@ export const Header: React.FC<Props> = props => {
         </Typography>
         {!loading && data && data.me ? (
           <div>
-            Hello, {data.me.user?.email}
+            Hello, {data.me.user?.name}
             <IconButton
               aria-label="account of current user"
               aria-controls="menu-appbar"
@@ -116,6 +108,14 @@ export const Header: React.FC<Props> = props => {
               onClose={handleClose}
             >
               {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
+              <MenuItem
+                onClick={() => {
+                  history.push('/settings');
+                  handleClose();
+                }}
+              >
+                Settings
+              </MenuItem>
               <MenuItem
                 onClick={async () => {
                   await logout();

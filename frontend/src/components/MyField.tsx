@@ -8,6 +8,7 @@ interface Props extends FieldProps {
   label: string;
   className: string;
   required?: boolean;
+  disabled?: boolean;
   multiline?: boolean;
   rows?: number;
   rowsMax?: number;
@@ -22,6 +23,7 @@ export const MyField: React.FC<Props> = ({
   className,
   field,
   required,
+  disabled,
   multiline,
   rows,
   rowsMax,
@@ -35,6 +37,7 @@ export const MyField: React.FC<Props> = ({
       label={label}
       className={className}
       required={required || false}
+      disabled={disabled || false}
       multiline={multiline || false}
       rows={rows}
       rowsMax={rowsMax}

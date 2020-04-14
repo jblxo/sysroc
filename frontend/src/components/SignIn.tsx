@@ -42,6 +42,7 @@ export const SignIn: React.FC<RouteComponentProps> = ({ history }) => {
               setAccessToken(data.accessToken);
 
               history.push('/');
+              window.location.reload();
             } else if (data.registerToken) {
               setRegisterToken(data.registerToken);
               setUserTemp(data.userTemp);
