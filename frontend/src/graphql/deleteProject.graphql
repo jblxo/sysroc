@@ -2,5 +2,13 @@ mutation deleteProject($projectId: Float!) {
   deleteProject(projectId: $projectId) {
     id
     name
+    user {
+      id
+      name
+    }
+    supervisor {
+      id
+      name
+    }
   }
 }

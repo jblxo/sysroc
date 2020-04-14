@@ -25,7 +25,8 @@ export class ProjectsService {
   ): Promise<ProjectDto> {
     const project = this.projectRepository.create(createProjectDto);
     project.user = await this.userRepository.findOne({ id: user.id });
-    return this.projectRepository.save(project);
+    const res = await this.projectRepository.save(project);
+    return this.projectRepository.findOne(res.id, { relations: ['user', 'supervisor'] });
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
@@ -33,7 +34,7 @@ export class ProjectsService {
   }
 
   async deleteOne(projectId: number): Promise<ProjectDto> {
-    const project = await this.projectRepository.findOne({ id: projectId });
+    const project = await this.projectRepository.findOne({ id: projectId }, { relations: ['user', 'supervisor'] });
     if (!project) {
       throw new NotFoundException(`Project couldn't be found.`);
     }
