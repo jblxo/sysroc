@@ -15,7 +15,13 @@ export const Home: React.FC<Props> = () => {
   const classes = useStyles();
   const { data, loading } = useMeQuery();
 
-  if (loading || !data?.me?.user) return <div>Loading...</div>;
+  if (loading) return <div>Loading...</div>;
+
+  if(!data?.me?.user) {
+    return (
+        <div />
+    );
+  }
 
   return (
     <div>
