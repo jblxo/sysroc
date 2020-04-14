@@ -55,7 +55,7 @@ export const ClaimProjectFab: React.FC<Props> = ({
 
   return (
     <>
-      { canClaimProject && (!hasSupervisor || (meData?.me?.user && supervisorId === parseInt(meData.me.user.id))) &&
+      { canClaimProject && (!hasSupervisor || (meData?.me?.user && supervisorId === parseInt(meData.me.user.id))) ? (
         <Fab
           color="secondary"
           variant="extended"
@@ -65,7 +65,9 @@ export const ClaimProjectFab: React.FC<Props> = ({
         >
           { hasSupervisor ? 'Unclaim' : 'Claim' }
         </Fab>
-      }
+      ) : (
+        <div />
+      )}
     </>
   );
 };
