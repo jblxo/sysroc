@@ -1,13 +1,13 @@
-import {Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException} from '@nestjs/common';
-import {Project} from './entities/projects.entity';
-import {CreateProjectDto} from './dto/create-project.dto';
-import {UserDto} from '../users/dto/user.dto';
-import {ProjectsFilter} from './filters/project.filter';
-import {ProjectDto} from './dto/project.dto';
-import {UpdateProjectDto} from './dto/update-project.dto';
-import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
-import {User} from '../users/entities/users.entity';
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Project } from './entities/projects.entity';
+import { CreateProjectDto } from './dto/create-project.dto';
+import { UserDto } from '../users/dto/user.dto';
+import { ProjectsFilter } from './filters/project.filter';
+import { ProjectDto } from './dto/project.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/users.entity';
 import { UsersService } from '../users/users.service';
 import { PERMISSIONS } from '../permissions/permissions';
 
@@ -31,9 +31,15 @@ export class ProjectsService {
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
     const query = this.projectRepository.createQueryBuilder('project')
-        .leftJoinAndSelect('project.user', 'user')
-        .leftJoinAndSelect('project.supervisor', 'supervisor');
-
+        .innerJoinAndSelect('project.user', 'user')
+        .leftJoinAndSelect('project.supervisor', 'supervisor')
+        .leftJoinAndSelect('project.tasks', 'tasks')
+        .orderBy({ 'tasks.createdAt': 'ASC' });
+      
+    if (filter.user) {
+      query.andWhere('project.user.id = :id', { id: filter.user });
+    }
+      
     if(filter.name && filter.name !== '') {
       query.andWhere('project.name like :name', {name: `%${filter.name}%`});
     }
@@ -65,32 +71,15 @@ export class ProjectsService {
 
   async getOne(projectId: number): Promise<ProjectDto> {
     return this.projectRepository
-        .createQueryBuilder('project')
-        .where('project.id = :id', {id: projectId})
-        .innerJoinAndSelect(
-          'project.user',
-          'user'
-        )
-        .leftJoinAndSelect(
-          'project.supervisor',
-          'supervisor'
-        )
-        .leftJoinAndSelect(
-            'project.tasks',
-            'tasks'
-        )
-        .leftJoinAndSelect(
-            'project.classifications',
-            'classifications'
-        )
-        .leftJoinAndSelect(
-            'classifications.user',
-            'teacher'
-        )
-        .orderBy({
-          'tasks.createdAt': 'ASC'
-        })
-        .getOne();
+      .createQueryBuilder('project')
+      .where('project.id = :id', { id: projectId })
+      .innerJoinAndSelect('project.user', 'user')
+      .leftJoinAndSelect('project.supervisor', 'supervisor')
+      .leftJoinAndSelect('project.tasks', 'tasks')
+      .leftJoinAndSelect('project.classifications', 'classifications')
+      .leftJoinAndSelect('classifications.user', 'teacher')
+      .orderBy({ 'tasks.createdAt': 'ASC' })
+      .getOne();
   }
 
   async updateOne(

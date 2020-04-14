@@ -3,7 +3,7 @@ import { Link } from '@material-ui/core';
 import { useHistory } from 'react-router';
 
 interface Props {
-  id: number;
+  id: number | string;
   name: string;
 }
 
