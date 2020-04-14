@@ -39,8 +39,8 @@ input ClassificationsFilter {
   id: Float
   projects: [Float!] = []
   users: [Float!] = []
-  fromDate: DateTime = "2020-03-14T22:03:32.924Z"
-  toDate: DateTime = "2020-04-14T21:03:32.924Z"
+  fromDate: DateTime = "2020-03-14T22:07:57.905Z"
+  toDate: DateTime = "2020-04-14T21:07:57.906Z"
 }
 
 input CreateClassificationDto {

@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const ProjectAutocomplete: React.FC<Props> = ({ userId, handleChange, defaultProject }) => {
-  const { data, loading } = useProjectsQuery({ variables: { userId } });
+  const { data, loading } = useProjectsQuery();
 
   if (loading) return <div>Loading...</div>;
 
