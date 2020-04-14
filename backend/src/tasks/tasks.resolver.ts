@@ -17,10 +17,7 @@ export class TasksResolver {
 
   @Mutation(() => TaskDto)
   @UseGuards(GqlAuthGuard)
-  @HasPermissions(
-    PERMISSIONS.PROJECTS_CREATE,
-    PERMISSIONS.PROJECTS_MANAGE,
-  )
+  @HasPermissions(PERMISSIONS.PROJECTS_VIEW)
   createTask(
     @CurrentUser() user: UserDto,
     @Args('input') input: CreateTaskDto,
@@ -30,10 +27,7 @@ export class TasksResolver {
 
   @Mutation(() => TaskDto)
   @UseGuards(GqlAuthGuard)
-  @HasPermissions(
-    PERMISSIONS.PROJECTS_CREATE,
-    PERMISSIONS.PROJECTS_MANAGE,
-  )
+  @HasPermissions(PERMISSIONS.PROJECTS_VIEW)
   deleteTask(
     @Args('filter') filter: TasksFilter,
     @CurrentUser() user: UserDto,
@@ -43,10 +37,7 @@ export class TasksResolver {
 
   @Mutation(() => TaskDto)
   @UseGuards(GqlAuthGuard)
-  @HasPermissions(
-    PERMISSIONS.PROJECTS_CREATE,
-    PERMISSIONS.PROJECTS_MANAGE,
-  )
+  @HasPermissions(PERMISSIONS.PROJECTS_VIEW)
   updateTask(
     @Args('filter') filter: TasksFilter,
     @Args('updates') updates: UpdateTaskDto,

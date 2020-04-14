@@ -74,6 +74,7 @@ export class ProjectsResolver {
 
   @Mutation(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
+  @HasPermissions(PERMISSIONS.PROJECTS_VIEW)
   updateProject(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
