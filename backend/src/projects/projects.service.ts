@@ -30,7 +30,23 @@ export class ProjectsService {
   }
 
   async getMany(filter: ProjectsFilter): Promise<ProjectDto[]> {
-    return this.projectRepository.find({ ...filter, relations: ['user', 'supervisor'] });
+    const query = this.projectRepository.createQueryBuilder('project')
+        .leftJoinAndSelect('project.user', 'user')
+        .leftJoinAndSelect('project.supervisor', 'supervisor');
+
+    if(filter.name && filter.name !== '') {
+      query.andWhere('project.name like :name', {name: `%${filter.name}%`});
+    }
+
+    if(filter.authors && filter.authors.length > 0) {
+      query.andWhere('user.id IN (:...userIds)', {userIds: filter.authors});
+    }
+
+    if(filter.supervisors && filter.supervisors.length > 0) {
+      query.andWhere('supervisor.id IN (:...supervisorIds)', {supervisorIds: filter.supervisors});
+    }
+
+    return query.getMany();
   }
 
   async deleteOne(projectId: number): Promise<ProjectDto> {
