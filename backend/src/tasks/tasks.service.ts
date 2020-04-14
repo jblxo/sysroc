@@ -78,7 +78,7 @@ export class TasksService {
     }
 
     const canManageProjects = await this.usersService.hasPermissions(user, PERMISSIONS.PROJECTS_MANAGE);
-    if (!((task.project.user.id === user.id && !updates.hasOwnProperty('completed')) || canManageProjects)) {
+    if (!((task.project.user.id === user.id && updates.completed === null) || canManageProjects)) {
       throw new UnauthorizedException(`Missing permissions for updating a task of this project`);
     }
 
