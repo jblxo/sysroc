@@ -50,7 +50,7 @@ export const ProjectsHeader: React.FC<Props> = ({ handleOpen }) => {
     <ProjectsHeaderStyles>
       <div className="header">
         <h2>Projects</h2>
-        <p>Manage your projects</p>
+        <p>View all projects</p>
       </div>
       { !loading && data && data.me && hasPermissions(data.me, 'projects.create') &&
         <div className="new-project">
