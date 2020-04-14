@@ -6,7 +6,9 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class PermissionsService {
-  constructor(@InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>) {}
+  constructor(
+    @InjectRepository(Permission) private readonly permissionRepository: Repository<Permission>,
+  ) {}
 
   async createMany(permissions: CreatePermissionDto[]): Promise<Permission[]> {
     return Promise.all(
