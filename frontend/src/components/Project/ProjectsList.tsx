@@ -10,6 +10,8 @@ import { Item } from '../Layout/Item';
 import { List } from '../Layout/List';
 import styled from 'styled-components';
 import { UserLink } from '../UserLink';
+import {ProjectFilters, ProjectsFilter} from "./ProjectsFilter";
+import {getProjectFilters, registerProjectFiltersListener, setProjectFilters} from "../../filters/projects";
 
 const PaperStyles = styled.div`
   & > div {
@@ -36,7 +38,11 @@ export const ProjectsList: React.FC<Props> = ({
 }) => {
   displayAuthor = displayAuthor === undefined ? true : displayAuthor;
 
-  const { data, loading } = useProjectsQuery({ variables: { userId } });
+  const [loaded, setLoaded] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const [filters, setFilters] = useState<ProjectFilters>(getProjectFilters());
+
+  const { data, loading } = useProjectsQuery({ variables: { userId, ...filters } });
   const [deleteProject, { error }] = useDeleteProjectMutation({
     update(cache, result) {
       const { projects }: any = cache.readQuery({
@@ -83,8 +89,20 @@ export const ProjectsList: React.FC<Props> = ({
 
   if (loading) return <span>Loading...</span>;
 
+  if (!loaded) {
+    registerProjectFiltersListener((data: ProjectFilters) => {
+      setFilters(data);
+      setRevision(revision + 1);
+    });
+    setLoaded(true);
+  }
+
   return (
     <div>
+      <ProjectsFilter defaultValues={filters} onSubmit={(filter) => {
+        setProjectFilters(filter);
+        setFilters(filter);
+      }}/>
       <h2>Projects List</h2>
       <Paper>
         <PaperStyles>

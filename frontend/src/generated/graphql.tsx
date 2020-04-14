@@ -243,6 +243,8 @@ export type ProjectsFilter = {
   id?: Maybe<Scalars['Float']>,
   name?: Maybe<Scalars['String']>,
   user?: Maybe<Scalars['String']>,
+  authors?: Maybe<Array<Scalars['Float']>>,
+  supervisors?: Maybe<Array<Scalars['Float']>>,
 };
 
 export type Query = {
@@ -749,7 +751,10 @@ export type ProjectQuery = (
 );
 
 export type ProjectsQueryVariables = {
-  userId?: Maybe<Scalars['String']>
+  userId?: Maybe<Scalars['String']>,
+  name?: Maybe<Scalars['String']>,
+  authors?: Maybe<Array<Scalars['Float']>>,
+  supervisors?: Maybe<Array<Scalars['Float']>>
 };
 
 
@@ -1673,8 +1678,8 @@ export type ProjectQueryHookResult = ReturnType<typeof useProjectQuery>;
 export type ProjectLazyQueryHookResult = ReturnType<typeof useProjectLazyQuery>;
 export type ProjectQueryResult = ApolloReactCommon.QueryResult<ProjectQuery, ProjectQueryVariables>;
 export const ProjectsDocument = gql`
-    query Projects($userId: String) {
-  projects(filter: {user: $userId}) {
+    query Projects($userId: String, $name: String, $authors: [Float!], $supervisors: [Float!]) {
+  projects(filter: {user: $userId, name: $name, authors: $authors, supervisors: $supervisors}) {
     id
     name
     description
@@ -1703,6 +1708,9 @@ export const ProjectsDocument = gql`
  * const { data, loading, error } = useProjectsQuery({
  *   variables: {
  *      userId: // value for 'userId'
+ *      name: // value for 'name'
+ *      authors: // value for 'authors'
+ *      supervisors: // value for 'supervisors'
  *   },
  * });
  */

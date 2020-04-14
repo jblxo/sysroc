@@ -49,6 +49,7 @@ type Mutation {
     signin(auth: UserAuthInputDto!): UserAuthDto!
     signup(input: SignUpUserDto!): UserAuthDto!
     updateClassification(filter: ClassificationsFilter!, updates: UpdateClassificationDto!): ClassificationDto!
+    updateProfile(input: UpdateProfileDto!): UserAuthDto!
     updateProject(filter: ProjectsFilter!, updates: UpdateProjectDto!): ProjectDto!
     updateTask(filter: TasksFilter!, updates: UpdateTaskDto!): TaskDto!
     updateUser(filter: UsersFilter!, input: UpdateUserDto!): UserDto!
@@ -171,6 +172,7 @@ type UserDto {
     id: ID!
     name: String!
     password: String!
+    projects: [ProjectDto!]!
     roles: [RoleDto!]!
 }
 
@@ -188,10 +190,10 @@ input AllUsersFilter {
 }
 
 input ClassificationsFilter {
-    fromDate: DateTime = "2020-03-14T14:11:23.501Z"
+    fromDate: DateTime = "2020-03-14T15:44:27.377Z"
     id: Float
     projects: [Float!] = []
-    toDate: DateTime = "2020-04-14T13:11:23.502Z"
+    toDate: DateTime = "2020-04-14T14:44:27.378Z"
     users: [Float!] = []
 }
 
@@ -224,8 +226,10 @@ input CreateUserDto {
 }
 
 input ProjectsFilter {
+    authors: [Float!] = []
     id: Float
     name: String
+    supervisors: [Float!] = []
     user: String
 }
 
@@ -253,6 +257,14 @@ input UpdateClassificationDto {
     mark: Float!
     note: String!
     projectId: Float
+}
+
+input UpdateProfileDto {
+    email: String
+    name: String!
+    oldPassword: String
+    password: String
+    passwordAgain: String
 }
 
 input UpdateProjectDto {
