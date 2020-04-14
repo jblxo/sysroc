@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import { NewProjectForm } from './NewProjectForm';
 import { useCreateProjectMutation } from '../../generated/graphql';
@@ -33,12 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
 interface Props {
   open: boolean;
   handleClose: () => void;
-  userId?: string;
 }
 
 export const GET_PROJECTS = gql`
-  query Projects($userId: String) {
-    projects(filter: { user: $userId }) {
+  query Projects($name: String) {
+    projects(filter: { name: $name }) {
       id
       name
       description
@@ -57,7 +56,6 @@ export const GET_PROJECTS = gql`
 export const NewProjectModal: React.FC<Props> = ({
   open,
   handleClose,
-  userId
 }) => {
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
@@ -67,12 +65,12 @@ export const NewProjectModal: React.FC<Props> = ({
       try {
         const { projects }: any = cache.readQuery({
           query: GET_PROJECTS,
-          variables: { userId }
+          variables: { name: '' },
         });
 
         cache.writeQuery({
           query: GET_PROJECTS,
-          variables: { userId },
+          variables: { name: '' },
           data: {
             projects: projects.concat([result.data?.createProject])
           }

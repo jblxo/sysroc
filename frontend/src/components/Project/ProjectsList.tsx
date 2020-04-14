@@ -49,11 +49,11 @@ export const ProjectsList: React.FC<Props> = ({
     update(cache, result) {
       const { projects }: any = cache.readQuery({
         query: GET_PROJECTS,
-        variables: { userId }
+        variables: { name: '' },
       });
       cache.writeQuery({
         query: GET_PROJECTS,
-        variables: { userId },
+        variables: { name: '' },
         data: {
           projects: projects.filter((project: { id: string }) => {
             if (result.data) {
