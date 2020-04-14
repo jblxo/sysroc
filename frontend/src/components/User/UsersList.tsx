@@ -17,6 +17,7 @@ import {
 import { DeleteUserDialog } from './DeleteUserDialog';
 import { useApolloClient } from '@apollo/react-hooks';
 import { useSnackbar } from 'notistack';
+import { UserLink } from '../UserLink';
 
 const GET_USERS = UsersDocument;
 
@@ -144,7 +145,7 @@ export const UsersList: React.FC<Props> = () => {
           data.users.map(user => (
             <div key={user.id} className="flex">
               <Item>
-                <div>{user.name}</div>
+                <div><UserLink id={user.id} name={user.name} /></div>
               </Item>
               <Item>
                 <div>{user.email}</div>
@@ -159,7 +160,7 @@ export const UsersList: React.FC<Props> = () => {
                 <div>{user.roles && user.roles.map(role => role.name).join(', ')}</div>
               </Item>
               <Item className="actions">
-                { !user.roles.some(role => role.admin) && !user.roles.some(role => (role.slug === 'teacher' && !canManageTeachers) || (role.slug === 'student' && !canManageStudents)) &&
+                {!user.roles.some(role => role.admin) && !user.roles.some(role => (role.slug === 'teacher' && !canManageTeachers) || (role.slug === 'student' && !canManageStudents)) &&
                   <Fab
                     color="primary"
                     variant="extended"
@@ -177,7 +178,7 @@ export const UsersList: React.FC<Props> = () => {
                     Edit
                   </Fab>
                 }
-                { canDeleteUsers
+                {canDeleteUsers
                   && user.id !== me?.me?.user?.id
                   && (!user.roles.some(role => role.admin) || isAdmin)
                   && !user.roles.some(role => (role.slug === 'teacher' && !canManageTeachers) || (role.slug === 'student' && !canManageStudents)) &&
@@ -203,7 +204,7 @@ export const UsersList: React.FC<Props> = () => {
         userId={selectedUserId ?? 0}
         data={userData}
       />
-      { canDeleteUsers &&
+      {canDeleteUsers &&
         <DeleteUserDialog
           userId={selectedUserId ?? 0}
           open={deleteUserModalOpen}

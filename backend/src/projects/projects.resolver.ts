@@ -4,17 +4,19 @@ import { ProjectsService } from './projects.service';
 import { GqlAuthGuard } from '../auth/graphql-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { UserDto } from '../users/dto/user.dto';
-import { UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { ProjectsFilter } from './filters/project.filter';
 import { ProjectDto } from './dto/project.dto';
 import { HasPermissions } from '../users/decorators/has-permissions.decorator';
 import { PERMISSIONS } from '../permissions/permissions';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { UsersService } from '../users/users.service';
 
 @Resolver('Projects')
 export class ProjectsResolver {
   constructor(
     private readonly projectsService: ProjectsService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Mutation(() => ProjectDto)
@@ -53,11 +55,21 @@ export class ProjectsResolver {
 
   @Query(() => ProjectDto)
   @UseGuards(GqlAuthGuard)
-  project(
+  @HasPermissions(
+    PERMISSIONS.PROJECTS_VIEW,
+    PERMISSIONS.PROJECTS_CREATE
+  )
+  async project(
     @CurrentUser() user: UserDto,
     @Args('filter') filter: ProjectsFilter,
   ) {
-    return this.projectsService.getOne(filter.id);
+    const project = await this.projectsService.getOne(filter.id);
+
+    if (!await this.usersService.hasPermissions(user, PERMISSIONS.PROJECTS_VIEW) && user.id !== project.user.id) {
+      throw new UnauthorizedException('You cannot view this project.');
+    }
+
+    return project;
   }
 
   @Mutation(() => ProjectDto)
