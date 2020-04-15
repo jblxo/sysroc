@@ -147,11 +147,7 @@ export class UsersService {
 
     await this.userRepository.save(newUser);
 
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .whereInIds(newUser.id)
-      .leftJoinAndSelect('user.roles', 'roles')
-      .getOne();
+    return await this.userRepository.findOne(newUser.id, { relations: ['roles', 'roles.permissions', 'groups'] });
   }
 
   async create(
@@ -188,6 +184,8 @@ export class UsersService {
     const passwordRaw = createUserDto.password ? createUserDto.password : crypto.randomBytes(16).toString('hex');
     const password = await this.hashPassword(passwordRaw);
 
+    console.log(`Password to be sent in email: ${passwordRaw}`);
+
     const createUser = {
       email: createUserDto.email,
       adEmail: createUserDto.adEmail ? createUserDto.adEmail : createUserDto.email,
@@ -206,12 +204,7 @@ export class UsersService {
     await this.addRoles(createdUser, createUserDto.roleSlugs);
     await this.userRepository.save(createdUser);
 
-    return await this.userRepository
-      .createQueryBuilder('user')
-      .whereInIds(createdUser.id)
-      .leftJoinAndSelect('user.roles', 'roles')
-      .leftJoinAndSelect('user.groups', 'groups')
-      .getOne();
+    return await this.userRepository.findOne(createdUser.id, { relations: ['roles', 'roles.permissions', 'groups'] });
   }
 
   async update(
